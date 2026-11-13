@@ -1,0 +1,368 @@
+                <div class="topic-head">
+                    <span class="topic-num">04</span>
+                    <h2>Strings</h2>
+                </div>
+
+                <h3 class="block-label">Recognition</h3>
+                <div class="table-scroll"><table class="sig-table">
+                    <thead>
+                        <tr>
+                            <th>When you see…</th>
+                            <th>Pattern / Language Bridge</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="sig" style="font-weight: bold;">Language Lock: Split / Capitalize / Reverse</td>
+                            <td class="pat">
+                                <span class="pat-tag">C++ STL: stringstream + reverse()</span> |
+                                <span class="pat-tag">Java: s.split(" ") + StringBuilder.reverse()</span> |
+                                <span class="pat-tag">JS: s.split(" ").reverse().join("")</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Check anagram</td>
+                            <td class="pat"><span class="pat-tag">Frequency array (size 256 for ASCII) / HashMap
+                                    comparison</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Longest palindromic substring</td>
+                            <td class="pat"><span class="pat-tag">Expand around center, DP, or Manacher's (optimal
+                                    — see Advanced Strings)</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Check palindrome ignoring case / punctuation</td>
+                            <td class="pat"><span class="pat-tag">Two-pointer from both ends +
+                                    tolower()/isalnum()</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Longest common prefix</td>
+                            <td class="pat"><span class="pat-tag">Vertical scanning, or sort &amp; compare
+                                    first/last</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Pattern matching (substring search)</td>
+                            <td class="pat"><span class="pat-tag">KMP / Z-function / Rabin–Karp — see
+                                    Advanced Strings for the trade-offs</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Minimum insertions/deletions to make palindrome</td>
+                            <td class="pat"><span class="pat-tag">LCS with reversed string (DP)</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Group anagrams</td>
+                            <td class="pat"><span class="pat-tag">HashMap keyed by sorted string or char-count
+                                    signature</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Roman ↔ integer</td>
+                            <td class="pat"><span class="pat-tag">Greedy symbol mapping (Right-to-left tracking)</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Word break</td>
+                            <td class="pat"><span class="pat-tag">DP + HashSet dictionary lookup</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Longest repeating substring / distinct substrings</td>
+                            <td class="pat"><span class="pat-tag">Suffix Array or Trie</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">String compression / run-length encoding</td>
+                            <td class="pat"><span class="pat-tag">Two-pointer, count consecutive chars (In-place
+                                    read/write heads)</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Valid parentheses / balanced brackets</td>
+                            <td class="pat"><span class="pat-tag">Stack</span></td>
+                        </tr>
+                    </tbody>
+                </table></div>
+
+                <h3 class="block-label">Example algorithms</h3>
+                <div class="examples-grid">
+                    <div class="example">
+                        <h4>KMP — substring search in O(n+m)</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function">vector&lt;<span class="hljs-type">int</span>&gt; <span class="hljs-title">buildLPS</span><span class="hljs-params">(<span class="hljs-type">const</span> string&amp; p)</span> </span>{
+    <span class="hljs-type">int</span> m = p.<span class="hljs-built_in">size</span>();
+    <span class="hljs-function">vector&lt;<span class="hljs-type">int</span>&gt; <span class="hljs-title">lps</span><span class="hljs-params">(m, <span class="hljs-number">0</span>)</span></span>;
+    <span class="hljs-type">int</span> len = <span class="hljs-number">0</span>, i = <span class="hljs-number">1</span>;
+    <span class="hljs-keyword">while</span> (i &lt; m) {
+        <span class="hljs-keyword">if</span> (p[i] == p[len]) lps[i++] = ++len;
+        <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (len) len = lps[len - <span class="hljs-number">1</span>];
+        <span class="hljs-keyword">else</span> lps[i++] = <span class="hljs-number">0</span>;
+    }
+    <span class="hljs-keyword">return</span> lps;
+}
+
+<span class="hljs-function">vector&lt;<span class="hljs-type">int</span>&gt; <span class="hljs-title">kmpSearch</span><span class="hljs-params">(<span class="hljs-type">const</span> string&amp; text, <span class="hljs-type">const</span> string&amp; pat)</span> </span>{
+    vector&lt;<span class="hljs-type">int</span>&gt; lps = <span class="hljs-built_in">buildLPS</span>(pat), matches;
+    <span class="hljs-type">int</span> i = <span class="hljs-number">0</span>, j = <span class="hljs-number">0</span>;
+    <span class="hljs-keyword">while</span> (i &lt; (<span class="hljs-type">int</span>)text.<span class="hljs-built_in">size</span>()) {
+        <span class="hljs-keyword">if</span> (text[i] == pat[j]) { i++; j++; }
+        <span class="hljs-keyword">if</span> (j == (<span class="hljs-type">int</span>)pat.<span class="hljs-built_in">size</span>()) {
+            matches.<span class="hljs-built_in">push_back</span>(i - j);
+            j = lps[j - <span class="hljs-number">1</span>];
+        } <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (i &lt; (<span class="hljs-type">int</span>)text.<span class="hljs-built_in">size</span>() &amp;&amp; text[i] != pat[j]) {
+            j ? j = lps[j - <span class="hljs-number">1</span>] : i++;
+        }
+    }
+    <span class="hljs-keyword">return</span> matches;
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Longest Palindromic Substring — expand around center</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function">string <span class="hljs-title">longestPalindrome</span><span class="hljs-params">(string s)</span> </span>{
+    <span class="hljs-type">int</span> start = <span class="hljs-number">0</span>, best = <span class="hljs-number">0</span>;
+    <span class="hljs-keyword">auto</span> expand = [&amp;](<span class="hljs-type">int</span> l, <span class="hljs-type">int</span> r) {
+        <span class="hljs-keyword">while</span> (l &gt;= <span class="hljs-number">0</span> &amp;&amp; r &lt; (<span class="hljs-type">int</span>)s.<span class="hljs-built_in">size</span>() &amp;&amp; s[l] == s[r]) { l--; r++; }
+        <span class="hljs-keyword">if</span> (r - l - <span class="hljs-number">1</span> &gt; best) { best = r - l - <span class="hljs-number">1</span>; start = l + <span class="hljs-number">1</span>; }
+    };
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; (<span class="hljs-type">int</span>)s.<span class="hljs-built_in">size</span>(); i++) {
+        <span class="hljs-built_in">expand</span>(i, i);
+        <span class="hljs-built_in">expand</span>(i, i + <span class="hljs-number">1</span>);
+    }
+    <span class="hljs-keyword">return</span> s.<span class="hljs-built_in">substr</span>(start, best);
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>stringstream — Clean Multiple Spaces &amp; Tokenize Words in O(N)</h4>
+                        <div class="code-wrap">
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-comment">// Bypasses all trailing, leading, and continuous redundant spaces automatically</span>
+<span class="hljs-function">vector&lt;string&gt; <span class="hljs-title">tokenize</span><span class="hljs-params">(<span class="hljs-type">const</span> string&amp; sentence)</span> </span>{
+    <span class="hljs-function">stringstream <span class="hljs-title">ss</span><span class="hljs-params">(sentence)</span></span>;
+    string word;
+    vector&lt;string&gt; words;
+    <span class="hljs-keyword">while</span> (ss &gt;&gt; word) {
+        words.<span class="hljs-built_in">push_back</span>(word);
+    }
+    <span class="hljs-keyword">return</span> words; 
+}</code></pre>
+                        </div>
+                    </div>
+
+                    <div class="example">
+                        <h4>ASCII Mutation — Conditional Capitalization &amp; Safe Traversal</h4>
+                        <div class="code-wrap">
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-comment">// Transforms alphabet states inplace. Safe bounds avoid string copy overhead.</span>
+<span class="hljs-function">string <span class="hljs-title">modifySentences</span><span class="hljs-params">(string s)</span> </span>{
+    <span class="hljs-comment">// In-place pointer modification via reference mutations</span>
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">size_t</span> i = <span class="hljs-number">0</span>; i &lt; s.<span class="hljs-built_in">length</span>(); i++) {
+        <span class="hljs-keyword">if</span> (<span class="hljs-built_in">isalpha</span>(s[i])) {
+            <span class="hljs-comment">// Safe index parsing logic using &lt;cctype&gt; boundaries</span>
+            s[i] = (i == <span class="hljs-number">0</span>) ? <span class="hljs-built_in">toupper</span>(s[i]) : <span class="hljs-built_in">tolower</span>(s[i]); 
+        }
+    }
+    <span class="hljs-keyword">return</span> s;
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Check Anagram (frequency array)</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function"><span class="hljs-type">bool</span> <span class="hljs-title">isAnagram</span><span class="hljs-params">(<span class="hljs-type">const</span> string&amp; a, <span class="hljs-type">const</span> string&amp; b)</span> </span>{
+    <span class="hljs-keyword">if</span> (a.<span class="hljs-built_in">size</span>() != b.<span class="hljs-built_in">size</span>()) <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;
+    <span class="hljs-type">int</span> freq[<span class="hljs-number">256</span>] = {};
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">unsigned</span> <span class="hljs-type">char</span> c : a) freq[c]++;
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">unsigned</span> <span class="hljs-type">char</span> c : b) <span class="hljs-keyword">if</span> (--freq[c] &lt; <span class="hljs-number">0</span>) <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;
+    <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Group Anagrams</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp">vector&lt;vector&lt;string&gt;&gt; <span class="hljs-built_in">groupAnagrams</span>(vector&lt;string&gt;&amp; strs) {
+    unordered_map&lt;string, vector&lt;string&gt;&gt; mp;
+    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">auto</span>&amp; s : strs) { string key = s; <span class="hljs-built_in">sort</span>(key.<span class="hljs-built_in">begin</span>(), key.<span class="hljs-built_in">end</span>()); mp[key].<span class="hljs-built_in">push_back</span>(s); }
+    vector&lt;vector&lt;string&gt;&gt; res;
+    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">auto</span>&amp; [k, v] : mp) res.<span class="hljs-built_in">push_back</span>(v);
+    <span class="hljs-keyword">return</span> res;
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Longest Common Prefix (sort, compare first and last)</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function">string <span class="hljs-title">longestCommonPrefix</span><span class="hljs-params">(vector&lt;string&gt;&amp; v)</span> </span>{
+    <span class="hljs-built_in">sort</span>(v.<span class="hljs-built_in">begin</span>(), v.<span class="hljs-built_in">end</span>());
+    string &amp;a = v.<span class="hljs-built_in">front</span>(), &amp;b = v.<span class="hljs-built_in">back</span>();
+    <span class="hljs-type">int</span> i = <span class="hljs-number">0</span>;
+    <span class="hljs-keyword">while</span> (i &lt; (<span class="hljs-type">int</span>)<span class="hljs-built_in">min</span>(a.<span class="hljs-built_in">size</span>(), b.<span class="hljs-built_in">size</span>()) &amp;&amp; a[i] == b[i]) i++;
+    <span class="hljs-keyword">return</span> a.<span class="hljs-built_in">substr</span>(<span class="hljs-number">0</span>, i);
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Valid Palindrome (ignore case / punctuation)</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function"><span class="hljs-type">bool</span> <span class="hljs-title">isPalindromeStr</span><span class="hljs-params">(<span class="hljs-type">const</span> string&amp; s)</span> </span>{
+    <span class="hljs-type">int</span> l = <span class="hljs-number">0</span>, r = (<span class="hljs-type">int</span>)s.<span class="hljs-built_in">size</span>() - <span class="hljs-number">1</span>;
+    <span class="hljs-keyword">while</span> (l &lt; r) {
+        <span class="hljs-keyword">while</span> (l &lt; r &amp;&amp; !<span class="hljs-built_in">isalnum</span>(s[l])) l++;
+        <span class="hljs-keyword">while</span> (l &lt; r &amp;&amp; !<span class="hljs-built_in">isalnum</span>(s[r])) r--;
+        <span class="hljs-keyword">if</span> (<span class="hljs-built_in">tolower</span>(s[l++]) != <span class="hljs-built_in">tolower</span>(s[r--])) <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;
+    }
+    <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Reverse Words in a Sentence (language bridge, C++ version)</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function">string <span class="hljs-title">reverseWords</span><span class="hljs-params">(<span class="hljs-type">const</span> string&amp; s)</span> </span>{
+    <span class="hljs-function">stringstream <span class="hljs-title">ss</span><span class="hljs-params">(s)</span></span>; string w; vector&lt;string&gt; words;
+    <span class="hljs-keyword">while</span> (ss &gt;&gt; w) words.<span class="hljs-built_in">push_back</span>(w);
+    <span class="hljs-built_in">reverse</span>(words.<span class="hljs-built_in">begin</span>(), words.<span class="hljs-built_in">end</span>());
+    string res;
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; (<span class="hljs-type">int</span>)words.<span class="hljs-built_in">size</span>(); i++) { <span class="hljs-keyword">if</span> (i) res += <span class="hljs-string">' '</span>; res += words[i]; }
+    <span class="hljs-keyword">return</span> res;
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Roman to Integer</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">romanToInt</span><span class="hljs-params">(<span class="hljs-type">const</span> string&amp; s)</span> </span>{
+    unordered_map&lt;<span class="hljs-type">char</span>,<span class="hljs-type">int</span>&gt; val = {{<span class="hljs-string">'I'</span>,<span class="hljs-number">1</span>},{<span class="hljs-string">'V'</span>,<span class="hljs-number">5</span>},{<span class="hljs-string">'X'</span>,<span class="hljs-number">10</span>},{<span class="hljs-string">'L'</span>,<span class="hljs-number">50</span>},{<span class="hljs-string">'C'</span>,<span class="hljs-number">100</span>},{<span class="hljs-string">'D'</span>,<span class="hljs-number">500</span>},{<span class="hljs-string">'M'</span>,<span class="hljs-number">1000</span>}};
+    <span class="hljs-type">int</span> total = <span class="hljs-number">0</span>;
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = (<span class="hljs-type">int</span>)s.<span class="hljs-built_in">size</span>() - <span class="hljs-number">1</span>; i &gt;= <span class="hljs-number">0</span>; i--) {
+        <span class="hljs-keyword">if</span> (i + <span class="hljs-number">1</span> &lt; (<span class="hljs-type">int</span>)s.<span class="hljs-built_in">size</span>() &amp;&amp; val[s[i]] &lt; val[s[i + <span class="hljs-number">1</span>]]) total -= val[s[i]];
+        <span class="hljs-keyword">else</span> total += val[s[i]];
+    }
+    <span class="hljs-keyword">return</span> total;
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>String Compression (in-place read/write heads)</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">compress</span><span class="hljs-params">(vector&lt;<span class="hljs-type">char</span>&gt;&amp; chars)</span> </span>{
+    <span class="hljs-type">int</span> w = <span class="hljs-number">0</span>, i = <span class="hljs-number">0</span>, n = chars.<span class="hljs-built_in">size</span>();
+    <span class="hljs-keyword">while</span> (i &lt; n) {
+        <span class="hljs-type">int</span> j = i;
+        <span class="hljs-keyword">while</span> (j &lt; n &amp;&amp; chars[j] == chars[i]) j++;
+        chars[w++] = chars[i];
+        <span class="hljs-keyword">if</span> (j - i &gt; <span class="hljs-number">1</span>) <span class="hljs-keyword">for</span> (<span class="hljs-type">char</span> c : <span class="hljs-built_in">to_string</span>(j - i)) chars[w++] = c;
+        i = j;
+    }
+    <span class="hljs-keyword">return</span> w;
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Word Break, DP + HashSet</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function"><span class="hljs-type">bool</span> <span class="hljs-title">wordBreak</span><span class="hljs-params">(string s, vector&lt;string&gt;&amp; dict)</span> </span>{
+    <span class="hljs-function">unordered_set&lt;string&gt; <span class="hljs-title">st</span><span class="hljs-params">(dict.begin(), dict.end())</span></span>;
+    <span class="hljs-type">int</span> n = s.<span class="hljs-built_in">size</span>();
+    <span class="hljs-function">vector&lt;<span class="hljs-type">bool</span>&gt; <span class="hljs-title">dp</span><span class="hljs-params">(n + <span class="hljs-number">1</span>, <span class="hljs-literal">false</span>)</span></span>; dp[<span class="hljs-number">0</span>] = <span class="hljs-literal">true</span>;
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">1</span>; i &lt;= n; i++)
+        <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> j = <span class="hljs-number">0</span>; j &lt; i; j++)
+            <span class="hljs-keyword">if</span> (dp[j] &amp;&amp; st.<span class="hljs-built_in">count</span>(s.<span class="hljs-built_in">substr</span>(j, i - j))) { dp[i] = <span class="hljs-literal">true</span>; <span class="hljs-keyword">break</span>; }
+    <span class="hljs-keyword">return</span> dp[n];
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Min Insertions to Make Palindrome (LCS with reverse)</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">minInsertions</span><span class="hljs-params">(string s)</span> </span>{
+    <span class="hljs-function">string <span class="hljs-title">r</span><span class="hljs-params">(s.rbegin(), s.rend())</span></span>;
+    <span class="hljs-type">int</span> n = s.<span class="hljs-built_in">size</span>();
+    vector&lt;vector&lt;<span class="hljs-type">int</span>&gt;&gt; <span class="hljs-built_in">dp</span>(n + <span class="hljs-number">1</span>, <span class="hljs-built_in">vector</span>&lt;<span class="hljs-type">int</span>&gt;(n + <span class="hljs-number">1</span>, <span class="hljs-number">0</span>));
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">1</span>; i &lt;= n; i++)
+        <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> j = <span class="hljs-number">1</span>; j &lt;= n; j++)
+            dp[i][j] = s[i - <span class="hljs-number">1</span>] == r[j - <span class="hljs-number">1</span>] ? <span class="hljs-number">1</span> + dp[i - <span class="hljs-number">1</span>][j - <span class="hljs-number">1</span>] : <span class="hljs-built_in">max</span>(dp[i - <span class="hljs-number">1</span>][j], dp[i][j - <span class="hljs-number">1</span>]);
+    <span class="hljs-keyword">return</span> n - dp[n][n];
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Suffix Array + Kasai LCP, distinct substrings / longest repeating substring</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function">vector&lt;<span class="hljs-type">int</span>&gt; <span class="hljs-title">buildSA</span><span class="hljs-params">(<span class="hljs-type">const</span> string&amp; s)</span> </span>{
+    <span class="hljs-type">int</span> n = s.<span class="hljs-built_in">size</span>();
+    <span class="hljs-function">vector&lt;<span class="hljs-type">int</span>&gt; <span class="hljs-title">sa</span><span class="hljs-params">(n)</span>, <span class="hljs-title">rnk</span><span class="hljs-params">(n)</span>, <span class="hljs-title">tmp</span><span class="hljs-params">(n)</span></span>;
+    <span class="hljs-built_in">iota</span>(sa.<span class="hljs-built_in">begin</span>(), sa.<span class="hljs-built_in">end</span>(), <span class="hljs-number">0</span>);
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; n; i++) rnk[i] = s[i];
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> k = <span class="hljs-number">1</span>; ; k &lt;&lt;= <span class="hljs-number">1</span>) {
+        <span class="hljs-keyword">auto</span> cmp = [&amp;](<span class="hljs-type">int</span> a, <span class="hljs-type">int</span> b) {
+            <span class="hljs-keyword">if</span> (rnk[a] != rnk[b]) <span class="hljs-keyword">return</span> rnk[a] &lt; rnk[b];
+            <span class="hljs-type">int</span> ra = a + k &lt; n ? rnk[a + k] : <span class="hljs-number">-1</span>, rb = b + k &lt; n ? rnk[b + k] : <span class="hljs-number">-1</span>;
+            <span class="hljs-keyword">return</span> ra &lt; rb;
+        };
+        <span class="hljs-built_in">sort</span>(sa.<span class="hljs-built_in">begin</span>(), sa.<span class="hljs-built_in">end</span>(), cmp);
+        tmp[sa[<span class="hljs-number">0</span>]] = <span class="hljs-number">0</span>;
+        <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">1</span>; i &lt; n; i++) tmp[sa[i]] = tmp[sa[i - <span class="hljs-number">1</span>]] + <span class="hljs-built_in">cmp</span>(sa[i - <span class="hljs-number">1</span>], sa[i]);
+        rnk = tmp;
+        <span class="hljs-keyword">if</span> (rnk[sa[n - <span class="hljs-number">1</span>]] == n - <span class="hljs-number">1</span>) <span class="hljs-keyword">break</span>;
+    }
+    <span class="hljs-keyword">return</span> sa;
+}
+<span class="hljs-function">vector&lt;<span class="hljs-type">int</span>&gt; <span class="hljs-title">buildLCP</span><span class="hljs-params">(<span class="hljs-type">const</span> string&amp; s, vector&lt;<span class="hljs-type">int</span>&gt;&amp; sa)</span> </span>{   <span class="hljs-comment">// Kasai</span>
+    <span class="hljs-type">int</span> n = s.<span class="hljs-built_in">size</span>();
+    <span class="hljs-function">vector&lt;<span class="hljs-type">int</span>&gt; <span class="hljs-title">rnk</span><span class="hljs-params">(n)</span>, <span class="hljs-title">lcp</span><span class="hljs-params">(n, <span class="hljs-number">0</span>)</span></span>;
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; n; i++) rnk[sa[i]] = i;
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>, h = <span class="hljs-number">0</span>; i &lt; n; i++) {
+        <span class="hljs-keyword">if</span> (rnk[i] == <span class="hljs-number">0</span>) { h = <span class="hljs-number">0</span>; <span class="hljs-keyword">continue</span>; }
+        <span class="hljs-type">int</span> j = sa[rnk[i] - <span class="hljs-number">1</span>];
+        <span class="hljs-keyword">while</span> (i + h &lt; n &amp;&amp; j + h &lt; n &amp;&amp; s[i + h] == s[j + h]) h++;
+        lcp[rnk[i]] = h;
+        <span class="hljs-keyword">if</span> (h) h--;
+    }
+    <span class="hljs-keyword">return</span> lcp;
+}
+<span class="hljs-function"><span class="hljs-type">long</span> <span class="hljs-type">long</span> <span class="hljs-title">countDistinctSubstrings</span><span class="hljs-params">(<span class="hljs-type">const</span> string&amp; s)</span> </span>{
+    <span class="hljs-type">int</span> n = s.<span class="hljs-built_in">size</span>();
+    <span class="hljs-keyword">auto</span> sa = <span class="hljs-built_in">buildSA</span>(s);
+    <span class="hljs-keyword">auto</span> lcp = <span class="hljs-built_in">buildLCP</span>(s, sa);
+    <span class="hljs-type">long</span> <span class="hljs-type">long</span> total = (<span class="hljs-type">long</span> <span class="hljs-type">long</span>)n * (n + <span class="hljs-number">1</span>) / <span class="hljs-number">2</span>;
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> x : lcp) total -= x;        <span class="hljs-comment">// longest repeating substring = *max_element(lcp)</span>
+    <span class="hljs-keyword">return</span> total;
+}</code></pre>
+                        </div>
+                    </div>
+                </div>

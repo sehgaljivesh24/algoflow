@@ -1,0 +1,453 @@
+                <div class="topic-head">
+                    <span class="topic-num">08</span>
+                    <h2>Stack and Queues</h2>
+                </div>
+
+                <h3 class="block-label">Prefix / Infix / Postfix</h3>
+                <div class="table-scroll"><table class="complexity-table">
+                    <thead>
+                        <tr>
+                            <th>Task</th>
+                            <th>Approach</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Infix → Postfix</td>
+                            <td>Operator stack, precedence + associativity check. Pop higher/equal precedence to output
+                                before pushing current.</td>
+                        </tr>
+                        <tr>
+                            <td>Infix → Prefix</td>
+                            <td>Reverse infix, swap ( ↔ ), convert to postfix, reverse result.</td>
+                        </tr>
+                        <tr>
+                            <td>Postfix evaluation</td>
+                            <td>Scan left→right. Push operands; on an operator, pop 2, apply (op2 OP op1), and push
+                                result back.</td>
+                        </tr>
+                        <tr>
+                            <td>Prefix evaluation</td>
+                            <td>Scan right→left. Push operands; on an operator, pop 2, apply (op1 OP op2), and push
+                                result back.</td>
+                        </tr>
+                        <tr>
+                            <td>Postfix → Infix</td>
+                            <td>Scan left→right. Push operands as strings; on an operator, pop 2, concatenate as
+                                (op2 OP op1), and push back.</td>
+                        </tr>
+                        <tr>
+                            <td>Prefix → Infix</td>
+                            <td>Scan right→left. Push operands as strings; on an operator, pop 2, concatenate as
+                                (op1 OP op2), and push back.</td>
+                        </tr>
+                        <tr>
+                            <td>Postfix → Prefix</td>
+                            <td>Scan left→right. Push operands as strings; on an operator, pop 2, concatenate as OP
+                                op2 op1, and push back.</td>
+                        </tr>
+                        <tr>
+                            <td>Prefix → Postfix</td>
+                            <td>Scan right→left. Push operands as strings; on an operator, pop 2, concatenate as
+                                op1 op2 OP, and push back.</td>
+                        </tr>
+                    </tbody>
+                </table></div>
+                <h3 class="block-label">Monotonic stack</h3>
+                <div class="table-scroll"><table class="sig-table">
+                    <thead>
+                        <tr>
+                            <th>When you see…</th>
+                            <th>Pattern</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="sig">Next Greater Element</td>
+                            <td class="pat"><span class="pat-tag">Monotonic decreasing stack, traverse
+                                    right→left</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Next Smaller Element</td>
+                            <td class="pat"><span class="pat-tag">Monotonic increasing stack</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Previous Greater / Smaller Element</td>
+                            <td class="pat"><span class="pat-tag">Same idea, traverse left→right</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Largest rectangle in histogram</td>
+                            <td class="pat"><span class="pat-tag">Monotonic stack of indices, nearest smaller
+                                    left/right</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Maximal rectangle in a binary matrix</td>
+                            <td class="pat"><span class="pat-tag">Per-row histogram trick +
+                                    largest-rectangle-in-histogram</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Stock span problem</td>
+                            <td class="pat"><span class="pat-tag">Monotonic decreasing stack of (price, span)</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Remove K digits to form the smallest number</td>
+                            <td class="pat"><span class="pat-tag">Monotonic increasing stack, pop larger digits</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Sum of subarray minimums / maximums</td>
+                            <td class="pat"><span class="pat-tag">Monotonic stack, contribution via nearest
+                                    smaller/greater bound</span></td>
+                        </tr>
+                    </tbody>
+                </table></div>
+                <h3 class="block-label">Implementation</h3>
+                <div class="table-scroll"><table class="sig-table">
+                    <thead>
+                        <tr>
+                            <th>When you see…</th>
+                            <th>Pattern</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="sig">Implement a stack using queues, or vice versa</td>
+                            <td class="pat"><span class="pat-tag">Two-container simulation</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Min Stack (O(1) getMin)</td>
+                            <td class="pat"><span class="pat-tag">Auxiliary stack, or store (val, currentMin)
+                                    pairs</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Circular queue / deque</td>
+                            <td class="pat"><span class="pat-tag">Array with front/rear modulo indexing</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Valid parentheses</td>
+                            <td class="pat"><span class="pat-tag">Stack: push opens, pop &amp; match on close</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table></div>
+
+                <h3 class="block-label">Example algorithms</h3>
+                <div class="examples-grid">
+                    <div class="example">
+                        <h4>Infix to Postfix conversion</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">precedence</span><span class="hljs-params">(<span class="hljs-type">char</span> op)</span> </span>{
+    <span class="hljs-keyword">if</span> (op == <span class="hljs-string">'+'</span> || op == <span class="hljs-string">'-'</span>) <span class="hljs-keyword">return</span> <span class="hljs-number">1</span>;
+    <span class="hljs-keyword">if</span> (op == <span class="hljs-string">'*'</span> || op == <span class="hljs-string">'/'</span>) <span class="hljs-keyword">return</span> <span class="hljs-number">2</span>;
+    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;
+}
+
+<span class="hljs-function">string <span class="hljs-title">infixToPostfix</span><span class="hljs-params">(string s)</span> </span>{
+    stack&lt;<span class="hljs-type">char</span>&gt; st;
+    string res;
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">char</span> c : s) {
+        <span class="hljs-keyword">if</span> (<span class="hljs-built_in">isalnum</span>(c)) res += c;
+        <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (c == <span class="hljs-string">'('</span>) st.<span class="hljs-built_in">push</span>(c);
+        <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (c == <span class="hljs-string">')'</span>) {
+            <span class="hljs-keyword">while</span> (!st.<span class="hljs-built_in">empty</span>() &amp;&amp; st.<span class="hljs-built_in">top</span>() != <span class="hljs-string">'('</span>) { res += st.<span class="hljs-built_in">top</span>(); st.<span class="hljs-built_in">pop</span>(); }
+            st.<span class="hljs-built_in">pop</span>();
+        } <span class="hljs-keyword">else</span> {
+            <span class="hljs-keyword">while</span> (!st.<span class="hljs-built_in">empty</span>() &amp;&amp; <span class="hljs-built_in">precedence</span>(st.<span class="hljs-built_in">top</span>()) &gt;= <span class="hljs-built_in">precedence</span>(c)) {
+                res += st.<span class="hljs-built_in">top</span>(); st.<span class="hljs-built_in">pop</span>();
+            }
+            st.<span class="hljs-built_in">push</span>(c);
+        }
+    }
+    <span class="hljs-keyword">while</span> (!st.<span class="hljs-built_in">empty</span>()) { res += st.<span class="hljs-built_in">top</span>(); st.<span class="hljs-built_in">pop</span>(); }
+    <span class="hljs-keyword">return</span> res;
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Next Greater Element — monotonic stack</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function">vector&lt;<span class="hljs-type">int</span>&gt; <span class="hljs-title">nextGreaterElement</span><span class="hljs-params">(vector&lt;<span class="hljs-type">int</span>&gt;&amp; a)</span> </span>{
+    <span class="hljs-type">int</span> n = a.<span class="hljs-built_in">size</span>();
+    <span class="hljs-function">vector&lt;<span class="hljs-type">int</span>&gt; <span class="hljs-title">res</span><span class="hljs-params">(n, <span class="hljs-number">-1</span>)</span></span>;
+    stack&lt;<span class="hljs-type">int</span>&gt; st;
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = n - <span class="hljs-number">1</span>; i &gt;= <span class="hljs-number">0</span>; i--) {
+        <span class="hljs-keyword">while</span> (!st.<span class="hljs-built_in">empty</span>() &amp;&amp; a[st.<span class="hljs-built_in">top</span>()] &lt;= a[i]) st.<span class="hljs-built_in">pop</span>();
+        <span class="hljs-keyword">if</span> (!st.<span class="hljs-built_in">empty</span>()) res[i] = a[st.<span class="hljs-built_in">top</span>()];
+        st.<span class="hljs-built_in">push</span>(i);
+    }
+    <span class="hljs-keyword">return</span> res;
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Min Stack — O(1) getMin</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-keyword">class</span> <span class="hljs-title class_">MinStack</span> {
+    stack&lt;pair&lt;<span class="hljs-type">int</span>,<span class="hljs-type">int</span>&gt;&gt; st;
+<span class="hljs-keyword">public</span>:
+    <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">push</span><span class="hljs-params">(<span class="hljs-type">int</span> val)</span> </span>{
+        <span class="hljs-type">int</span> mn = st.<span class="hljs-built_in">empty</span>() ? val : <span class="hljs-built_in">min</span>(val, st.<span class="hljs-built_in">top</span>().second);
+        st.<span class="hljs-built_in">push</span>({val, mn});
+    }
+    <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">pop</span><span class="hljs-params">()</span> </span>{ st.<span class="hljs-built_in">pop</span>(); }
+    <span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">top</span><span class="hljs-params">()</span> </span>{ <span class="hljs-keyword">return</span> st.<span class="hljs-built_in">top</span>().first; }
+    <span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">getMin</span><span class="hljs-params">()</span> </span>{ <span class="hljs-keyword">return</span> st.<span class="hljs-built_in">top</span>().second; }
+};</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Postfix Evaluation</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">evalPostfix</span><span class="hljs-params">(<span class="hljs-type">const</span> vector&lt;string&gt;&amp; tokens)</span> </span>{
+    stack&lt;<span class="hljs-type">int</span>&gt; st;
+    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">auto</span>&amp; t : tokens) {
+        <span class="hljs-keyword">if</span> (t == <span class="hljs-string">"+"</span> || t == <span class="hljs-string">"-"</span> || t == <span class="hljs-string">"*"</span> || t == <span class="hljs-string">"/"</span>) {
+            <span class="hljs-type">int</span> b = st.<span class="hljs-built_in">top</span>(); st.<span class="hljs-built_in">pop</span>();
+            <span class="hljs-type">int</span> a = st.<span class="hljs-built_in">top</span>(); st.<span class="hljs-built_in">pop</span>();
+            <span class="hljs-keyword">if</span> (t == <span class="hljs-string">"+"</span>) st.<span class="hljs-built_in">push</span>(a + b);
+            <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (t == <span class="hljs-string">"-"</span>) st.<span class="hljs-built_in">push</span>(a - b);
+            <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (t == <span class="hljs-string">"*"</span>) st.<span class="hljs-built_in">push</span>(a * b);
+            <span class="hljs-keyword">else</span> st.<span class="hljs-built_in">push</span>(a / b);
+        } <span class="hljs-keyword">else</span> st.<span class="hljs-built_in">push</span>(<span class="hljs-built_in">stoi</span>(t));
+    }
+    <span class="hljs-keyword">return</span> st.<span class="hljs-built_in">top</span>();
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Infix → Prefix (reverse, swap brackets, postfix with &gt;, reverse; uses precedence() from
+                            above)</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function">string <span class="hljs-title">infixToPrefix</span><span class="hljs-params">(string s)</span> </span>{
+    <span class="hljs-built_in">reverse</span>(s.<span class="hljs-built_in">begin</span>(), s.<span class="hljs-built_in">end</span>());
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">char</span>&amp; c : s) { <span class="hljs-keyword">if</span> (c == <span class="hljs-string">'('</span>) c = <span class="hljs-string">')'</span>; <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (c == <span class="hljs-string">')'</span>) c = <span class="hljs-string">'('</span>; }
+    stack&lt;<span class="hljs-type">char</span>&gt; st; string res;
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">char</span> c : s) {
+        <span class="hljs-keyword">if</span> (<span class="hljs-built_in">isalnum</span>(c)) res += c;
+        <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (c == <span class="hljs-string">'('</span>) st.<span class="hljs-built_in">push</span>(c);
+        <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (c == <span class="hljs-string">')'</span>) {
+            <span class="hljs-keyword">while</span> (!st.<span class="hljs-built_in">empty</span>() &amp;&amp; st.<span class="hljs-built_in">top</span>() != <span class="hljs-string">'('</span>) { res += st.<span class="hljs-built_in">top</span>(); st.<span class="hljs-built_in">pop</span>(); }
+            st.<span class="hljs-built_in">pop</span>();
+        } <span class="hljs-keyword">else</span> {
+            <span class="hljs-keyword">while</span> (!st.<span class="hljs-built_in">empty</span>() &amp;&amp; <span class="hljs-built_in">precedence</span>(st.<span class="hljs-built_in">top</span>()) &gt; <span class="hljs-built_in">precedence</span>(c)) { res += st.<span class="hljs-built_in">top</span>(); st.<span class="hljs-built_in">pop</span>(); }  <span class="hljs-comment">// '&gt;' not '&gt;='</span>
+            st.<span class="hljs-built_in">push</span>(c);
+        }
+    }
+    <span class="hljs-keyword">while</span> (!st.<span class="hljs-built_in">empty</span>()) { res += st.<span class="hljs-built_in">top</span>(); st.<span class="hljs-built_in">pop</span>(); }
+    <span class="hljs-built_in">reverse</span>(res.<span class="hljs-built_in">begin</span>(), res.<span class="hljs-built_in">end</span>());
+    <span class="hljs-keyword">return</span> res;
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Valid Parentheses</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function"><span class="hljs-type">bool</span> <span class="hljs-title">isValid</span><span class="hljs-params">(<span class="hljs-type">const</span> string&amp; s)</span> </span>{
+    stack&lt;<span class="hljs-type">char</span>&gt; st;
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">char</span> c : s) {
+        <span class="hljs-keyword">if</span> (c == <span class="hljs-string">'('</span> || c == <span class="hljs-string">'{'</span> || c == <span class="hljs-string">'['</span>) st.<span class="hljs-built_in">push</span>(c);
+        <span class="hljs-keyword">else</span> {
+            <span class="hljs-keyword">if</span> (st.<span class="hljs-built_in">empty</span>()) <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;
+            <span class="hljs-type">char</span> t = st.<span class="hljs-built_in">top</span>(); st.<span class="hljs-built_in">pop</span>();
+            <span class="hljs-keyword">if</span> ((c == <span class="hljs-string">')'</span> &amp;&amp; t != <span class="hljs-string">'('</span>) || (c == <span class="hljs-string">'}'</span> &amp;&amp; t != <span class="hljs-string">'{'</span>) || (c == <span class="hljs-string">']'</span> &amp;&amp; t != <span class="hljs-string">'['</span>)) <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;
+        }
+    }
+    <span class="hljs-keyword">return</span> st.<span class="hljs-built_in">empty</span>();
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Next Smaller Element (previous smaller = same, left → right)</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function">vector&lt;<span class="hljs-type">int</span>&gt; <span class="hljs-title">nextSmaller</span><span class="hljs-params">(vector&lt;<span class="hljs-type">int</span>&gt;&amp; a)</span> </span>{
+    <span class="hljs-type">int</span> n = a.<span class="hljs-built_in">size</span>();
+    <span class="hljs-function">vector&lt;<span class="hljs-type">int</span>&gt; <span class="hljs-title">res</span><span class="hljs-params">(n, <span class="hljs-number">-1</span>)</span></span>; stack&lt;<span class="hljs-type">int</span>&gt; st;
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = n - <span class="hljs-number">1</span>; i &gt;= <span class="hljs-number">0</span>; i--) {
+        <span class="hljs-keyword">while</span> (!st.<span class="hljs-built_in">empty</span>() &amp;&amp; a[st.<span class="hljs-built_in">top</span>()] &gt;= a[i]) st.<span class="hljs-built_in">pop</span>();
+        <span class="hljs-keyword">if</span> (!st.<span class="hljs-built_in">empty</span>()) res[i] = a[st.<span class="hljs-built_in">top</span>()];
+        st.<span class="hljs-built_in">push</span>(i);
+    }
+    <span class="hljs-keyword">return</span> res;
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Largest Rectangle in Histogram</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">largestRectangle</span><span class="hljs-params">(vector&lt;<span class="hljs-type">int</span>&gt;&amp; h)</span> </span>{
+    stack&lt;<span class="hljs-type">int</span>&gt; st; <span class="hljs-type">int</span> best = <span class="hljs-number">0</span>, n = h.<span class="hljs-built_in">size</span>();
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt;= n; i++) {
+        <span class="hljs-type">int</span> cur = (i == n) ? <span class="hljs-number">0</span> : h[i];
+        <span class="hljs-keyword">while</span> (!st.<span class="hljs-built_in">empty</span>() &amp;&amp; h[st.<span class="hljs-built_in">top</span>()] &gt;= cur) {
+            <span class="hljs-type">int</span> height = h[st.<span class="hljs-built_in">top</span>()]; st.<span class="hljs-built_in">pop</span>();
+            <span class="hljs-type">int</span> left = st.<span class="hljs-built_in">empty</span>() ? <span class="hljs-number">-1</span> : st.<span class="hljs-built_in">top</span>();
+            best = <span class="hljs-built_in">max</span>(best, height * (i - left - <span class="hljs-number">1</span>));
+        }
+        st.<span class="hljs-built_in">push</span>(i);
+    }
+    <span class="hljs-keyword">return</span> best;
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Maximal Rectangle in a Binary Matrix</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">maximalRectangle</span><span class="hljs-params">(vector&lt;vector&lt;<span class="hljs-type">char</span>&gt;&gt;&amp; m)</span> </span>{
+    <span class="hljs-keyword">if</span> (m.<span class="hljs-built_in">empty</span>()) <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;
+    <span class="hljs-type">int</span> C = m[<span class="hljs-number">0</span>].<span class="hljs-built_in">size</span>(), best = <span class="hljs-number">0</span>;
+    <span class="hljs-function">vector&lt;<span class="hljs-type">int</span>&gt; <span class="hljs-title">h</span><span class="hljs-params">(C, <span class="hljs-number">0</span>)</span></span>;
+    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">auto</span>&amp; row : m) {
+        <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> j = <span class="hljs-number">0</span>; j &lt; C; j++) h[j] = row[j] == <span class="hljs-string">'1'</span> ? h[j] + <span class="hljs-number">1</span> : <span class="hljs-number">0</span>;
+        best = <span class="hljs-built_in">max</span>(best, <span class="hljs-built_in">largestRectangle</span>(h));
+    }
+    <span class="hljs-keyword">return</span> best;
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Stock Span</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function">vector&lt;<span class="hljs-type">int</span>&gt; <span class="hljs-title">stockSpan</span><span class="hljs-params">(vector&lt;<span class="hljs-type">int</span>&gt;&amp; price)</span> </span>{
+    stack&lt;<span class="hljs-type">int</span>&gt; st; <span class="hljs-function">vector&lt;<span class="hljs-type">int</span>&gt; <span class="hljs-title">span</span><span class="hljs-params">(price.size())</span></span>;
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; (<span class="hljs-type">int</span>)price.<span class="hljs-built_in">size</span>(); i++) {
+        <span class="hljs-keyword">while</span> (!st.<span class="hljs-built_in">empty</span>() &amp;&amp; price[st.<span class="hljs-built_in">top</span>()] &lt;= price[i]) st.<span class="hljs-built_in">pop</span>();
+        span[i] = st.<span class="hljs-built_in">empty</span>() ? i + <span class="hljs-number">1</span> : i - st.<span class="hljs-built_in">top</span>();
+        st.<span class="hljs-built_in">push</span>(i);
+    }
+    <span class="hljs-keyword">return</span> span;
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Remove K Digits</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function">string <span class="hljs-title">removeKdigits</span><span class="hljs-params">(string num, <span class="hljs-type">int</span> k)</span> </span>{
+    string st;
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">char</span> c : num) {
+        <span class="hljs-keyword">while</span> (k &amp;&amp; !st.<span class="hljs-built_in">empty</span>() &amp;&amp; st.<span class="hljs-built_in">back</span>() &gt; c) { st.<span class="hljs-built_in">pop_back</span>(); k--; }
+        st.<span class="hljs-built_in">push_back</span>(c);
+    }
+    <span class="hljs-keyword">while</span> (k-- &gt; <span class="hljs-number">0</span> &amp;&amp; !st.<span class="hljs-built_in">empty</span>()) st.<span class="hljs-built_in">pop_back</span>();
+    <span class="hljs-type">int</span> i = <span class="hljs-number">0</span>;
+    <span class="hljs-keyword">while</span> (i &lt; (<span class="hljs-type">int</span>)st.<span class="hljs-built_in">size</span>() &amp;&amp; st[i] == <span class="hljs-string">'0'</span>) i++;
+    st = st.<span class="hljs-built_in">substr</span>(i);
+    <span class="hljs-keyword">return</span> st.<span class="hljs-built_in">empty</span>() ? <span class="hljs-string">"0"</span> : st;
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Sum of Subarray Minimums (contribution technique)</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">sumSubarrayMins</span><span class="hljs-params">(vector&lt;<span class="hljs-type">int</span>&gt;&amp; a)</span> </span>{
+    <span class="hljs-type">int</span> n = a.<span class="hljs-built_in">size</span>(); <span class="hljs-type">const</span> <span class="hljs-type">int</span> MOD = <span class="hljs-number">1e9</span> + <span class="hljs-number">7</span>;
+    <span class="hljs-function">vector&lt;<span class="hljs-type">int</span>&gt; <span class="hljs-title">left</span><span class="hljs-params">(n)</span>, <span class="hljs-title">right</span><span class="hljs-params">(n)</span></span>; stack&lt;<span class="hljs-type">int</span>&gt; st;
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; n; i++) {                       <span class="hljs-comment">// previous strictly smaller</span>
+        <span class="hljs-keyword">while</span> (!st.<span class="hljs-built_in">empty</span>() &amp;&amp; a[st.<span class="hljs-built_in">top</span>()] &gt;= a[i]) st.<span class="hljs-built_in">pop</span>();
+        left[i] = st.<span class="hljs-built_in">empty</span>() ? i + <span class="hljs-number">1</span> : i - st.<span class="hljs-built_in">top</span>();
+        st.<span class="hljs-built_in">push</span>(i);
+    }
+    <span class="hljs-keyword">while</span> (!st.<span class="hljs-built_in">empty</span>()) st.<span class="hljs-built_in">pop</span>();
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = n - <span class="hljs-number">1</span>; i &gt;= <span class="hljs-number">0</span>; i--) {                  <span class="hljs-comment">// next smaller or equal</span>
+        <span class="hljs-keyword">while</span> (!st.<span class="hljs-built_in">empty</span>() &amp;&amp; a[st.<span class="hljs-built_in">top</span>()] &gt; a[i]) st.<span class="hljs-built_in">pop</span>();
+        right[i] = st.<span class="hljs-built_in">empty</span>() ? n - i : st.<span class="hljs-built_in">top</span>() - i;
+        st.<span class="hljs-built_in">push</span>(i);
+    }
+    <span class="hljs-type">long</span> <span class="hljs-type">long</span> ans = <span class="hljs-number">0</span>;
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; n; i++) ans = (ans + (<span class="hljs-type">long</span> <span class="hljs-type">long</span>)a[i] * left[i] % MOD * right[i]) % MOD;
+    <span class="hljs-keyword">return</span> ans;
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Queue using two Stacks</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-keyword">class</span> <span class="hljs-title class_">MyQueue</span> {
+    stack&lt;<span class="hljs-type">int</span>&gt; in, out;
+    <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">shift</span><span class="hljs-params">()</span> </span>{ <span class="hljs-keyword">if</span> (out.<span class="hljs-built_in">empty</span>()) <span class="hljs-keyword">while</span> (!in.<span class="hljs-built_in">empty</span>()) { out.<span class="hljs-built_in">push</span>(in.<span class="hljs-built_in">top</span>()); in.<span class="hljs-built_in">pop</span>(); } }
+<span class="hljs-keyword">public</span>:
+    <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">push</span><span class="hljs-params">(<span class="hljs-type">int</span> x)</span> </span>{ in.<span class="hljs-built_in">push</span>(x); }
+    <span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">pop</span><span class="hljs-params">()</span>  </span>{ <span class="hljs-built_in">shift</span>(); <span class="hljs-type">int</span> v = out.<span class="hljs-built_in">top</span>(); out.<span class="hljs-built_in">pop</span>(); <span class="hljs-keyword">return</span> v; }
+    <span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">peek</span><span class="hljs-params">()</span> </span>{ <span class="hljs-built_in">shift</span>(); <span class="hljs-keyword">return</span> out.<span class="hljs-built_in">top</span>(); }
+    <span class="hljs-function"><span class="hljs-type">bool</span> <span class="hljs-title">empty</span><span class="hljs-params">()</span> </span>{ <span class="hljs-keyword">return</span> in.<span class="hljs-built_in">empty</span>() &amp;&amp; out.<span class="hljs-built_in">empty</span>(); }
+};</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Stack using one Queue</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-keyword">class</span> <span class="hljs-title class_">MyStack</span> {
+    queue&lt;<span class="hljs-type">int</span>&gt; q;
+<span class="hljs-keyword">public</span>:
+    <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">push</span><span class="hljs-params">(<span class="hljs-type">int</span> x)</span> </span>{
+        q.<span class="hljs-built_in">push</span>(x);
+        <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; (<span class="hljs-type">int</span>)q.<span class="hljs-built_in">size</span>() - <span class="hljs-number">1</span>; i++) { q.<span class="hljs-built_in">push</span>(q.<span class="hljs-built_in">front</span>()); q.<span class="hljs-built_in">pop</span>(); }
+    }
+    <span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">pop</span><span class="hljs-params">()</span> </span>{ <span class="hljs-type">int</span> v = q.<span class="hljs-built_in">front</span>(); q.<span class="hljs-built_in">pop</span>(); <span class="hljs-keyword">return</span> v; }
+    <span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">top</span><span class="hljs-params">()</span> </span>{ <span class="hljs-keyword">return</span> q.<span class="hljs-built_in">front</span>(); }
+    <span class="hljs-function"><span class="hljs-type">bool</span> <span class="hljs-title">empty</span><span class="hljs-params">()</span> </span>{ <span class="hljs-keyword">return</span> q.<span class="hljs-built_in">empty</span>(); }
+};</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Circular Queue (modulo indexing)</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-keyword">class</span> <span class="hljs-title class_">CircularQueue</span> {
+    vector&lt;<span class="hljs-type">int</span>&gt; buf; <span class="hljs-type">int</span> head = <span class="hljs-number">0</span>, cnt = <span class="hljs-number">0</span>, cap;
+<span class="hljs-keyword">public</span>:
+    <span class="hljs-built_in">CircularQueue</span>(<span class="hljs-type">int</span> k) : <span class="hljs-built_in">buf</span>(k), <span class="hljs-built_in">cap</span>(k) {}
+    <span class="hljs-function"><span class="hljs-type">bool</span> <span class="hljs-title">enQueue</span><span class="hljs-params">(<span class="hljs-type">int</span> x)</span> </span>{ <span class="hljs-keyword">if</span> (cnt == cap) <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>; buf[(head + cnt) % cap] = x; cnt++; <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>; }
+    <span class="hljs-function"><span class="hljs-type">bool</span> <span class="hljs-title">deQueue</span><span class="hljs-params">()</span> </span>{ <span class="hljs-keyword">if</span> (!cnt) <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>; head = (head + <span class="hljs-number">1</span>) % cap; cnt--; <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>; }
+    <span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">Front</span><span class="hljs-params">()</span> </span>{ <span class="hljs-keyword">return</span> cnt ? buf[head] : <span class="hljs-number">-1</span>; }
+    <span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">Rear</span><span class="hljs-params">()</span>  </span>{ <span class="hljs-keyword">return</span> cnt ? buf[(head + cnt - <span class="hljs-number">1</span>) % cap] : <span class="hljs-number">-1</span>; }
+    <span class="hljs-function"><span class="hljs-type">bool</span> <span class="hljs-title">isEmpty</span><span class="hljs-params">()</span> </span>{ <span class="hljs-keyword">return</span> cnt == <span class="hljs-number">0</span>; }
+    <span class="hljs-function"><span class="hljs-type">bool</span> <span class="hljs-title">isFull</span><span class="hljs-params">()</span>  </span>{ <span class="hljs-keyword">return</span> cnt == cap; }
+};</code></pre>
+                        </div>
+                    </div>
+                </div>

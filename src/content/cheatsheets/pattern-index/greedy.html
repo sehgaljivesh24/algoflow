@@ -1,0 +1,335 @@
+                <div class="topic-head">
+                    <span class="topic-num">11</span>
+                    <h2>Greedy Algorithms</h2>
+                </div>
+                <p class="topic-intro">Works when a locally optimal choice provably leads to a globally optimal one. If
+                    you can find a counterexample, it's probably DP instead.</p>
+                <h3 class="block-label">Easy</h3>
+                <div class="table-scroll"><table class="sig-table">
+                    <thead>
+                        <tr>
+                            <th>When you see…</th>
+                            <th>Pattern</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="sig">Assign cookies / minimize resource matching</td>
+                            <td class="pat"><span class="pat-tag">Sort both, greedy two-pointer</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Lemonade change</td>
+                            <td class="pat"><span class="pat-tag">Track denominations greedily</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Minimum coins (canonical coin system)</td>
+                            <td class="pat"><span class="pat-tag">Greedy from the largest denomination</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Fractional knapsack</td>
+                            <td class="pat"><span class="pat-tag">Sort by value/weight ratio, descending</span></td>
+                        </tr>
+                    </tbody>
+                </table></div>
+                <h3 class="block-label">Medium / Hard</h3>
+                <div class="table-scroll"><table class="sig-table">
+                    <thead>
+                        <tr>
+                            <th>When you see…</th>
+                            <th>Pattern</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="sig">Activity selection / max non-overlapping intervals</td>
+                            <td class="pat"><span class="pat-tag">Sort by end time, greedily pick</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Minimum meeting rooms / platforms</td>
+                            <td class="pat"><span class="pat-tag">Sort starts &amp; ends separately, sweep, or
+                                    min-heap</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Job sequencing with deadlines</td>
+                            <td class="pat"><span class="pat-tag">Sort by profit desc, place in the latest free slot
+                                    ≤ deadline</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Minimum jumps to reach the end</td>
+                            <td class="pat"><span class="pat-tag">Greedy range-extension (BFS-like)</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Gas station (circuit tour)</td>
+                            <td class="pat"><span class="pat-tag">If total gas ≥ total cost, a single pass finds the
+                                    start</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Candy distribution</td>
+                            <td class="pat"><span class="pat-tag">Two-pass greedy (left → right, then right →
+                                    left)</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Insert interval / merge intervals</td>
+                            <td class="pat"><span class="pat-tag">Sort + sweep</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Partition labels</td>
+                            <td class="pat"><span class="pat-tag">Track last occurrence, greedily widen the
+                                    window</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Huffman encoding</td>
+                            <td class="pat"><span class="pat-tag">Min-heap, always combine the two smallest</span></td>
+                        </tr>
+                    </tbody>
+                </table></div>
+
+                <h3 class="block-label">Example algorithms</h3>
+                <div class="examples-grid">
+                    <div class="example">
+                        <h4>Activity Selection / N Meetings in One Room</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">maxMeetings</span><span class="hljs-params">(vector&lt;<span class="hljs-type">int</span>&gt;&amp; start, vector&lt;<span class="hljs-type">int</span>&gt;&amp; end)</span> </span>{
+    <span class="hljs-type">int</span> n = start.<span class="hljs-built_in">size</span>();
+    <span class="hljs-function">vector&lt;<span class="hljs-type">int</span>&gt; <span class="hljs-title">idx</span><span class="hljs-params">(n)</span></span>;
+    <span class="hljs-built_in">iota</span>(idx.<span class="hljs-built_in">begin</span>(), idx.<span class="hljs-built_in">end</span>(), <span class="hljs-number">0</span>);
+    <span class="hljs-built_in">sort</span>(idx.<span class="hljs-built_in">begin</span>(), idx.<span class="hljs-built_in">end</span>(), [&amp;](<span class="hljs-type">int</span> i, <span class="hljs-type">int</span> j) {
+        <span class="hljs-keyword">return</span> end[i] &lt; end[j];
+    });
+
+    <span class="hljs-type">int</span> count = <span class="hljs-number">0</span>, lastEnd = <span class="hljs-number">-1</span>;
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i : idx) {
+        <span class="hljs-keyword">if</span> (start[i] &gt; lastEnd) {
+            count++;
+            lastEnd = end[i];
+        }
+    }
+    <span class="hljs-keyword">return</span> count;
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Job Sequencing with Deadlines</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-keyword">struct</span> <span class="hljs-title class_">Job</span> { <span class="hljs-type">int</span> id, deadline, profit; };
+
+<span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">jobSequencing</span><span class="hljs-params">(vector&lt;Job&gt;&amp; jobs)</span> </span>{
+    <span class="hljs-built_in">sort</span>(jobs.<span class="hljs-built_in">begin</span>(), jobs.<span class="hljs-built_in">end</span>(), [](Job&amp; a, Job&amp; b) {
+        <span class="hljs-keyword">return</span> a.profit &gt; b.profit;
+    });
+    <span class="hljs-type">int</span> maxDeadline = <span class="hljs-number">0</span>;
+    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">auto</span>&amp; j : jobs) maxDeadline = <span class="hljs-built_in">max</span>(maxDeadline, j.deadline);
+
+    <span class="hljs-function">vector&lt;<span class="hljs-type">bool</span>&gt; <span class="hljs-title">slot</span><span class="hljs-params">(maxDeadline + <span class="hljs-number">1</span>, <span class="hljs-literal">false</span>)</span></span>;
+    <span class="hljs-type">int</span> totalProfit = <span class="hljs-number">0</span>;
+    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">auto</span>&amp; j : jobs) {
+        <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> d = j.deadline; d &gt; <span class="hljs-number">0</span>; d--) {
+            <span class="hljs-keyword">if</span> (!slot[d]) { slot[d] = <span class="hljs-literal">true</span>; totalProfit += j.profit; <span class="hljs-keyword">break</span>; }
+        }
+    }
+    <span class="hljs-keyword">return</span> totalProfit;
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Assign Cookies</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">findContentChildren</span><span class="hljs-params">(vector&lt;<span class="hljs-type">int</span>&gt;&amp; g, vector&lt;<span class="hljs-type">int</span>&gt;&amp; s)</span> </span>{
+    <span class="hljs-built_in">sort</span>(g.<span class="hljs-built_in">begin</span>(), g.<span class="hljs-built_in">end</span>()); <span class="hljs-built_in">sort</span>(s.<span class="hljs-built_in">begin</span>(), s.<span class="hljs-built_in">end</span>());
+    <span class="hljs-type">int</span> i = <span class="hljs-number">0</span>, j = <span class="hljs-number">0</span>;
+    <span class="hljs-keyword">while</span> (i &lt; (<span class="hljs-type">int</span>)g.<span class="hljs-built_in">size</span>() &amp;&amp; j &lt; (<span class="hljs-type">int</span>)s.<span class="hljs-built_in">size</span>()) { <span class="hljs-keyword">if</span> (s[j] &gt;= g[i]) i++; j++; }
+    <span class="hljs-keyword">return</span> i;
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Lemonade Change</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function"><span class="hljs-type">bool</span> <span class="hljs-title">lemonadeChange</span><span class="hljs-params">(vector&lt;<span class="hljs-type">int</span>&gt;&amp; bills)</span> </span>{
+    <span class="hljs-type">int</span> five = <span class="hljs-number">0</span>, ten = <span class="hljs-number">0</span>;
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> b : bills) {
+        <span class="hljs-keyword">if</span> (b == <span class="hljs-number">5</span>) five++;
+        <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (b == <span class="hljs-number">10</span>) { <span class="hljs-keyword">if</span> (!five) <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>; five--; ten++; }
+        <span class="hljs-keyword">else</span> {
+            <span class="hljs-keyword">if</span> (ten &amp;&amp; five) { ten--; five--; }
+            <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (five &gt;= <span class="hljs-number">3</span>) five -= <span class="hljs-number">3</span>;
+            <span class="hljs-keyword">else</span> <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;
+        }
+    }
+    <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Fractional Knapsack</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function"><span class="hljs-type">double</span> <span class="hljs-title">fractionalKnapsack</span><span class="hljs-params">(vector&lt;pair&lt;<span class="hljs-type">int</span>,<span class="hljs-type">int</span>&gt;&gt;&amp; items, <span class="hljs-type">int</span> W)</span> </span>{     <span class="hljs-comment">// (value, weight)</span>
+    <span class="hljs-built_in">sort</span>(items.<span class="hljs-built_in">begin</span>(), items.<span class="hljs-built_in">end</span>(), [](<span class="hljs-keyword">auto</span>&amp; a, <span class="hljs-keyword">auto</span>&amp; b) {
+        <span class="hljs-built_in">return</span> (<span class="hljs-type">double</span>)a.first / a.second &gt; (<span class="hljs-type">double</span>)b.first / b.second;
+    });
+    <span class="hljs-type">double</span> total = <span class="hljs-number">0</span>;
+    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">auto</span>&amp; [val, wt] : items) {
+        <span class="hljs-keyword">if</span> (W &gt;= wt) { total += val; W -= wt; }
+        <span class="hljs-keyword">else</span> { total += (<span class="hljs-type">double</span>)val * W / wt; <span class="hljs-keyword">break</span>; }
+    }
+    <span class="hljs-keyword">return</span> total;
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Minimum Platforms / Meeting Rooms</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">minPlatforms</span><span class="hljs-params">(vector&lt;<span class="hljs-type">int</span>&gt;&amp; arr, vector&lt;<span class="hljs-type">int</span>&gt;&amp; dep)</span> </span>{
+    <span class="hljs-built_in">sort</span>(arr.<span class="hljs-built_in">begin</span>(), arr.<span class="hljs-built_in">end</span>()); <span class="hljs-built_in">sort</span>(dep.<span class="hljs-built_in">begin</span>(), dep.<span class="hljs-built_in">end</span>());
+    <span class="hljs-type">int</span> need = <span class="hljs-number">0</span>, best = <span class="hljs-number">0</span>, i = <span class="hljs-number">0</span>, j = <span class="hljs-number">0</span>, n = arr.<span class="hljs-built_in">size</span>();
+    <span class="hljs-keyword">while</span> (i &lt; n) {
+        <span class="hljs-keyword">if</span> (arr[i] &lt;= dep[j]) { need++; i++; }
+        <span class="hljs-keyword">else</span> { need--; j++; }
+        best = <span class="hljs-built_in">max</span>(best, need);
+    }
+    <span class="hljs-keyword">return</span> best;
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Jump Game II (greedy range extension)</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">jump</span><span class="hljs-params">(vector&lt;<span class="hljs-type">int</span>&gt;&amp; a)</span> </span>{
+    <span class="hljs-type">int</span> jumps = <span class="hljs-number">0</span>, curEnd = <span class="hljs-number">0</span>, farthest = <span class="hljs-number">0</span>;
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; (<span class="hljs-type">int</span>)a.<span class="hljs-built_in">size</span>() - <span class="hljs-number">1</span>; i++) {
+        farthest = <span class="hljs-built_in">max</span>(farthest, i + a[i]);
+        <span class="hljs-keyword">if</span> (i == curEnd) { jumps++; curEnd = farthest; }
+    }
+    <span class="hljs-keyword">return</span> jumps;
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Gas Station</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">canCompleteCircuit</span><span class="hljs-params">(vector&lt;<span class="hljs-type">int</span>&gt;&amp; gas, vector&lt;<span class="hljs-type">int</span>&gt;&amp; cost)</span> </span>{
+    <span class="hljs-type">int</span> total = <span class="hljs-number">0</span>, tank = <span class="hljs-number">0</span>, start = <span class="hljs-number">0</span>;
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; (<span class="hljs-type">int</span>)gas.<span class="hljs-built_in">size</span>(); i++) {
+        <span class="hljs-type">int</span> diff = gas[i] - cost[i];
+        total += diff; tank += diff;
+        <span class="hljs-keyword">if</span> (tank &lt; <span class="hljs-number">0</span>) { start = i + <span class="hljs-number">1</span>; tank = <span class="hljs-number">0</span>; }
+    }
+    <span class="hljs-keyword">return</span> total &gt;= <span class="hljs-number">0</span> ? start : <span class="hljs-number">-1</span>;
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Candy (two-pass)</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">candy</span><span class="hljs-params">(vector&lt;<span class="hljs-type">int</span>&gt;&amp; r)</span> </span>{
+    <span class="hljs-type">int</span> n = r.<span class="hljs-built_in">size</span>();
+    <span class="hljs-function">vector&lt;<span class="hljs-type">int</span>&gt; <span class="hljs-title">c</span><span class="hljs-params">(n, <span class="hljs-number">1</span>)</span></span>;
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">1</span>; i &lt; n; i++) <span class="hljs-keyword">if</span> (r[i] &gt; r[i - <span class="hljs-number">1</span>]) c[i] = c[i - <span class="hljs-number">1</span>] + <span class="hljs-number">1</span>;
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = n - <span class="hljs-number">2</span>; i &gt;= <span class="hljs-number">0</span>; i--) <span class="hljs-keyword">if</span> (r[i] &gt; r[i + <span class="hljs-number">1</span>]) c[i] = <span class="hljs-built_in">max</span>(c[i], c[i + <span class="hljs-number">1</span>] + <span class="hljs-number">1</span>);
+    <span class="hljs-keyword">return</span> <span class="hljs-built_in">accumulate</span>(c.<span class="hljs-built_in">begin</span>(), c.<span class="hljs-built_in">end</span>(), <span class="hljs-number">0</span>);
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Insert Interval</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp">vector&lt;vector&lt;<span class="hljs-type">int</span>&gt;&gt; <span class="hljs-built_in">insertInterval</span>(vector&lt;vector&lt;<span class="hljs-type">int</span>&gt;&gt;&amp; iv, vector&lt;<span class="hljs-type">int</span>&gt; nw) {
+    vector&lt;vector&lt;<span class="hljs-type">int</span>&gt;&gt; res;
+    <span class="hljs-type">int</span> i = <span class="hljs-number">0</span>, n = iv.<span class="hljs-built_in">size</span>();
+    <span class="hljs-keyword">while</span> (i &lt; n &amp;&amp; iv[i][<span class="hljs-number">1</span>] &lt; nw[<span class="hljs-number">0</span>]) res.<span class="hljs-built_in">push_back</span>(iv[i++]);
+    <span class="hljs-keyword">while</span> (i &lt; n &amp;&amp; iv[i][<span class="hljs-number">0</span>] &lt;= nw[<span class="hljs-number">1</span>]) {
+        nw[<span class="hljs-number">0</span>] = <span class="hljs-built_in">min</span>(nw[<span class="hljs-number">0</span>], iv[i][<span class="hljs-number">0</span>]);
+        nw[<span class="hljs-number">1</span>] = <span class="hljs-built_in">max</span>(nw[<span class="hljs-number">1</span>], iv[i][<span class="hljs-number">1</span>]);
+        i++;
+    }
+    res.<span class="hljs-built_in">push_back</span>(nw);
+    <span class="hljs-keyword">while</span> (i &lt; n) res.<span class="hljs-built_in">push_back</span>(iv[i++]);
+    <span class="hljs-keyword">return</span> res;
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Partition Labels</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function">vector&lt;<span class="hljs-type">int</span>&gt; <span class="hljs-title">partitionLabels</span><span class="hljs-params">(string s)</span> </span>{
+    <span class="hljs-type">int</span> last[<span class="hljs-number">26</span>] = {};
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; (<span class="hljs-type">int</span>)s.<span class="hljs-built_in">size</span>(); i++) last[s[i] - <span class="hljs-string">'a'</span>] = i;
+    vector&lt;<span class="hljs-type">int</span>&gt; res; <span class="hljs-type">int</span> start = <span class="hljs-number">0</span>, end = <span class="hljs-number">0</span>;
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; (<span class="hljs-type">int</span>)s.<span class="hljs-built_in">size</span>(); i++) {
+        end = <span class="hljs-built_in">max</span>(end, last[s[i] - <span class="hljs-string">'a'</span>]);
+        <span class="hljs-keyword">if</span> (i == end) { res.<span class="hljs-built_in">push_back</span>(end - start + <span class="hljs-number">1</span>); start = i + <span class="hljs-number">1</span>; }
+    }
+    <span class="hljs-keyword">return</span> res;
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Huffman Encoding</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-keyword">struct</span> <span class="hljs-title class_">HNode</span> {
+    <span class="hljs-type">char</span> ch; <span class="hljs-type">int</span> freq; HNode *left, *right;
+    <span class="hljs-built_in">HNode</span>(<span class="hljs-type">char</span> c, <span class="hljs-type">int</span> f) : <span class="hljs-built_in">ch</span>(c), <span class="hljs-built_in">freq</span>(f), <span class="hljs-built_in">left</span>(<span class="hljs-literal">nullptr</span>), <span class="hljs-built_in">right</span>(<span class="hljs-literal">nullptr</span>) {}
+};
+<span class="hljs-keyword">struct</span> <span class="hljs-title class_">HCmp</span> { <span class="hljs-function"><span class="hljs-type">bool</span> <span class="hljs-title">operator</span><span class="hljs-params">()</span><span class="hljs-params">(HNode* a, HNode* b)</span> </span>{ <span class="hljs-keyword">return</span> a-&gt;freq &gt; b-&gt;freq; } };
+
+<span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">buildCodes</span><span class="hljs-params">(HNode* node, string code, unordered_map&lt;<span class="hljs-type">char</span>, string&gt;&amp; codes)</span> </span>{
+    <span class="hljs-keyword">if</span> (!node) <span class="hljs-keyword">return</span>;
+    <span class="hljs-keyword">if</span> (!node-&gt;left &amp;&amp; !node-&gt;right) { codes[node-&gt;ch] = code.<span class="hljs-built_in">empty</span>() ? <span class="hljs-string">"0"</span> : code; <span class="hljs-keyword">return</span>; }
+    <span class="hljs-built_in">buildCodes</span>(node-&gt;left,  code + <span class="hljs-string">"0"</span>, codes);
+    <span class="hljs-built_in">buildCodes</span>(node-&gt;right, code + <span class="hljs-string">"1"</span>, codes);
+}
+<span class="hljs-function">unordered_map&lt;<span class="hljs-type">char</span>, string&gt; <span class="hljs-title">huffman</span><span class="hljs-params">(<span class="hljs-type">const</span> string&amp; s)</span> </span>{
+    unordered_map&lt;<span class="hljs-type">char</span>, <span class="hljs-type">int</span>&gt; freq;
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">char</span> c : s) freq[c]++;
+    priority_queue&lt;HNode*, vector&lt;HNode*&gt;, HCmp&gt; pq;
+    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">auto</span>&amp; [c, f] : freq) pq.<span class="hljs-built_in">push</span>(<span class="hljs-keyword">new</span> <span class="hljs-built_in">HNode</span>(c, f));
+    <span class="hljs-keyword">while</span> (pq.<span class="hljs-built_in">size</span>() &gt; <span class="hljs-number">1</span>) {
+        HNode *a = pq.<span class="hljs-built_in">top</span>(); pq.<span class="hljs-built_in">pop</span>();
+        HNode *b = pq.<span class="hljs-built_in">top</span>(); pq.<span class="hljs-built_in">pop</span>();
+        HNode* parent = <span class="hljs-keyword">new</span> <span class="hljs-built_in">HNode</span>(<span class="hljs-string">'#'</span>, a-&gt;freq + b-&gt;freq);
+        parent-&gt;left = a; parent-&gt;right = b;
+        pq.<span class="hljs-built_in">push</span>(parent);
+    }
+    unordered_map&lt;<span class="hljs-type">char</span>, string&gt; codes;
+    <span class="hljs-keyword">if</span> (!pq.<span class="hljs-built_in">empty</span>()) <span class="hljs-built_in">buildCodes</span>(pq.<span class="hljs-built_in">top</span>(), <span class="hljs-string">""</span>, codes);
+    <span class="hljs-keyword">return</span> codes;
+}</code></pre>
+                        </div>
+                    </div>
+                </div>

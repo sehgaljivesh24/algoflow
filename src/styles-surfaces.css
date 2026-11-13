@@ -1,0 +1,36 @@
+/*
+ * Colour tokens per surface (see src/surface.ts). Same variable names everywhere, so components only
+ * ever use var(--bg) / var(--bg2) / var(--blue) ... and automatically follow the page type.
+ * The default (library) tokens live in styles.css; this file overrides them for viz and pattern pages.
+ * Dark values mirror the reference product's animation and pattern pages; light values are our own.
+ */
+
+body[data-surface='viz'],
+body[data-surface='pattern'] {
+  --bg: #0d1117; --bg2: #161b22; --bg3: #21262d; --border: #30363d;
+  --text: #e6edf3; --muted: #8b949e; --prose: #c9d1d9;
+  --blue: #388bfd; --cyan: #79c0ff;
+  --green: #3fb950; --yellow: #d29922; --orange: #f0883e; --red: #f78166; --purple: #bc8cff;
+  --blue-bg: #1f3d6e; --green-bg: #1a3d2b; --yellow-bg: #3d2e00; --orange-bg: #3d2610; --purple-bg: #2d1f6e; --red-bg: #4a1d1b;
+  --code-bg: #080e16; --code-border: #30363d;
+  --tk-kw: #ff7b72; --tk-type: #ffa657; --tk-num: #79c0ff; --tk-fn: #d2a8ff; --tk-str: #a5d6ff; --tk-com: #6e7681; --tk-id: #e6edf3;
+}
+
+/* Pattern pages: a slightly lighter second surface and a cyan accent */
+body[data-surface='pattern'] {
+  --bg3: #1c2128;
+  --cyan: #22d3ee; --yellow: #e3b341;
+}
+
+/* Light variants of the two animation surfaces (the reference has none; this keeps the theme toggle working) */
+:root[data-theme='light'] body[data-surface='viz'],
+:root[data-theme='light'] body[data-surface='pattern'] {
+  --bg: #f6f8fa; --bg2: #ffffff; --bg3: #eaeef2; --border: #d0d7de;
+  --text: #1f2328; --muted: #656d76; --prose: #2f3640;
+  --blue: #0969da; --cyan: #0550ae;
+  --green: #1a7f37; --yellow: #9a6700; --orange: #bc4c00; --red: #cf222e; --purple: #8250df;
+  --blue-bg: #ddf4ff; --green-bg: #dafbe1; --yellow-bg: #fff8c5; --orange-bg: #ffe9d6; --purple-bg: #fbefff; --red-bg: #ffebe9;
+  --code-bg: #f6f8fa; --code-border: #d0d7de;
+  --tk-kw: #cf222e; --tk-type: #953800; --tk-num: #0550ae; --tk-fn: #8250df; --tk-str: #0a3069; --tk-com: #6e7781; --tk-id: #1f2328;
+}
+:root[data-theme='light'] body[data-surface='pattern'] { --bg3: #f0f3f6; --cyan: #0e7490; --yellow: #9a6700; }

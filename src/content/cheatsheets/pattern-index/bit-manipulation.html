@@ -1,0 +1,189 @@
+                <div class="topic-head">
+                    <span class="topic-num">07</span>
+                    <h2>Bit Manipulation</h2>
+                </div>
+
+                <h3 class="block-label">Recognition</h3>
+                <div class="table-scroll"><table class="sig-table">
+                    <thead>
+                        <tr>
+                            <th>When you see…</th>
+                            <th>Pattern</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="sig">Single number, all others appear twice</td>
+                            <td class="pat"><span class="pat-tag">XOR every element (a ^ a = 0)</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Two numbers appear once, rest appear twice</td>
+                            <td class="pat"><span class="pat-tag">XOR all → find a differing bit → split into
+                                    two groups</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">One number appears three times, rest twice</td>
+                            <td class="pat"><span class="pat-tag">Bit counting mod 3</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Count set bits from 0 to n</td>
+                            <td class="pat"><span class="pat-tag">DP: bits[i] = bits[i&gt;&gt;1] + (i &amp; 1)</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Generate all subsets / power set</td>
+                            <td class="pat"><span class="pat-tag">Bitmask, iterate 0 to 2ⁿ − 1</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Minimum bit flips to convert A to B</td>
+                            <td class="pat"><span class="pat-tag">Count set bits in A ^ B</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Maximum XOR of two numbers in an array</td>
+                            <td class="pat"><span class="pat-tag">Binary Trie over bits</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Divide two integers without * or /</td>
+                            <td class="pat"><span class="pat-tag">Subtract powers of two via bit shifting</span></td>
+                        </tr>
+                    </tbody>
+                </table></div>
+
+                <h3 class="block-label">Example algorithms</h3>
+                <div class="examples-grid">
+                    <div class="example">
+                        <h4>Bit tricks cheat sheet</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function"><span class="hljs-type">bool</span> <span class="hljs-title">getBit</span><span class="hljs-params">(<span class="hljs-type">int</span> n, <span class="hljs-type">int</span> i)</span>   </span>{ <span class="hljs-keyword">return</span> (n &gt;&gt; i) &amp; <span class="hljs-number">1</span>; }
+<span class="hljs-function"><span class="hljs-type">int</span>  <span class="hljs-title">setBit</span><span class="hljs-params">(<span class="hljs-type">int</span> n, <span class="hljs-type">int</span> i)</span>   </span>{ <span class="hljs-keyword">return</span> n | (<span class="hljs-number">1</span> &lt;&lt; i); }
+<span class="hljs-function"><span class="hljs-type">int</span>  <span class="hljs-title">clearBit</span><span class="hljs-params">(<span class="hljs-type">int</span> n, <span class="hljs-type">int</span> i)</span> </span>{ <span class="hljs-keyword">return</span> n &amp; ~(<span class="hljs-number">1</span> &lt;&lt; i); }
+<span class="hljs-function"><span class="hljs-type">int</span>  <span class="hljs-title">toggleBit</span><span class="hljs-params">(<span class="hljs-type">int</span> n, <span class="hljs-type">int</span> i)</span></span>{ <span class="hljs-keyword">return</span> n ^ (<span class="hljs-number">1</span> &lt;&lt; i); }
+<span class="hljs-function"><span class="hljs-type">int</span>  <span class="hljs-title">removeLastSetBit</span><span class="hljs-params">(<span class="hljs-type">int</span> n)</span></span>{ <span class="hljs-keyword">return</span> n &amp; (n - <span class="hljs-number">1</span>); }
+<span class="hljs-function"><span class="hljs-type">int</span>  <span class="hljs-title">isolateLastSetBit</span><span class="hljs-params">(<span class="hljs-type">int</span> n)</span></span>{ <span class="hljs-keyword">return</span> n &amp; (-n); }
+<span class="hljs-function"><span class="hljs-type">bool</span> <span class="hljs-title">isPowerOfTwo</span><span class="hljs-params">(<span class="hljs-type">int</span> n)</span>    </span>{ <span class="hljs-keyword">return</span> n &gt; <span class="hljs-number">0</span> &amp;&amp; (n &amp; (n - <span class="hljs-number">1</span>)) == <span class="hljs-number">0</span>; }</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Single Number — XOR trick</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">singleNumber</span><span class="hljs-params">(vector&lt;<span class="hljs-type">int</span>&gt;&amp; a)</span> </span>{
+    <span class="hljs-type">int</span> result = <span class="hljs-number">0</span>;
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> x : a) result ^= x;
+    <span class="hljs-keyword">return</span> result;
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Count Set Bits — Brian Kernighan's algorithm</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">countSetBits</span><span class="hljs-params">(<span class="hljs-type">int</span> n)</span> </span>{
+    <span class="hljs-type">int</span> count = <span class="hljs-number">0</span>;
+    <span class="hljs-keyword">while</span> (n) {
+        n &amp;= (n - <span class="hljs-number">1</span>);
+        count++;
+    }
+    <span class="hljs-keyword">return</span> count;
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Single Number III (two unique numbers)</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function">vector&lt;<span class="hljs-type">int</span>&gt; <span class="hljs-title">singleNumberIII</span><span class="hljs-params">(vector&lt;<span class="hljs-type">int</span>&gt;&amp; a)</span> </span>{
+    <span class="hljs-type">long</span> <span class="hljs-type">long</span> xr = <span class="hljs-number">0</span>;
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> x : a) xr ^= x;
+    <span class="hljs-type">long</span> <span class="hljs-type">long</span> diff = xr &amp; -xr;                   <span class="hljs-comment">// a bit where the two answers differ</span>
+    <span class="hljs-type">int</span> p = <span class="hljs-number">0</span>, q = <span class="hljs-number">0</span>;
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> x : a) { <span class="hljs-keyword">if</span> (x &amp; diff) p ^= x; <span class="hljs-keyword">else</span> q ^= x; }
+    <span class="hljs-keyword">return</span> {p, q};
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Single Number II (others appear 3 times), bit counting mod 3</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">singleNumberII</span><span class="hljs-params">(vector&lt;<span class="hljs-type">int</span>&gt;&amp; a)</span> </span>{
+    <span class="hljs-type">unsigned</span> ans = <span class="hljs-number">0</span>;
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> bit = <span class="hljs-number">0</span>; bit &lt; <span class="hljs-number">32</span>; bit++) {
+        <span class="hljs-type">int</span> cnt = <span class="hljs-number">0</span>;
+        <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> x : a) cnt += (x &gt;&gt; bit) &amp; <span class="hljs-number">1</span>;
+        <span class="hljs-keyword">if</span> (cnt % <span class="hljs-number">3</span>) ans |= (<span class="hljs-number">1u</span> &lt;&lt; bit);
+    }
+    <span class="hljs-keyword">return</span> (<span class="hljs-type">int</span>)ans;
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Count Bits from 0 to n (DP)</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function">vector&lt;<span class="hljs-type">int</span>&gt; <span class="hljs-title">countBits</span><span class="hljs-params">(<span class="hljs-type">int</span> n)</span> </span>{
+    <span class="hljs-function">vector&lt;<span class="hljs-type">int</span>&gt; <span class="hljs-title">bits</span><span class="hljs-params">(n + <span class="hljs-number">1</span>, <span class="hljs-number">0</span>)</span></span>;
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">1</span>; i &lt;= n; i++) bits[i] = bits[i &gt;&gt; <span class="hljs-number">1</span>] + (i &amp; <span class="hljs-number">1</span>);
+    <span class="hljs-keyword">return</span> bits;
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Power Set via Bitmask</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp">vector&lt;vector&lt;<span class="hljs-type">int</span>&gt;&gt; <span class="hljs-built_in">powerSet</span>(vector&lt;<span class="hljs-type">int</span>&gt;&amp; a) {
+    <span class="hljs-type">int</span> n = a.<span class="hljs-built_in">size</span>();
+    vector&lt;vector&lt;<span class="hljs-type">int</span>&gt;&gt; res;
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> mask = <span class="hljs-number">0</span>; mask &lt; (<span class="hljs-number">1</span> &lt;&lt; n); mask++) {
+        vector&lt;<span class="hljs-type">int</span>&gt; subset;
+        <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; n; i++) <span class="hljs-keyword">if</span> (mask &amp; (<span class="hljs-number">1</span> &lt;&lt; i)) subset.<span class="hljs-built_in">push_back</span>(a[i]);
+        res.<span class="hljs-built_in">push_back</span>(subset);
+    }
+    <span class="hljs-keyword">return</span> res;
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Minimum Bit Flips A → B</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">minBitFlips</span><span class="hljs-params">(<span class="hljs-type">int</span> a, <span class="hljs-type">int</span> b)</span> </span>{ <span class="hljs-keyword">return</span> __builtin_popcount(a ^ b); }</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Divide Two Integers without * or /</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">divideInts</span><span class="hljs-params">(<span class="hljs-type">int</span> dividend, <span class="hljs-type">int</span> divisor)</span> </span>{
+    <span class="hljs-keyword">if</span> (dividend == INT_MIN &amp;&amp; divisor == <span class="hljs-number">-1</span>) <span class="hljs-keyword">return</span> INT_MAX;
+    <span class="hljs-type">long</span> <span class="hljs-type">long</span> a = <span class="hljs-built_in">llabs</span>((<span class="hljs-type">long</span> <span class="hljs-type">long</span>)dividend), b = <span class="hljs-built_in">llabs</span>((<span class="hljs-type">long</span> <span class="hljs-type">long</span>)divisor), q = <span class="hljs-number">0</span>;
+    <span class="hljs-keyword">while</span> (a &gt;= b) {
+        <span class="hljs-type">long</span> <span class="hljs-type">long</span> t = b, shift = <span class="hljs-number">1</span>;
+        <span class="hljs-keyword">while</span> (a &gt;= (t &lt;&lt; <span class="hljs-number">1</span>)) { t &lt;&lt;= <span class="hljs-number">1</span>; shift &lt;&lt;= <span class="hljs-number">1</span>; }
+        a -= t; q += shift;
+    }
+    <span class="hljs-keyword">return</span> ((dividend &lt; <span class="hljs-number">0</span>) ^ (divisor &lt; <span class="hljs-number">0</span>)) ? -q : q;
+}</code></pre>
+                        </div>
+                    </div>
+                </div>

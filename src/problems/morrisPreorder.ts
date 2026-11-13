@@ -1,0 +1,111 @@
+import type { ProblemDef } from '../engine/types.ts';
+import { find, parseTree } from './treeKit.ts';
+import type { TreeIn } from './treeKit.ts';
+import { runMorris } from './morrisKit.ts';
+import type { MorrisLines } from './morrisKit.ts';
+
+const java = [
+  'public List<Integer> preorderTraversal(TreeNode root) {',
+  '    List<Integer> res = new ArrayList<>();',
+  '    TreeNode cur = root;',
+  '    while (cur != null) {',
+  '        if (cur.left == null) {',
+  '            res.add(cur.val);                 // no left subtree: record, go right',
+  '            cur = cur.right;',
+  '        } else {',
+  '            TreeNode pred = cur.left;         // rightmost node of the left subtree',
+  '            while (pred.right != null && pred.right != cur) pred = pred.right;',
+  '            if (pred.right == null) {',
+  '                res.add(cur.val);             // first arrival: record BEFORE the left side',
+  '                pred.right = cur;             // thread back to cur',
+  '                cur = cur.left;',
+  '            } else {',
+  '                pred.right = null;            // second arrival: just cut the thread',
+  '                cur = cur.right;',
+  '            }',
+  '        }',
+  '    }',
+  '    return res;',
+  '}',
+];
+const python = [
+  'def preorder_morris(root):',
+  '    res, cur = [], root',
+  '    while cur:',
+  '        if not cur.left:',
+  '            res.append(cur.val)               # no left subtree: record, go right',
+  '            cur = cur.right',
+  '        else:',
+  '            pred = cur.left                   # rightmost node of the left subtree',
+  '            while pred.right and pred.right is not cur:',
+  '                pred = pred.right',
+  '            if pred.right is None:',
+  '                res.append(cur.val)           # first arrival: record BEFORE the left side',
+  '                pred.right = cur              # thread back to cur',
+  '                cur = cur.left',
+  '            else:',
+  '                pred.right = None             # second arrival: just cut the thread',
+  '                cur = cur.right',
+  '    return res',
+];
+const J: MorrisLines = {
+  start: find(java, 'List<Integer> res', 'TreeNode cur = root'),
+  leaf: find(java, 'if (cur.left == null)', 'res.add(cur.val);                 //', 'cur = cur.right;'),
+  find: find(java, 'TreeNode pred = cur.left'),
+  hop: find(java, 'while (pred.right != null'),
+  link: find(java, 'if (pred.right == null)', 'res.add(cur.val);             //', 'pred.right = cur;', 'cur = cur.left;'),
+  cut: find(java, 'pred.right = null;', ['cur = cur.right;', 2]),
+  fix: find(java, 'return res;'),
+  ret: find(java, 'return res;'),
+};
+const P: MorrisLines = {
+  start: find(python, 'res, cur = [], root'),
+  leaf: find(python, 'if not cur.left', 'res.append(cur.val)               #', 'cur = cur.right'),
+  find: find(python, 'pred = cur.left'),
+  hop: find(python, 'while pred.right and', 'pred = pred.right'),
+  link: find(python, 'if pred.right is None', 'res.append(cur.val)           #', 'pred.right = cur', 'cur = cur.left'),
+  cut: find(python, 'pred.right = None', ['cur = cur.right', 2]),
+  fix: find(python, 'return res'),
+  ret: find(python, 'return res'),
+};
+
+export const morrisPreorder: ProblemDef<TreeIn> = {
+  slug: '144-binary-tree-preorder-traversal',
+  id: '144', title: 'Binary Tree Preorder Traversal', difficulty: 'Easy', category: 'Tree', tag: 'Morris threads, O(1) space',
+  statement: 'Return the pre-order traversal (node, left, right) of a binary tree without recursion and without a stack, by temporarily threading each in-order predecessor back to its node.',
+  constraints: '0 ≤ nodes ≤ 100 (animation input is limited to 12 nodes; write the tree in level order, using null for gaps).',
+  examples: [
+    { label: '1 2 3 4 5', input: { tokens: [1, 2, 3, 4, 5] }, output: '[1,2,4,5,3]' },
+    { label: '1 null 2 3', input: { tokens: [1, null, 2, 3] }, output: '[1,2,3]' },
+    { label: '5 3 8 1 4 7 9', input: { tokens: [5, 3, 8, 1, 4, 7, 9] }, output: '[5,3,1,4,8,7,9]' },
+  ],
+  inputPlaceholder: 'e.g. 1 2 3 4 5',
+  parseInput: parseTree,
+  buildSteps: ({ tokens }) => runMorris({ tokens, mode: 'preorder', J, P, orderName: 'Pre-order traversal' }),
+  viz: 'cells',
+  vizTitle: 'Binary tree with Morris threads',
+  legend: [{ label: 'cur (current node)', state: 'active' }, { label: 'pred (walking to the predecessor)', state: 'compare' }, { label: 'Recorded (#k = output position)', state: 'found' }],
+  varLabels: ['cur', 'pred', 'threads', 'visited'],
+  emphasis: ['pre-order', 'without recursion', 'thread'],
+  phases: [
+    { icon: '🚀', label: 'Init: cur = root', tone: 'blue' },
+    { icon: '🍃', label: 'No left child: record', tone: 'gold' },
+    { icon: '🔍', label: 'Find predecessor', tone: 'cyan' },
+    { icon: '🧵', label: 'Thread (record) or cut', tone: 'orange' },
+    { icon: '✅', label: 'Done', tone: 'green' },
+  ],
+  approach: {
+    title: 'Same threads, record on the way in',
+    text: 'The loop is the in-order Morris loop with one change: a node is recorded the first time we arrive at it, which is the moment its thread is created (or immediately if it has no left child). On the second arrival the thread is only cut.',
+  },
+  java, python,
+  algorithm: [
+    'Start with cur = root and an empty result',
+    'No left child: record cur and move to cur.right',
+    'Otherwise find pred, the rightmost node of cur.left (stop at null or at cur)',
+    'pred.right null: record cur, thread it and go left; pred.right == cur: cut the thread and go right',
+    'When cur is null the result holds the pre-order sequence and every thread is gone',
+  ],
+  complexity: [{ label: 'Time', value: 'O(n)' }, { label: 'Space', value: 'O(1) extra' }],
+  why: 'Pre-order needs a node before anything in its left subtree. The first time the loop reaches a node that has a left subtree is exactly the moment before that subtree is entered, so recording there gives the right order; the second arrival (via the thread) happens after the left subtree and must not record again. Because the walk is the same as the in-order one, the same argument bounds the work by O(n) and shows the threads are all removed.',
+};

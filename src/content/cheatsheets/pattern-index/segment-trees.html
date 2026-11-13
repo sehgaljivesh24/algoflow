@@ -1,0 +1,245 @@
+                <div class="topic-head">
+                    <span class="topic-num">18</span>
+                    <h2>Segment Trees &amp; Fenwick</h2>
+                </div>
+                <p class="topic-intro">Efficient range queries and updates in logarithmic time.</p>
+                <h3 class="block-label">Recognition</h3>
+                <div class="table-scroll"><table class="sig-table">
+                    <thead>
+                        <tr>
+                            <th>When you see…</th>
+                            <th>Pattern</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="sig">Range sum/min/max queries + point updates</td>
+                            <td class="pat"><span class="pat-tag">Segment Tree or Fenwick Tree</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Range update (lazy propagation needed)</td>
+                            <td class="pat"><span class="pat-tag">Segment Tree with lazy propagation</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Find kth smallest in range</td>
+                            <td class="pat"><span class="pat-tag">Segment Tree + binary search</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Range GCD / LCM queries</td>
+                            <td class="pat"><span class="pat-tag">Segment Tree combining GCD</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Count queries with updates</td>
+                            <td class="pat"><span class="pat-tag">Segment Tree or Fenwick Tree</span></td>
+                        </tr>
+                    </tbody>
+                </table></div>
+
+                <h3 class="block-label">Example algorithms</h3>
+                <div class="examples-grid">
+                    <div class="example">
+                        <h4>Segment Tree — Range Sum Query</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-keyword">class</span> <span class="hljs-title class_">SegmentTree</span> {
+    vector&lt;<span class="hljs-type">int</span>&gt; tree;
+    <span class="hljs-type">int</span> n;
+
+    <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">build</span><span class="hljs-params">(vector&lt;<span class="hljs-type">int</span>&gt;&amp; arr, <span class="hljs-type">int</span> node, <span class="hljs-type">int</span> start, <span class="hljs-type">int</span> end)</span> </span>{
+        <span class="hljs-keyword">if</span> (start == end) tree[node] = arr[start];
+        <span class="hljs-keyword">else</span> {
+            <span class="hljs-type">int</span> mid = (start + end) / <span class="hljs-number">2</span>;
+            <span class="hljs-built_in">build</span>(arr, <span class="hljs-number">2</span>*node, start, mid);
+            <span class="hljs-built_in">build</span>(arr, <span class="hljs-number">2</span>*node+<span class="hljs-number">1</span>, mid+<span class="hljs-number">1</span>, end);
+            tree[node] = tree[<span class="hljs-number">2</span>*node] + tree[<span class="hljs-number">2</span>*node+<span class="hljs-number">1</span>];
+        }
+    }
+
+    <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">update</span><span class="hljs-params">(<span class="hljs-type">int</span> node, <span class="hljs-type">int</span> start, <span class="hljs-type">int</span> end, <span class="hljs-type">int</span> idx, <span class="hljs-type">int</span> val)</span> </span>{
+        <span class="hljs-keyword">if</span> (start == end) tree[node] = val;
+        <span class="hljs-keyword">else</span> {
+            <span class="hljs-type">int</span> mid = (start + end) / <span class="hljs-number">2</span>;
+            <span class="hljs-keyword">if</span> (idx &lt;= mid) <span class="hljs-built_in">update</span>(<span class="hljs-number">2</span>*node, start, mid, idx, val);
+            <span class="hljs-keyword">else</span> <span class="hljs-built_in">update</span>(<span class="hljs-number">2</span>*node+<span class="hljs-number">1</span>, mid+<span class="hljs-number">1</span>, end, idx, val);
+            tree[node] = tree[<span class="hljs-number">2</span>*node] + tree[<span class="hljs-number">2</span>*node+<span class="hljs-number">1</span>];
+        }
+    }
+
+    <span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">query</span><span class="hljs-params">(<span class="hljs-type">int</span> node, <span class="hljs-type">int</span> start, <span class="hljs-type">int</span> end, <span class="hljs-type">int</span> l, <span class="hljs-type">int</span> r)</span> </span>{
+        <span class="hljs-keyword">if</span> (r &lt; start || end &lt; l) <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;
+        <span class="hljs-keyword">if</span> (l &lt;= start &amp;&amp; end &lt;= r) <span class="hljs-keyword">return</span> tree[node];
+        <span class="hljs-type">int</span> mid = (start + end) / <span class="hljs-number">2</span>;
+        <span class="hljs-keyword">return</span> <span class="hljs-built_in">query</span>(<span class="hljs-number">2</span>*node, start, mid, l, r) +
+               <span class="hljs-built_in">query</span>(<span class="hljs-number">2</span>*node+<span class="hljs-number">1</span>, mid+<span class="hljs-number">1</span>, end, l, r);
+    }
+
+<span class="hljs-keyword">public</span>:
+    <span class="hljs-built_in">SegmentTree</span>(vector&lt;<span class="hljs-type">int</span>&gt;&amp; arr) {
+        n = arr.<span class="hljs-built_in">size</span>();
+        tree.<span class="hljs-built_in">resize</span>(<span class="hljs-number">4</span> * n);
+        <span class="hljs-built_in">build</span>(arr, <span class="hljs-number">1</span>, <span class="hljs-number">0</span>, n<span class="hljs-number">-1</span>);
+    }
+
+    <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">update</span><span class="hljs-params">(<span class="hljs-type">int</span> idx, <span class="hljs-type">int</span> val)</span> </span>{ <span class="hljs-built_in">update</span>(<span class="hljs-number">1</span>, <span class="hljs-number">0</span>, n<span class="hljs-number">-1</span>, idx, val); }
+    <span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">query</span><span class="hljs-params">(<span class="hljs-type">int</span> l, <span class="hljs-type">int</span> r)</span> </span>{ <span class="hljs-keyword">return</span> <span class="hljs-built_in">query</span>(<span class="hljs-number">1</span>, <span class="hljs-number">0</span>, n<span class="hljs-number">-1</span>, l, r); }
+};</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Fenwick Tree (Binary Indexed Tree)</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-keyword">class</span> <span class="hljs-title class_">FenwickTree</span> {
+    vector&lt;<span class="hljs-type">int</span>&gt; tree;
+    <span class="hljs-type">int</span> n;
+
+<span class="hljs-keyword">public</span>:
+    <span class="hljs-built_in">FenwickTree</span>(<span class="hljs-type">int</span> n) : <span class="hljs-built_in">n</span>(n), <span class="hljs-built_in">tree</span>(n+<span class="hljs-number">1</span>, <span class="hljs-number">0</span>) {}
+
+    <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">update</span><span class="hljs-params">(<span class="hljs-type">int</span> i, <span class="hljs-type">int</span> delta)</span> </span>{
+        i++;
+        <span class="hljs-keyword">while</span> (i &lt;= n) {
+            tree[i] += delta;
+            i += i &amp; (-i);
+        }
+    }
+
+    <span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">query</span><span class="hljs-params">(<span class="hljs-type">int</span> i)</span> </span>{
+        i++;
+        <span class="hljs-type">int</span> sum = <span class="hljs-number">0</span>;
+        <span class="hljs-keyword">while</span> (i &gt; <span class="hljs-number">0</span>) {
+            sum += tree[i];
+            i -= i &amp; (-i);
+        }
+        <span class="hljs-keyword">return</span> sum;
+    }
+
+    <span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">rangeQuery</span><span class="hljs-params">(<span class="hljs-type">int</span> l, <span class="hljs-type">int</span> r)</span> </span>{
+        <span class="hljs-keyword">if</span> (l == <span class="hljs-number">0</span>) <span class="hljs-keyword">return</span> <span class="hljs-built_in">query</span>(r);
+        <span class="hljs-keyword">return</span> <span class="hljs-built_in">query</span>(r) - <span class="hljs-built_in">query</span>(l - <span class="hljs-number">1</span>);
+    }
+};</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Segment Tree with Lazy Propagation (range add, range sum)</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-keyword">class</span> <span class="hljs-title class_">LazySegTree</span> {
+    vector&lt;<span class="hljs-type">long</span> <span class="hljs-type">long</span>&gt; tree, lazy; <span class="hljs-type">int</span> n;
+    <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">applyAdd</span><span class="hljs-params">(<span class="hljs-type">int</span> node, <span class="hljs-type">int</span> l, <span class="hljs-type">int</span> r, <span class="hljs-type">long</span> <span class="hljs-type">long</span> v)</span> </span>{ tree[node] += v * (r - l + <span class="hljs-number">1</span>); lazy[node] += v; }
+    <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">push</span><span class="hljs-params">(<span class="hljs-type">int</span> node, <span class="hljs-type">int</span> l, <span class="hljs-type">int</span> r)</span> </span>{
+        <span class="hljs-keyword">if</span> (!lazy[node]) <span class="hljs-keyword">return</span>;
+        <span class="hljs-type">int</span> mid = (l + r) / <span class="hljs-number">2</span>;
+        <span class="hljs-built_in">applyAdd</span>(<span class="hljs-number">2</span> * node, l, mid, lazy[node]);
+        <span class="hljs-built_in">applyAdd</span>(<span class="hljs-number">2</span> * node + <span class="hljs-number">1</span>, mid + <span class="hljs-number">1</span>, r, lazy[node]);
+        lazy[node] = <span class="hljs-number">0</span>;
+    }
+    <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">build</span><span class="hljs-params">(vector&lt;<span class="hljs-type">int</span>&gt;&amp; a, <span class="hljs-type">int</span> node, <span class="hljs-type">int</span> l, <span class="hljs-type">int</span> r)</span> </span>{
+        <span class="hljs-keyword">if</span> (l == r) { tree[node] = a[l]; <span class="hljs-keyword">return</span>; }
+        <span class="hljs-type">int</span> mid = (l + r) / <span class="hljs-number">2</span>;
+        <span class="hljs-built_in">build</span>(a, <span class="hljs-number">2</span> * node, l, mid); <span class="hljs-built_in">build</span>(a, <span class="hljs-number">2</span> * node + <span class="hljs-number">1</span>, mid + <span class="hljs-number">1</span>, r);
+        tree[node] = tree[<span class="hljs-number">2</span> * node] + tree[<span class="hljs-number">2</span> * node + <span class="hljs-number">1</span>];
+    }
+    <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">update</span><span class="hljs-params">(<span class="hljs-type">int</span> node, <span class="hljs-type">int</span> l, <span class="hljs-type">int</span> r, <span class="hljs-type">int</span> ql, <span class="hljs-type">int</span> qr, <span class="hljs-type">long</span> <span class="hljs-type">long</span> v)</span> </span>{
+        <span class="hljs-keyword">if</span> (qr &lt; l || r &lt; ql) <span class="hljs-keyword">return</span>;
+        <span class="hljs-keyword">if</span> (ql &lt;= l &amp;&amp; r &lt;= qr) { <span class="hljs-built_in">applyAdd</span>(node, l, r, v); <span class="hljs-keyword">return</span>; }
+        <span class="hljs-built_in">push</span>(node, l, r);
+        <span class="hljs-type">int</span> mid = (l + r) / <span class="hljs-number">2</span>;
+        <span class="hljs-built_in">update</span>(<span class="hljs-number">2</span> * node, l, mid, ql, qr, v); <span class="hljs-built_in">update</span>(<span class="hljs-number">2</span> * node + <span class="hljs-number">1</span>, mid + <span class="hljs-number">1</span>, r, ql, qr, v);
+        tree[node] = tree[<span class="hljs-number">2</span> * node] + tree[<span class="hljs-number">2</span> * node + <span class="hljs-number">1</span>];
+    }
+    <span class="hljs-function"><span class="hljs-type">long</span> <span class="hljs-type">long</span> <span class="hljs-title">query</span><span class="hljs-params">(<span class="hljs-type">int</span> node, <span class="hljs-type">int</span> l, <span class="hljs-type">int</span> r, <span class="hljs-type">int</span> ql, <span class="hljs-type">int</span> qr)</span> </span>{
+        <span class="hljs-keyword">if</span> (qr &lt; l || r &lt; ql) <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;
+        <span class="hljs-keyword">if</span> (ql &lt;= l &amp;&amp; r &lt;= qr) <span class="hljs-keyword">return</span> tree[node];
+        <span class="hljs-built_in">push</span>(node, l, r);
+        <span class="hljs-type">int</span> mid = (l + r) / <span class="hljs-number">2</span>;
+        <span class="hljs-keyword">return</span> <span class="hljs-built_in">query</span>(<span class="hljs-number">2</span> * node, l, mid, ql, qr) + <span class="hljs-built_in">query</span>(<span class="hljs-number">2</span> * node + <span class="hljs-number">1</span>, mid + <span class="hljs-number">1</span>, r, ql, qr);
+    }
+<span class="hljs-keyword">public</span>:
+    <span class="hljs-built_in">LazySegTree</span>(vector&lt;<span class="hljs-type">int</span>&gt;&amp; a) : <span class="hljs-built_in">tree</span>(<span class="hljs-number">4</span> * a.<span class="hljs-built_in">size</span>()), <span class="hljs-built_in">lazy</span>(<span class="hljs-number">4</span> * a.<span class="hljs-built_in">size</span>(), <span class="hljs-number">0</span>), <span class="hljs-built_in">n</span>(a.<span class="hljs-built_in">size</span>()) { <span class="hljs-built_in">build</span>(a, <span class="hljs-number">1</span>, <span class="hljs-number">0</span>, n - <span class="hljs-number">1</span>); }
+    <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">rangeAdd</span><span class="hljs-params">(<span class="hljs-type">int</span> l, <span class="hljs-type">int</span> r, <span class="hljs-type">long</span> <span class="hljs-type">long</span> v)</span> </span>{ <span class="hljs-built_in">update</span>(<span class="hljs-number">1</span>, <span class="hljs-number">0</span>, n - <span class="hljs-number">1</span>, l, r, v); }
+    <span class="hljs-function"><span class="hljs-type">long</span> <span class="hljs-type">long</span> <span class="hljs-title">rangeSum</span><span class="hljs-params">(<span class="hljs-type">int</span> l, <span class="hljs-type">int</span> r)</span> </span>{ <span class="hljs-keyword">return</span> <span class="hljs-built_in">query</span>(<span class="hljs-number">1</span>, <span class="hljs-number">0</span>, n - <span class="hljs-number">1</span>, l, r); }
+};</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Range GCD Segment Tree (iterative; for min/max swap __gcd with min/max, identity 0 →
+                            INT_MAX/INT_MIN)
+                        </h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-keyword">class</span> <span class="hljs-title class_">GcdSegTree</span> {
+    <span class="hljs-type">int</span> n; vector&lt;<span class="hljs-type">int</span>&gt; t;
+<span class="hljs-keyword">public</span>:
+    <span class="hljs-built_in">GcdSegTree</span>(vector&lt;<span class="hljs-type">int</span>&gt;&amp; a) : <span class="hljs-built_in">n</span>(a.<span class="hljs-built_in">size</span>()), <span class="hljs-built_in">t</span>(<span class="hljs-number">2</span> * a.<span class="hljs-built_in">size</span>()) {
+        <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; n; i++) t[n + i] = a[i];
+        <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = n - <span class="hljs-number">1</span>; i &gt; <span class="hljs-number">0</span>; i--) t[i] = __gcd(t[<span class="hljs-number">2</span> * i], t[<span class="hljs-number">2</span> * i + <span class="hljs-number">1</span>]);
+    }
+    <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">update</span><span class="hljs-params">(<span class="hljs-type">int</span> i, <span class="hljs-type">int</span> val)</span> </span>{
+        <span class="hljs-keyword">for</span> (t[i += n] = val; i &gt; <span class="hljs-number">1</span>; i &gt;&gt;= <span class="hljs-number">1</span>) t[i &gt;&gt; <span class="hljs-number">1</span>] = __gcd(t[i], t[i ^ <span class="hljs-number">1</span>]);
+    }
+    <span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">query</span><span class="hljs-params">(<span class="hljs-type">int</span> l, <span class="hljs-type">int</span> r)</span> </span>{                          <span class="hljs-comment">// inclusive [l, r]</span>
+        <span class="hljs-type">int</span> res = <span class="hljs-number">0</span>;
+        <span class="hljs-keyword">for</span> (l += n, r += n + <span class="hljs-number">1</span>; l &lt; r; l &gt;&gt;= <span class="hljs-number">1</span>, r &gt;&gt;= <span class="hljs-number">1</span>) {
+            <span class="hljs-keyword">if</span> (l &amp; <span class="hljs-number">1</span>) res = __gcd(res, t[l++]);
+            <span class="hljs-keyword">if</span> (r &amp; <span class="hljs-number">1</span>) res = __gcd(res, t[--r]);
+        }
+        <span class="hljs-keyword">return</span> res;
+    }
+};</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Fenwick with Kth Element (order statistics by binary descent)</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-keyword">struct</span> <span class="hljs-title class_">FenwickKth</span> {
+    <span class="hljs-type">int</span> n; vector&lt;<span class="hljs-type">int</span>&gt; t;
+    <span class="hljs-built_in">FenwickKth</span>(<span class="hljs-type">int</span> n) : <span class="hljs-built_in">n</span>(n), <span class="hljs-built_in">t</span>(n + <span class="hljs-number">1</span>, <span class="hljs-number">0</span>) {}
+    <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">add</span><span class="hljs-params">(<span class="hljs-type">int</span> i, <span class="hljs-type">int</span> delta)</span> </span>{ <span class="hljs-keyword">for</span> (; i &lt;= n; i += i &amp; -i) t[i] += delta; }
+    <span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">prefix</span><span class="hljs-params">(<span class="hljs-type">int</span> i)</span> </span>{ <span class="hljs-type">int</span> s = <span class="hljs-number">0</span>; <span class="hljs-keyword">for</span> (; i &gt; <span class="hljs-number">0</span>; i -= i &amp; -i) s += t[i]; <span class="hljs-keyword">return</span> s; }
+    <span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">kth</span><span class="hljs-params">(<span class="hljs-type">int</span> k)</span> </span>{                                   <span class="hljs-comment">// smallest i with prefix(i) &gt;= k, 1-indexed</span>
+        <span class="hljs-type">int</span> pos = <span class="hljs-number">0</span>, pw = <span class="hljs-number">1</span>;
+        <span class="hljs-keyword">while</span> (pw * <span class="hljs-number">2</span> &lt;= n) pw *= <span class="hljs-number">2</span>;
+        <span class="hljs-keyword">for</span> (; pw; pw &gt;&gt;= <span class="hljs-number">1</span>)
+            <span class="hljs-keyword">if</span> (pos + pw &lt;= n &amp;&amp; t[pos + pw] &lt; k) { pos += pw; k -= t[pos]; }
+        <span class="hljs-keyword">return</span> pos + <span class="hljs-number">1</span>;
+    }
+};</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Count of Smaller Numbers After Self (Fenwick + coordinate compression)</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function">vector&lt;<span class="hljs-type">int</span>&gt; <span class="hljs-title">countSmaller</span><span class="hljs-params">(vector&lt;<span class="hljs-type">int</span>&gt;&amp; nums)</span> </span>{
+    vector&lt;<span class="hljs-type">int</span>&gt; sorted = nums;
+    <span class="hljs-built_in">sort</span>(sorted.<span class="hljs-built_in">begin</span>(), sorted.<span class="hljs-built_in">end</span>());
+    sorted.<span class="hljs-built_in">erase</span>(<span class="hljs-built_in">unique</span>(sorted.<span class="hljs-built_in">begin</span>(), sorted.<span class="hljs-built_in">end</span>()), sorted.<span class="hljs-built_in">end</span>());
+    <span class="hljs-type">int</span> m = sorted.<span class="hljs-built_in">size</span>();
+    <span class="hljs-function">vector&lt;<span class="hljs-type">int</span>&gt; <span class="hljs-title">bit</span><span class="hljs-params">(m + <span class="hljs-number">1</span>, <span class="hljs-number">0</span>)</span>, <span class="hljs-title">res</span><span class="hljs-params">(nums.size())</span></span>;
+    <span class="hljs-keyword">auto</span> add = [&amp;](<span class="hljs-type">int</span> i) { <span class="hljs-keyword">for</span> (; i &lt;= m; i += i &amp; -i) bit[i]++; };
+    <span class="hljs-keyword">auto</span> query = [&amp;](<span class="hljs-type">int</span> i) { <span class="hljs-type">int</span> s = <span class="hljs-number">0</span>; <span class="hljs-keyword">for</span> (; i &gt; <span class="hljs-number">0</span>; i -= i &amp; -i) s += bit[i]; <span class="hljs-keyword">return</span> s; };
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = (<span class="hljs-type">int</span>)nums.<span class="hljs-built_in">size</span>() - <span class="hljs-number">1</span>; i &gt;= <span class="hljs-number">0</span>; i--) {
+        <span class="hljs-type">int</span> rank = <span class="hljs-built_in">lower_bound</span>(sorted.<span class="hljs-built_in">begin</span>(), sorted.<span class="hljs-built_in">end</span>(), nums[i]) - sorted.<span class="hljs-built_in">begin</span>() + <span class="hljs-number">1</span>;
+        res[i] = <span class="hljs-built_in">query</span>(rank - <span class="hljs-number">1</span>);
+        <span class="hljs-built_in">add</span>(rank);
+    }
+    <span class="hljs-keyword">return</span> res;
+}</code></pre>
+                        </div>
+                    </div>
+                </div>

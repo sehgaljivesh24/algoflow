@@ -1,0 +1,212 @@
+/* Graph / intervals / trie pictures and the split layout. Only surface-palette variables are used, so every theme works. */
+
+.gv-wrap, .iv-wrap, .tr-wrap { width: 100%; }
+.svg-viz.gv, .svg-viz.iv, .svg-viz.tr { display: block; margin: 0 auto; width: 100%; height: auto; overflow: visible; }
+.svg-viz.gv { max-height: 360px; }
+.svg-viz.iv { max-height: 380px; }
+.svg-viz.tr { max-height: 380px; }
+
+/* ---------- Colour roles shared by graph nodes, interval bars and trie nodes ---------- */
+.gv-circle, .tr-circle, .iv-rect {
+  fill: var(--bg3); stroke: var(--border); stroke-width: 2;
+  transition: fill .4s, stroke .4s, stroke-width .4s;
+}
+.gv-circle.vz-visited,  .tr-circle.vz-visited,  .iv-rect.vz-visited  { fill: var(--purple-bg); stroke: var(--purple); }
+.gv-circle.vz-current,  .tr-circle.vz-current,  .iv-rect.vz-current  { fill: var(--blue-bg); stroke: var(--blue); }
+.gv-circle.vz-queued,   .tr-circle.vz-queued,   .iv-rect.vz-queued   { fill: var(--yellow-bg); stroke: var(--yellow); }
+.gv-circle.vz-result,   .tr-circle.vz-result,   .iv-rect.vz-result   { fill: var(--green-bg); stroke: var(--green); }
+.gv-circle.vz-rejected, .tr-circle.vz-rejected, .iv-rect.vz-rejected { fill: var(--red-bg); stroke: var(--red); }
+.gv-circle.vz-dim,      .tr-circle.vz-dim,      .iv-rect.vz-dim      { fill: var(--bg2); stroke: var(--border); }
+.gv-circle.vz-tone-blue,   .iv-rect.vz-tone-blue   { fill: var(--blue-bg); stroke: var(--blue); }
+.gv-circle.vz-tone-orange, .iv-rect.vz-tone-orange { fill: var(--orange-bg); stroke: var(--orange); }
+.gv-circle.vz-tone-purple, .iv-rect.vz-tone-purple { fill: var(--purple-bg); stroke: var(--purple); }
+.gv-circle.vz-tone-green,  .iv-rect.vz-tone-green  { fill: var(--green-bg); stroke: var(--green); }
+.gv-circle.vz-tone-yellow, .iv-rect.vz-tone-yellow { fill: var(--yellow-bg); stroke: var(--yellow); }
+.gv-circle.vz-tone-red,    .iv-rect.vz-tone-red    { fill: var(--red-bg); stroke: var(--red); }
+.tr-circle.vz-on-path { stroke: var(--blue); }
+.vz-faded { opacity: .5; }
+.gv-node, .tr-node, .iv-bar { transition: opacity .4s; }
+
+/* the node being processed pulses */
+.gv-circle.vz-current, .tr-circle.vz-current { animation: vzBlink 1.2s ease-in-out infinite; }
+@keyframes vzBlink {
+  0%, 100% { filter: drop-shadow(0 0 4px var(--blue)); stroke-width: 2; }
+  50%      { filter: drop-shadow(0 0 11px var(--blue)); stroke-width: 3; }
+}
+
+/* ---------- Graph ---------- */
+.gv-ntext { fill: var(--text); font: 700 12px var(--mono); pointer-events: none; }
+.gv-line { fill: none; stroke: var(--muted); stroke-width: 2; opacity: .55; transition: stroke .4s, opacity .4s, stroke-width .4s; }
+.gv-edge.st-active .gv-line { stroke: var(--blue); stroke-width: 3; opacity: 1; }
+.gv-edge.st-visited .gv-line { stroke: var(--purple); stroke-width: 2.5; opacity: .95; }
+.gv-edge.st-chosen .gv-line { stroke: var(--green); stroke-width: 3; opacity: 1; }
+.gv-edge.st-dim .gv-line { stroke-width: 1.6; stroke-dasharray: 5 6; opacity: .35; }
+.gv-edge.st-error .gv-line { stroke: var(--red); stroke-width: 3; opacity: 1; }
+.gv-mk path { fill: var(--muted); }
+.gv-mk.st-default path { opacity: .7; }
+.gv-mk.st-active path { fill: var(--blue); }
+.gv-mk.st-visited path { fill: var(--purple); }
+.gv-mk.st-chosen path { fill: var(--green); }
+.gv-mk.st-error path { fill: var(--red); }
+.gv-mk.st-dim path { opacity: .4; }
+.gv-wbox { fill: var(--bg2); stroke: var(--border); stroke-width: 1; transition: stroke .4s; }
+.gv-edge.st-active .gv-wbox { stroke: var(--blue); }
+.gv-edge.st-visited .gv-wbox { stroke: var(--purple); }
+.gv-edge.st-chosen .gv-wbox { stroke: var(--green); }
+.gv-edge.st-error .gv-wbox { stroke: var(--red); }
+.gv-wtext { fill: var(--muted); font: 700 10.5px var(--mono); pointer-events: none; }
+.gv-edge.st-active .gv-wtext, .gv-edge.st-chosen .gv-wtext, .gv-edge.st-visited .gv-wtext, .gv-edge.st-error .gv-wtext { fill: var(--text); }
+.gv-tagbox { fill: var(--bg2); stroke: var(--border); stroke-width: 1; }
+.gv-tagtext { fill: var(--orange); font: 700 10px var(--mono); }
+
+/* pointer chips slide to the node they now point at (spring easing) */
+.gv-ptr { transition: transform .4s cubic-bezier(0.34, 1.56, 0.64, 1); }
+.gv-ptrbox { fill: var(--bg2); stroke-width: 1.2; }
+.gv-ptrtext { font: 700 10.5px var(--mono); }
+
+/* colour key under the picture */
+.gv-legend {
+  display: flex; flex-wrap: wrap; gap: 8px 20px; margin-top: 12px; padding: 10px 14px;
+  background: var(--bg3); border: 1px solid var(--border); border-radius: 8px;
+  font-size: .72rem; color: var(--muted);
+}
+.gv-legend-item { display: inline-flex; align-items: center; gap: 6px; }
+.gv-legend-dot { width: 12px; height: 12px; border-radius: 50%; border: 2px solid; flex-shrink: 0; box-sizing: border-box; }
+.gv-legend-dot.vz-unvisited { background: var(--bg2); border-color: var(--border); }
+.gv-legend-dot.vz-current { background: var(--blue-bg); border-color: var(--blue); animation: vzBlink 1.2s ease-in-out infinite; }
+.gv-legend-dot.vz-queued { background: var(--yellow-bg); border-color: var(--yellow); }
+.gv-legend-dot.vz-visited { background: var(--purple-bg); border-color: var(--purple); }
+.gv-legend-dot.vz-result { background: var(--green-bg); border-color: var(--green); }
+.gv-legend-dot.vz-rejected { background: var(--red-bg); border-color: var(--red); }
+
+/* ---------- Intervals ---------- */
+.iv-track { fill: var(--bg3); opacity: .55; }
+.iv-grid { stroke: var(--border); stroke-width: 1; opacity: .5; }
+.iv-axis { stroke: var(--muted); stroke-width: 1.5; opacity: .8; }
+.iv-tick { fill: var(--muted); font: 10.5px var(--mono); }
+.iv-empty { font-style: italic; }
+.iv-rowlabel { fill: var(--muted); font: 700 10.5px var(--mono); }
+.iv-reslabel { fill: var(--green); }
+.iv-divider { stroke: var(--border); stroke-width: 1.5; stroke-dasharray: 4 4; }
+.iv-label { fill: var(--text); font: 700 11px var(--mono); pointer-events: none; }
+.iv-bar { transition: transform .4s cubic-bezier(0.34, 1.2, 0.64, 1), opacity .4s; }
+.iv-rect { transition: fill .4s, stroke .4s, width .4s; }
+.iv-bar .iv-rect.vz-current { animation: vzBlink 1.2s ease-in-out infinite; }
+.iv-marker { transition: transform .4s cubic-bezier(0.34, 1.2, 0.64, 1); }
+.iv-marker line { stroke: var(--orange); stroke-width: 2.4; stroke-dasharray: 6 4; }
+.iv-marker text { fill: var(--orange); font: 700 10.5px var(--mono); }
+
+/* ---------- Trie ---------- */
+.tr-node { transition: transform .4s ease, opacity .4s; }
+.tr-pop { animation: trPop .4s cubic-bezier(0.34, 1.56, 0.64, 1); }
+@keyframes trPop { from { transform: scale(.4); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.tr-edge { stroke: var(--border); stroke-width: 2; transition: stroke .4s, stroke-width .4s, d .4s; }
+.tr-edge.hot { stroke: var(--blue); stroke-width: 3; }
+.tr-endring { fill: none; stroke: var(--green); stroke-width: 2; }
+.tr-ch { fill: var(--text); font: 700 13px var(--mono); pointer-events: none; }
+.tr-root { fill: var(--muted); font: 700 9px var(--mono); pointer-events: none; }
+
+/* ---------- Split scene (two scenes side by side) ---------- */
+.split-viz { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; justify-content: center; }
+.split-part { flex: 1 1 280px; min-width: 0; }
+.split-part .grid-viz { padding: 2px 0; }
+
+@media (prefers-reduced-motion: reduce) {
+  .gv-circle, .tr-circle, .iv-rect, .gv-line, .gv-wbox, .tr-edge, .gv-node, .tr-node, .iv-bar, .iv-marker, .gv-ptr { transition: none !important; }
+  .gv-circle.vz-current, .tr-circle.vz-current, .iv-bar .iv-rect.vz-current, .gv-legend-dot.vz-current, .tr-pop { animation: none !important; }
+  .gv-circle.vz-current, .tr-circle.vz-current, .iv-rect.vz-current { stroke-width: 3; }
+}
+
+/* ======================================================================
+   p9 scene kinds: n-ary tree (nt-), 2-D plane (pl-), trie links, stacked split
+   ====================================================================== */
+.nt-wrap, .pl-wrap { width: 100%; overflow-x: auto; }
+.svg-viz.nt, .svg-viz.pl { display: block; margin: 0 auto; width: 100%; height: auto; overflow: visible; }
+.svg-viz.nt { max-height: 440px; }
+.svg-viz.pl { max-height: 400px; }
+
+.nt-shape, .pl-dot {
+  fill: var(--bg3); stroke: var(--border); stroke-width: 2;
+  transition: fill .4s, stroke .4s, stroke-width .4s;
+}
+.nt-shape.vz-visited,  .pl-dot.vz-visited  { fill: var(--purple-bg); stroke: var(--purple); }
+.nt-shape.vz-current,  .pl-dot.vz-current  { fill: var(--blue-bg); stroke: var(--blue); }
+.nt-shape.vz-queued,   .pl-dot.vz-queued   { fill: var(--yellow-bg); stroke: var(--yellow); }
+.nt-shape.vz-result,   .pl-dot.vz-result   { fill: var(--green-bg); stroke: var(--green); }
+.nt-shape.vz-rejected, .pl-dot.vz-rejected { fill: var(--red-bg); stroke: var(--red); }
+.nt-shape.vz-dim,      .pl-dot.vz-dim      { fill: var(--bg2); stroke: var(--border); }
+.nt-shape.vz-tone-blue,   .pl-dot.vz-tone-blue   { fill: var(--blue-bg); stroke: var(--blue); }
+.nt-shape.vz-tone-orange, .pl-dot.vz-tone-orange { fill: var(--orange-bg); stroke: var(--orange); }
+.nt-shape.vz-tone-purple, .pl-dot.vz-tone-purple { fill: var(--purple-bg); stroke: var(--purple); }
+.nt-shape.vz-tone-green,  .pl-dot.vz-tone-green  { fill: var(--green-bg); stroke: var(--green); }
+.nt-shape.vz-tone-yellow, .pl-dot.vz-tone-yellow { fill: var(--yellow-bg); stroke: var(--yellow); }
+.nt-shape.vz-tone-red,    .pl-dot.vz-tone-red    { fill: var(--red-bg); stroke: var(--red); }
+.nt-shape.vz-on-path { stroke: var(--blue); }
+.nt-shape.vz-current, .pl-dot.vz-current { animation: vzBlink 1.2s ease-in-out infinite; }
+.nt-node, .pl-pt { transition: opacity .4s; }
+
+.nt-text { fill: var(--text); font: 700 12.5px var(--mono); pointer-events: none; }
+.nt-sub { fill: var(--muted); font: 600 9.5px var(--mono); pointer-events: none; }
+.nt-line { fill: none; stroke: var(--border); stroke-width: 2; transition: stroke .4s, stroke-width .4s, d .4s; }
+.nt-edge.heavy .nt-line { stroke: var(--green); stroke-width: 4; opacity: .9; }
+.nt-edge.hot .nt-line { stroke: var(--blue); stroke-width: 3.2; opacity: 1; }
+.nt-ebox { fill: var(--bg2); stroke: var(--border); stroke-width: 1; }
+.nt-edge.hot .nt-ebox { stroke: var(--blue); }
+.nt-etext { fill: var(--muted); font: 700 10px var(--mono); pointer-events: none; }
+.nt-edge.hot .nt-etext { fill: var(--text); }
+
+/* dashed link arrows (n-ary tree jumps, trie failure links) */
+.nt-xedge path, .tr-link path { stroke-width: 2; stroke-dasharray: 5 4; opacity: .9; }
+.nt-xedge text, .tr-link text { font: 700 10px var(--mono); paint-order: stroke; stroke: var(--bg); stroke-width: 3px; stroke-linejoin: round; }
+.nt-xedge.tone-orange path, .tr-link.tone-orange path { stroke: var(--orange); }
+.nt-xedge.tone-orange text, .tr-link.tone-orange text { fill: var(--orange); }
+.nt-xedge.tone-blue path, .tr-link.tone-blue path { stroke: var(--blue); }
+.nt-xedge.tone-blue text, .tr-link.tone-blue text { fill: var(--blue); }
+.nt-xedge.tone-green path, .tr-link.tone-green path { stroke: var(--green); }
+.nt-xedge.tone-green text, .tr-link.tone-green text { fill: var(--green); }
+.nt-xedge.tone-red path, .tr-link.tone-red path { stroke: var(--red); }
+.nt-xedge.tone-red text, .tr-link.tone-red text { fill: var(--red); }
+.nt-xedge.tone-purple path { stroke: var(--purple); }
+.nt-xedge.tone-purple text { fill: var(--purple); }
+.nt-xedge.tone-yellow path { stroke: var(--yellow); }
+.nt-xedge.tone-yellow text { fill: var(--yellow); }
+.tr-link.tone-dim path { stroke: var(--muted); opacity: .35; }
+.tr-link.tone-dim text { fill: var(--muted); }
+.tr-link path, .nt-xedge path { transition: stroke .4s, opacity .4s; }
+.nt-mk path { fill: var(--orange); }
+.nt-mk.tone-blue path { fill: var(--blue); }
+.nt-mk.tone-green path { fill: var(--green); }
+.nt-mk.tone-red path { fill: var(--red); }
+.nt-mk.tone-purple path { fill: var(--purple); }
+.nt-mk.tone-yellow path { fill: var(--yellow); }
+.nt-mk.tone-dim path { fill: var(--muted); opacity: .45; }
+.tr-ebox.hot { stroke: var(--blue); }
+
+/* ---------- Plane ---------- */
+.pl-frame { fill: var(--bg3); fill-opacity: .35; stroke: var(--border); stroke-width: 1.5; }
+.pl-grid { stroke: var(--border); stroke-width: 1; opacity: .45; }
+.pl-poly { stroke-width: 2.5; stroke-linejoin: round; fill-opacity: .22; transition: fill .4s, stroke .4s; }
+.pl-poly.st-chosen { fill: var(--green); stroke: var(--green); }
+.pl-poly.st-active { fill: var(--blue); stroke: var(--blue); }
+.pl-poly.st-error { fill: var(--red); stroke: var(--red); }
+.pl-poly.st-visited { fill: var(--purple); stroke: var(--purple); }
+.pl-poly[fill="none"] { fill: none; }
+.pl-name { fill: var(--text); font: 700 11px var(--mono); pointer-events: none; paint-order: stroke; stroke: var(--bg); stroke-width: 3px; stroke-linejoin: round; }
+.pl-sweep { transition: transform .4s cubic-bezier(0.34, 1.2, 0.64, 1); }
+.pl-sweep line { stroke: var(--orange); stroke-width: 2.2; stroke-dasharray: 6 4; }
+.pl-sweep text { fill: var(--orange); font: 700 10.5px var(--mono); }
+
+/* ---------- Split, stacked ---------- */
+.split-viz.stack { flex-direction: column; align-items: stretch; flex-wrap: nowrap; gap: 10px; }
+.split-viz.stack .split-part { flex: none; width: 100%; }
+
+/* Phone: the interval timeline is 620 units wide; keep its text legible and let it scroll sideways instead of shrinking to ~5px. */
+@media (max-width: 600px) {
+  .iv-wrap { overflow-x: auto; }
+  .svg-viz.iv { min-width: 540px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nt-shape, .pl-dot, .nt-line, .nt-node, .pl-pt, .pl-sweep, .pl-poly, .tr-link path, .nt-xedge path { transition: none !important; }
+  .nt-shape.vz-current, .pl-dot.vz-current { animation: none !important; stroke-width: 3; }
+}

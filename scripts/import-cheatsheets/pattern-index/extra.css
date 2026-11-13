@@ -1,0 +1,55 @@
+/* ================= AlgoFlow additions (not part of the original stylesheet) ================= */
+
+/* The original styles <body>; here .cs-pi plays that role. */
+.cs-pi { color-scheme: dark; min-height: 100vh; text-align: left; font-variant-ligatures: normal; font-feature-settings: normal; }
+body:has(.cs-pi) { background: #030303; }
+
+/* Undo AlgoFlow's global element/class rules that would otherwise leak into the imported page. */
+.cs-pi .hero { padding: 0; }
+.cs-pi h1, .cs-pi h2, .cs-pi h3, .cs-pi h4 { letter-spacing: normal; text-transform: none; }
+.cs-pi p { margin: 1em 0; }
+.cs-pi code, .cs-pi kbd { font-variant-ligatures: normal; font-feature-settings: normal; }
+.cs-pi kbd { font: inherit; background: none; border: 0; padding: 0; border-radius: 0; }
+.cs-pi a { color: LinkText; text-decoration: underline; }
+.cs-pi a:visited { color: VisitedText; }
+.cs-pi a:hover { text-decoration: underline; }
+.cs-pi a.nav-link, .cs-pi a.nav-link:hover, .cs-pi a.nav-link:visited { text-decoration: none; color: var(--ink); }
+.cs-pi a.nav-link.active, .cs-pi a.nav-link.active:hover { color: #fff; }
+.cs-pi :focus-visible { outline: auto; outline-offset: 0; }
+.cs-pi .search-box { line-height: normal; font-weight: 400; }
+.cs-pi .search-box:focus { outline: none; }
+.cs-pi ul, .cs-pi ol { margin: 1em 0; }
+
+/* Class-name collisions with the AlgoFlow library stylesheet (.pat-tag, .brand, .topic, .hero): neutralise the leaked properties. */
+.cs-pi .pat-tag { padding: 0; border: 0; border-radius: 0; background: none; white-space: normal; }
+.cs-pi .brand { line-height: 1.55; white-space: normal; }
+.cs-pi .topic { margin-bottom: 0; }
+
+/* The original wraps every table in an unstyled div at runtime; we bake the wrapper in and let it scroll on narrow screens. */
+.cs-pi .table-scroll { max-width: 100%; overflow-x: auto; margin-bottom: 6px; }
+/* the wrapper is a scroll container, so it (not the table) carries the 6px bottom margin that collapsed in the original */
+.cs-pi .table-scroll > table { margin-bottom: 0; }
+
+/* --- sidebar footer with a way back (kept in the same visual language as nav links) --- */
+.cs-pi .sidebar-foot {
+  margin: 16px 8px 0; padding-top: 12px; border-top: 1px solid var(--border);
+  font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; line-height: 1.7; color: var(--ink-muted);
+}
+.cs-pi .sidebar-foot a { color: var(--ink-muted); text-decoration: none; }
+.cs-pi .sidebar-foot a:hover { color: var(--ink); text-decoration: none; }
+
+/* --- attribution footer --- */
+.cs-pi .cs-attrib {
+  margin-top: 72px; padding-top: 16px; border-top: 1px solid var(--border);
+  font-family: 'IBM Plex Mono', monospace; font-size: 12px; line-height: 1.7; color: var(--ink-muted);
+}
+.cs-pi .cs-attrib a { color: var(--pine); text-decoration: none; }
+.cs-pi .cs-attrib a:hover { text-decoration: underline; }
+.cs-pi .cs-attrib p { margin: 0; }
+
+/* A section that is still being fetched is just reserved space (its height is a measured estimate). */
+.cs-pi .topic[data-loaded='0'] { box-sizing: border-box; }
+
+@media (max-width: 880px) {
+  .cs-pi .sidebar-foot { margin-top: 12px; }
+}

@@ -1,0 +1,313 @@
+                <div class="topic-head">
+                    <span class="topic-num">09</span>
+                    <h2>Sliding Window &amp; Two Pointer</h2>
+                </div>
+                <p class="topic-intro">Core signal: a contiguous subarray/substring with a condition on sum, count, or
+                    distinct elements — or two sorted sequences being compared from both ends.</p>
+                <h3 class="block-label">Recognition</h3>
+                <div class="table-scroll"><table class="sig-table">
+                    <thead>
+                        <tr>
+                            <th>When you see…</th>
+                            <th>Pattern</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="sig">Fixed-size K subarray, max/min sum</td>
+                            <td class="pat"><span class="pat-tag">Fixed window: add the new element, remove the old
+                                    one</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Longest substring without repeating characters</td>
+                            <td class="pat"><span class="pat-tag">Variable window + HashSet/HashMap, shrink on
+                                    violation</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Longest substring with at most K distinct characters</td>
+                            <td class="pat"><span class="pat-tag">Variable window + frequency map</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Minimum window substring containing all of T</td>
+                            <td class="pat"><span class="pat-tag">Expand until valid, then contract while still
+                                    valid</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Max consecutive ones with at most K flips</td>
+                            <td class="pat"><span class="pat-tag">Variable window tracking the zero count</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Subarray with sum exactly K (all positive)</td>
+                            <td class="pat"><span class="pat-tag">Variable window, shrink when sum &gt; K</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Subarray with sum exactly K (has negatives)</td>
+                            <td class="pat"><span class="pat-tag">Prefix sum + HashMap — <em>not</em> sliding
+                                    window</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Longest repeating character replacement</td>
+                            <td class="pat"><span class="pat-tag">Window + track the max-frequency char</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Fruits into baskets / at most 2 distinct types</td>
+                            <td class="pat"><span class="pat-tag">Variable window, frequency-map size ≤ 2</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Two Sum in a sorted array</td>
+                            <td class="pat"><span class="pat-tag">Two-pointer from both ends</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Container with most water</td>
+                            <td class="pat"><span class="pat-tag">Two-pointer, move the pointer with the smaller
+                                    height</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Sliding window maximum</td>
+                            <td class="pat"><span class="pat-tag">Monotonic deque (decreasing)</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Count subarrays with exactly K distinct elements</td>
+                            <td class="pat"><span class="pat-tag">atMost(K) − atMost(K−1) trick</span></td>
+                        </tr>
+                    </tbody>
+                </table></div>
+
+                <h3 class="block-label">Example algorithms</h3>
+                <div class="examples-grid">
+                    <div class="example">
+                        <h4>Variable window — the template</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">slidingWindowTemplate</span><span class="hljs-params">(vector&lt;<span class="hljs-type">int</span>&gt;&amp; a)</span> </span>{
+    <span class="hljs-type">int</span> left = <span class="hljs-number">0</span>, best = <span class="hljs-number">0</span>;
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> right = <span class="hljs-number">0</span>; right &lt; (<span class="hljs-type">int</span>)a.<span class="hljs-built_in">size</span>(); right++) {
+        <span class="hljs-comment">// add(a[right]) into the window state</span>
+
+        <span class="hljs-keyword">while</span> (<span class="hljs-comment">/* window is invalid */</span> <span class="hljs-literal">false</span>) {
+            <span class="hljs-comment">// remove(a[left]) from the window state</span>
+            left++;
+        }
+        best = <span class="hljs-built_in">max</span>(best, right - left + <span class="hljs-number">1</span>);
+    }
+    <span class="hljs-keyword">return</span> best;
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Longest Substring Without Repeating Characters</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">lengthOfLongestSubstring</span><span class="hljs-params">(string s)</span> </span>{
+    unordered_map&lt;<span class="hljs-type">char</span>, <span class="hljs-type">int</span>&gt; last;
+    <span class="hljs-type">int</span> left = <span class="hljs-number">0</span>, best = <span class="hljs-number">0</span>;
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> right = <span class="hljs-number">0</span>; right &lt; (<span class="hljs-type">int</span>)s.<span class="hljs-built_in">size</span>(); right++) {
+        <span class="hljs-keyword">if</span> (last.<span class="hljs-built_in">count</span>(s[right]) &amp;&amp; last[s[right]] &gt;= left)
+            left = last[s[right]] + <span class="hljs-number">1</span>;
+        last[s[right]] = right;
+        best = <span class="hljs-built_in">max</span>(best, right - left + <span class="hljs-number">1</span>);
+    }
+    <span class="hljs-keyword">return</span> best;
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Minimum Window Substring</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function">string <span class="hljs-title">minWindow</span><span class="hljs-params">(string s, string t)</span> </span>{
+    unordered_map&lt;<span class="hljs-type">char</span>, <span class="hljs-type">int</span>&gt; need;
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">char</span> c : t) need[c]++;
+    <span class="hljs-type">int</span> required = need.<span class="hljs-built_in">size</span>(), formed = <span class="hljs-number">0</span>;
+    unordered_map&lt;<span class="hljs-type">char</span>, <span class="hljs-type">int</span>&gt; window;
+    <span class="hljs-type">int</span> left = <span class="hljs-number">0</span>, bestLen = INT_MAX, bestStart = <span class="hljs-number">0</span>;
+
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> right = <span class="hljs-number">0</span>; right &lt; (<span class="hljs-type">int</span>)s.<span class="hljs-built_in">size</span>(); right++) {
+        <span class="hljs-type">char</span> c = s[right];
+        window[c]++;
+        <span class="hljs-keyword">if</span> (need.<span class="hljs-built_in">count</span>(c) &amp;&amp; window[c] == need[c]) formed++;
+
+        <span class="hljs-keyword">while</span> (formed == required) {
+            <span class="hljs-keyword">if</span> (right - left + <span class="hljs-number">1</span> &lt; bestLen) {
+                bestLen = right - left + <span class="hljs-number">1</span>;
+                bestStart = left;
+            }
+            <span class="hljs-type">char</span> lc = s[left];
+            window[lc]--;
+            <span class="hljs-keyword">if</span> (need.<span class="hljs-built_in">count</span>(lc) &amp;&amp; window[lc] &lt; need[lc]) formed--;
+            left++;
+        }
+    }
+    <span class="hljs-keyword">return</span> bestLen == INT_MAX ? <span class="hljs-string">""</span> : s.<span class="hljs-built_in">substr</span>(bestStart, bestLen);
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Fixed window, max sum of size K</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function"><span class="hljs-type">long</span> <span class="hljs-type">long</span> <span class="hljs-title">maxSumK</span><span class="hljs-params">(vector&lt;<span class="hljs-type">int</span>&gt;&amp; a, <span class="hljs-type">int</span> k)</span> </span>{
+    <span class="hljs-type">long</span> <span class="hljs-type">long</span> sum = <span class="hljs-number">0</span>, best = LLONG_MIN;
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; (<span class="hljs-type">int</span>)a.<span class="hljs-built_in">size</span>(); i++) {
+        sum += a[i];
+        <span class="hljs-keyword">if</span> (i &gt;= k) sum -= a[i - k];
+        <span class="hljs-keyword">if</span> (i &gt;= k - <span class="hljs-number">1</span>) best = <span class="hljs-built_in">max</span>(best, sum);
+    }
+    <span class="hljs-keyword">return</span> best;
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Longest Substring with at most K Distinct (Fruits into Baskets = K = 2)</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">longestKDistinct</span><span class="hljs-params">(string s, <span class="hljs-type">int</span> k)</span> </span>{
+    unordered_map&lt;<span class="hljs-type">char</span>, <span class="hljs-type">int</span>&gt; freq;
+    <span class="hljs-type">int</span> left = <span class="hljs-number">0</span>, best = <span class="hljs-number">0</span>;
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> right = <span class="hljs-number">0</span>; right &lt; (<span class="hljs-type">int</span>)s.<span class="hljs-built_in">size</span>(); right++) {
+        freq[s[right]]++;
+        <span class="hljs-keyword">while</span> ((<span class="hljs-type">int</span>)freq.<span class="hljs-built_in">size</span>() &gt; k) {
+            <span class="hljs-keyword">if</span> (--freq[s[left]] == <span class="hljs-number">0</span>) freq.<span class="hljs-built_in">erase</span>(s[left]);
+            left++;
+        }
+        best = <span class="hljs-built_in">max</span>(best, right - left + <span class="hljs-number">1</span>);
+    }
+    <span class="hljs-keyword">return</span> best;
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Max Consecutive Ones III (at most K flips)</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">longestOnes</span><span class="hljs-params">(vector&lt;<span class="hljs-type">int</span>&gt;&amp; a, <span class="hljs-type">int</span> k)</span> </span>{
+    <span class="hljs-type">int</span> left = <span class="hljs-number">0</span>, zeros = <span class="hljs-number">0</span>, best = <span class="hljs-number">0</span>;
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> right = <span class="hljs-number">0</span>; right &lt; (<span class="hljs-type">int</span>)a.<span class="hljs-built_in">size</span>(); right++) {
+        <span class="hljs-keyword">if</span> (a[right] == <span class="hljs-number">0</span>) zeros++;
+        <span class="hljs-keyword">while</span> (zeros &gt; k) <span class="hljs-keyword">if</span> (a[left++] == <span class="hljs-number">0</span>) zeros--;
+        best = <span class="hljs-built_in">max</span>(best, right - left + <span class="hljs-number">1</span>);
+    }
+    <span class="hljs-keyword">return</span> best;
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Longest Subarray with Sum = K (all positive)</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">longestSubarraySumK</span><span class="hljs-params">(vector&lt;<span class="hljs-type">int</span>&gt;&amp; a, <span class="hljs-type">long</span> <span class="hljs-type">long</span> k)</span> </span>{
+    <span class="hljs-type">int</span> left = <span class="hljs-number">0</span>, best = <span class="hljs-number">0</span>; <span class="hljs-type">long</span> <span class="hljs-type">long</span> sum = <span class="hljs-number">0</span>;
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> right = <span class="hljs-number">0</span>; right &lt; (<span class="hljs-type">int</span>)a.<span class="hljs-built_in">size</span>(); right++) {
+        sum += a[right];
+        <span class="hljs-keyword">while</span> (sum &gt; k) sum -= a[left++];
+        <span class="hljs-keyword">if</span> (sum == k) best = <span class="hljs-built_in">max</span>(best, right - left + <span class="hljs-number">1</span>);
+    }
+    <span class="hljs-keyword">return</span> best;
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Longest Repeating Character Replacement</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">characterReplacement</span><span class="hljs-params">(string s, <span class="hljs-type">int</span> k)</span> </span>{
+    <span class="hljs-type">int</span> freq[<span class="hljs-number">26</span>] = {}, left = <span class="hljs-number">0</span>, maxFreq = <span class="hljs-number">0</span>, best = <span class="hljs-number">0</span>;
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> right = <span class="hljs-number">0</span>; right &lt; (<span class="hljs-type">int</span>)s.<span class="hljs-built_in">size</span>(); right++) {
+        maxFreq = <span class="hljs-built_in">max</span>(maxFreq, ++freq[s[right] - <span class="hljs-string">'A'</span>]);
+        <span class="hljs-keyword">while</span> (right - left + <span class="hljs-number">1</span> - maxFreq &gt; k) freq[s[left++] - <span class="hljs-string">'A'</span>]--;
+        best = <span class="hljs-built_in">max</span>(best, right - left + <span class="hljs-number">1</span>);
+    }
+    <span class="hljs-keyword">return</span> best;
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Two Sum in a Sorted Array</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function">vector&lt;<span class="hljs-type">int</span>&gt; <span class="hljs-title">twoSumSorted</span><span class="hljs-params">(vector&lt;<span class="hljs-type">int</span>&gt;&amp; a, <span class="hljs-type">int</span> target)</span> </span>{
+    <span class="hljs-type">int</span> lo = <span class="hljs-number">0</span>, hi = (<span class="hljs-type">int</span>)a.<span class="hljs-built_in">size</span>() - <span class="hljs-number">1</span>;
+    <span class="hljs-keyword">while</span> (lo &lt; hi) {
+        <span class="hljs-type">int</span> s = a[lo] + a[hi];
+        <span class="hljs-keyword">if</span> (s == target) <span class="hljs-keyword">return</span> {lo, hi};
+        <span class="hljs-keyword">if</span> (s &lt; target) lo++; <span class="hljs-keyword">else</span> hi--;
+    }
+    <span class="hljs-keyword">return</span> {<span class="hljs-number">-1</span>, <span class="hljs-number">-1</span>};
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Container With Most Water</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">maxArea</span><span class="hljs-params">(vector&lt;<span class="hljs-type">int</span>&gt;&amp; h)</span> </span>{
+    <span class="hljs-type">int</span> lo = <span class="hljs-number">0</span>, hi = (<span class="hljs-type">int</span>)h.<span class="hljs-built_in">size</span>() - <span class="hljs-number">1</span>, best = <span class="hljs-number">0</span>;
+    <span class="hljs-keyword">while</span> (lo &lt; hi) {
+        best = <span class="hljs-built_in">max</span>(best, <span class="hljs-built_in">min</span>(h[lo], h[hi]) * (hi - lo));
+        <span class="hljs-keyword">if</span> (h[lo] &lt; h[hi]) lo++; <span class="hljs-keyword">else</span> hi--;
+    }
+    <span class="hljs-keyword">return</span> best;
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Sliding Window Maximum (monotonic deque)</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function">vector&lt;<span class="hljs-type">int</span>&gt; <span class="hljs-title">maxSlidingWindow</span><span class="hljs-params">(vector&lt;<span class="hljs-type">int</span>&gt;&amp; a, <span class="hljs-type">int</span> k)</span> </span>{
+    deque&lt;<span class="hljs-type">int</span>&gt; dq; vector&lt;<span class="hljs-type">int</span>&gt; res;
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; (<span class="hljs-type">int</span>)a.<span class="hljs-built_in">size</span>(); i++) {
+        <span class="hljs-keyword">if</span> (!dq.<span class="hljs-built_in">empty</span>() &amp;&amp; dq.<span class="hljs-built_in">front</span>() &lt;= i - k) dq.<span class="hljs-built_in">pop_front</span>();
+        <span class="hljs-keyword">while</span> (!dq.<span class="hljs-built_in">empty</span>() &amp;&amp; a[dq.<span class="hljs-built_in">back</span>()] &lt;= a[i]) dq.<span class="hljs-built_in">pop_back</span>();
+        dq.<span class="hljs-built_in">push_back</span>(i);
+        <span class="hljs-keyword">if</span> (i &gt;= k - <span class="hljs-number">1</span>) res.<span class="hljs-built_in">push_back</span>(a[dq.<span class="hljs-built_in">front</span>()]);
+    }
+    <span class="hljs-keyword">return</span> res;
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Subarrays with Exactly K Distinct, atMost(K) − atMost(K−1)</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">atMostK</span><span class="hljs-params">(vector&lt;<span class="hljs-type">int</span>&gt;&amp; a, <span class="hljs-type">int</span> k)</span> </span>{
+    unordered_map&lt;<span class="hljs-type">int</span>, <span class="hljs-type">int</span>&gt; freq;
+    <span class="hljs-type">int</span> left = <span class="hljs-number">0</span>, count = <span class="hljs-number">0</span>;
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> right = <span class="hljs-number">0</span>; right &lt; (<span class="hljs-type">int</span>)a.<span class="hljs-built_in">size</span>(); right++) {
+        freq[a[right]]++;
+        <span class="hljs-keyword">while</span> ((<span class="hljs-type">int</span>)freq.<span class="hljs-built_in">size</span>() &gt; k) {
+            <span class="hljs-keyword">if</span> (--freq[a[left]] == <span class="hljs-number">0</span>) freq.<span class="hljs-built_in">erase</span>(a[left]);
+            left++;
+        }
+        count += right - left + <span class="hljs-number">1</span>;
+    }
+    <span class="hljs-keyword">return</span> count;
+}
+<span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">subarraysWithKDistinct</span><span class="hljs-params">(vector&lt;<span class="hljs-type">int</span>&gt;&amp; a, <span class="hljs-type">int</span> k)</span> </span>{ <span class="hljs-keyword">return</span> <span class="hljs-built_in">atMostK</span>(a, k) - <span class="hljs-built_in">atMostK</span>(a, k - <span class="hljs-number">1</span>); }</code></pre>
+                        </div>
+                    </div>
+                </div>

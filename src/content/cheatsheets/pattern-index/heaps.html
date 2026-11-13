@@ -1,0 +1,235 @@
+                <div class="topic-head">
+                    <span class="topic-num">10</span>
+                    <h2>Heaps</h2>
+                </div>
+
+                <h3 class="block-label">Recognition</h3>
+                <div class="table-scroll"><table class="sig-table">
+                    <thead>
+                        <tr>
+                            <th>When you see…</th>
+                            <th>Pattern</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="sig">Kth largest / smallest element</td>
+                            <td class="pat"><span class="pat-tag">Min-heap of size K (largest) / Max-heap of size K
+                                    (smallest)</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">K closest points to the origin</td>
+                            <td class="pat"><span class="pat-tag">Max-heap of size K by distance</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Top K frequent elements</td>
+                            <td class="pat"><span class="pat-tag">Min-heap of size K by frequency, or bucket sort</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Merge K sorted lists / arrays</td>
+                            <td class="pat"><span class="pat-tag">Min-heap of size K, one element per list</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Median from a data stream</td>
+                            <td class="pat"><span class="pat-tag">Two heaps: max-heap (lower half) + min-heap (upper
+                                    half)</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Task scheduler / rearrange with a cooldown</td>
+                            <td class="pat"><span class="pat-tag">Max-heap by frequency + a cooldown queue</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Connect ropes with minimum cost</td>
+                            <td class="pat"><span class="pat-tag">Min-heap, always combine the two smallest</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Dijkstra's / Prim's shortest path</td>
+                            <td class="pat"><span class="pat-tag">Min-heap (priority queue) for greedy edge
+                                    selection</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Reorganize string (no adjacent same characters)</td>
+                            <td class="pat"><span class="pat-tag">Max-heap by frequency</span></td>
+                        </tr>
+                    </tbody>
+                </table></div>
+
+                <h3 class="block-label">Example algorithms</h3>
+                <div class="examples-grid">
+                    <div class="example">
+                        <h4>Kth Largest Element in an Array</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">findKthLargest</span><span class="hljs-params">(vector&lt;<span class="hljs-type">int</span>&gt;&amp; nums, <span class="hljs-type">int</span> k)</span> </span>{
+    priority_queue&lt;<span class="hljs-type">int</span>, vector&lt;<span class="hljs-type">int</span>&gt;, greater&lt;<span class="hljs-type">int</span>&gt;&gt; minHeap;
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> x : nums) {
+        minHeap.<span class="hljs-built_in">push</span>(x);
+        <span class="hljs-keyword">if</span> ((<span class="hljs-type">int</span>)minHeap.<span class="hljs-built_in">size</span>() &gt; k) minHeap.<span class="hljs-built_in">pop</span>();
+    }
+    <span class="hljs-keyword">return</span> minHeap.<span class="hljs-built_in">top</span>();
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Merge K Sorted Lists</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-keyword">struct</span> <span class="hljs-title class_">ListNode</span> { <span class="hljs-type">int</span> val; ListNode* next; };
+
+<span class="hljs-function">ListNode* <span class="hljs-title">mergeKLists</span><span class="hljs-params">(vector&lt;ListNode*&gt;&amp; lists)</span> </span>{
+    <span class="hljs-keyword">auto</span> cmp = [](ListNode* a, ListNode* b) { <span class="hljs-keyword">return</span> a-&gt;val &gt; b-&gt;val; };
+    priority_queue&lt;ListNode*, vector&lt;ListNode*&gt;, <span class="hljs-keyword">decltype</span>(cmp)&gt; <span class="hljs-built_in">pq</span>(cmp);
+    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">auto</span> l : lists) <span class="hljs-keyword">if</span> (l) pq.<span class="hljs-built_in">push</span>(l);
+
+    <span class="hljs-function">ListNode <span class="hljs-title">dummy</span><span class="hljs-params">(<span class="hljs-number">0</span>)</span></span>;
+    ListNode* tail = &amp;dummy;
+    <span class="hljs-keyword">while</span> (!pq.<span class="hljs-built_in">empty</span>()) {
+        ListNode* node = pq.<span class="hljs-built_in">top</span>(); pq.<span class="hljs-built_in">pop</span>();
+        tail-&gt;next = node;
+        tail = tail-&gt;next;
+        <span class="hljs-keyword">if</span> (node-&gt;next) pq.<span class="hljs-built_in">push</span>(node-&gt;next);
+    }
+    <span class="hljs-keyword">return</span> dummy.next;
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Median from a Data Stream — two heaps</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-keyword">class</span> <span class="hljs-title class_">MedianFinder</span> {
+    priority_queue&lt;<span class="hljs-type">int</span>&gt; lower;
+    priority_queue&lt;<span class="hljs-type">int</span>, vector&lt;<span class="hljs-type">int</span>&gt;, greater&lt;<span class="hljs-type">int</span>&gt;&gt; upper;
+<span class="hljs-keyword">public</span>:
+    <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">addNum</span><span class="hljs-params">(<span class="hljs-type">int</span> num)</span> </span>{
+        lower.<span class="hljs-built_in">push</span>(num);
+        upper.<span class="hljs-built_in">push</span>(lower.<span class="hljs-built_in">top</span>()); lower.<span class="hljs-built_in">pop</span>();
+        <span class="hljs-keyword">if</span> (upper.<span class="hljs-built_in">size</span>() &gt; lower.<span class="hljs-built_in">size</span>()) {
+            lower.<span class="hljs-built_in">push</span>(upper.<span class="hljs-built_in">top</span>()); upper.<span class="hljs-built_in">pop</span>();
+        }
+    }
+    <span class="hljs-function"><span class="hljs-type">double</span> <span class="hljs-title">findMedian</span><span class="hljs-params">()</span> </span>{
+        <span class="hljs-keyword">if</span> (lower.<span class="hljs-built_in">size</span>() &gt; upper.<span class="hljs-built_in">size</span>()) <span class="hljs-keyword">return</span> lower.<span class="hljs-built_in">top</span>();
+        <span class="hljs-keyword">return</span> (lower.<span class="hljs-built_in">top</span>() + upper.<span class="hljs-built_in">top</span>()) / <span class="hljs-number">2.0</span>;
+    }
+};</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>K Closest Points to Origin</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp">vector&lt;vector&lt;<span class="hljs-type">int</span>&gt;&gt; <span class="hljs-built_in">kClosest</span>(vector&lt;vector&lt;<span class="hljs-type">int</span>&gt;&gt;&amp; pts, <span class="hljs-type">int</span> k) {
+    priority_queue&lt;pair&lt;<span class="hljs-type">int</span>,<span class="hljs-type">int</span>&gt;&gt; pq;                  <span class="hljs-comment">// (dist², index) max-heap</span>
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; (<span class="hljs-type">int</span>)pts.<span class="hljs-built_in">size</span>(); i++) {
+        pq.<span class="hljs-built_in">push</span>({pts[i][<span class="hljs-number">0</span>] * pts[i][<span class="hljs-number">0</span>] + pts[i][<span class="hljs-number">1</span>] * pts[i][<span class="hljs-number">1</span>], i});
+        <span class="hljs-keyword">if</span> ((<span class="hljs-type">int</span>)pq.<span class="hljs-built_in">size</span>() &gt; k) pq.<span class="hljs-built_in">pop</span>();
+    }
+    vector&lt;vector&lt;<span class="hljs-type">int</span>&gt;&gt; res;
+    <span class="hljs-keyword">while</span> (!pq.<span class="hljs-built_in">empty</span>()) { res.<span class="hljs-built_in">push_back</span>(pts[pq.<span class="hljs-built_in">top</span>().second]); pq.<span class="hljs-built_in">pop</span>(); }
+    <span class="hljs-keyword">return</span> res;
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Top K Frequent Elements</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function">vector&lt;<span class="hljs-type">int</span>&gt; <span class="hljs-title">topKFrequent</span><span class="hljs-params">(vector&lt;<span class="hljs-type">int</span>&gt;&amp; nums, <span class="hljs-type">int</span> k)</span> </span>{
+    unordered_map&lt;<span class="hljs-type">int</span>, <span class="hljs-type">int</span>&gt; freq;
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> x : nums) freq[x]++;
+    priority_queue&lt;pair&lt;<span class="hljs-type">int</span>,<span class="hljs-type">int</span>&gt;, vector&lt;pair&lt;<span class="hljs-type">int</span>,<span class="hljs-type">int</span>&gt;&gt;, greater&lt;&gt;&gt; pq;   <span class="hljs-comment">// (freq, value)</span>
+    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">auto</span>&amp; [val, f] : freq) {
+        pq.<span class="hljs-built_in">push</span>({f, val});
+        <span class="hljs-keyword">if</span> ((<span class="hljs-type">int</span>)pq.<span class="hljs-built_in">size</span>() &gt; k) pq.<span class="hljs-built_in">pop</span>();
+    }
+    vector&lt;<span class="hljs-type">int</span>&gt; res;
+    <span class="hljs-keyword">while</span> (!pq.<span class="hljs-built_in">empty</span>()) { res.<span class="hljs-built_in">push_back</span>(pq.<span class="hljs-built_in">top</span>().second); pq.<span class="hljs-built_in">pop</span>(); }
+    <span class="hljs-keyword">return</span> res;
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Connect Ropes with Minimum Cost</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function"><span class="hljs-type">long</span> <span class="hljs-type">long</span> <span class="hljs-title">connectRopes</span><span class="hljs-params">(vector&lt;<span class="hljs-type">int</span>&gt;&amp; ropes)</span> </span>{
+    priority_queue&lt;<span class="hljs-type">long</span> <span class="hljs-type">long</span>, vector&lt;<span class="hljs-type">long</span> <span class="hljs-type">long</span>&gt;, greater&lt;&gt;&gt; <span class="hljs-built_in">pq</span>(ropes.<span class="hljs-built_in">begin</span>(), ropes.<span class="hljs-built_in">end</span>());
+    <span class="hljs-type">long</span> <span class="hljs-type">long</span> cost = <span class="hljs-number">0</span>;
+    <span class="hljs-keyword">while</span> (pq.<span class="hljs-built_in">size</span>() &gt; <span class="hljs-number">1</span>) {
+        <span class="hljs-type">long</span> <span class="hljs-type">long</span> a = pq.<span class="hljs-built_in">top</span>(); pq.<span class="hljs-built_in">pop</span>();
+        <span class="hljs-type">long</span> <span class="hljs-type">long</span> b = pq.<span class="hljs-built_in">top</span>(); pq.<span class="hljs-built_in">pop</span>();
+        cost += a + b;
+        pq.<span class="hljs-built_in">push</span>(a + b);
+    }
+    <span class="hljs-keyword">return</span> cost;
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Task Scheduler (max-heap + cooldown)</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">leastInterval</span><span class="hljs-params">(vector&lt;<span class="hljs-type">char</span>&gt;&amp; tasks, <span class="hljs-type">int</span> n)</span> </span>{
+    <span class="hljs-type">int</span> freq[<span class="hljs-number">26</span>] = {};
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">char</span> t : tasks) freq[t - <span class="hljs-string">'A'</span>]++;
+    priority_queue&lt;<span class="hljs-type">int</span>&gt; pq;
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> f : freq) <span class="hljs-keyword">if</span> (f) pq.<span class="hljs-built_in">push</span>(f);
+    <span class="hljs-type">int</span> time = <span class="hljs-number">0</span>;
+    <span class="hljs-keyword">while</span> (!pq.<span class="hljs-built_in">empty</span>()) {
+        vector&lt;<span class="hljs-type">int</span>&gt; temp; <span class="hljs-type">int</span> cycle = n + <span class="hljs-number">1</span>;
+        <span class="hljs-keyword">while</span> (cycle &gt; <span class="hljs-number">0</span> &amp;&amp; !pq.<span class="hljs-built_in">empty</span>()) {
+            <span class="hljs-type">int</span> f = pq.<span class="hljs-built_in">top</span>(); pq.<span class="hljs-built_in">pop</span>();
+            <span class="hljs-keyword">if</span> (--f &gt; <span class="hljs-number">0</span>) temp.<span class="hljs-built_in">push_back</span>(f);
+            cycle--; time++;
+        }
+        <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> f : temp) pq.<span class="hljs-built_in">push</span>(f);
+        <span class="hljs-keyword">if</span> (!pq.<span class="hljs-built_in">empty</span>()) time += cycle;                 <span class="hljs-comment">// idle slots</span>
+    }
+    <span class="hljs-keyword">return</span> time;
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Reorganize String</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function">string <span class="hljs-title">reorganizeString</span><span class="hljs-params">(string s)</span> </span>{
+    <span class="hljs-type">int</span> freq[<span class="hljs-number">26</span>] = {};
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">char</span> c : s) freq[c - <span class="hljs-string">'a'</span>]++;
+    priority_queue&lt;pair&lt;<span class="hljs-type">int</span>,<span class="hljs-type">char</span>&gt;&gt; pq;
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">26</span>; i++) <span class="hljs-keyword">if</span> (freq[i]) pq.<span class="hljs-built_in">push</span>({freq[i], <span class="hljs-built_in">char</span>(<span class="hljs-string">'a'</span> + i)});
+    string res;
+    <span class="hljs-keyword">while</span> (pq.<span class="hljs-built_in">size</span>() &gt;= <span class="hljs-number">2</span>) {
+        <span class="hljs-keyword">auto</span> [f1, c1] = pq.<span class="hljs-built_in">top</span>(); pq.<span class="hljs-built_in">pop</span>();
+        <span class="hljs-keyword">auto</span> [f2, c2] = pq.<span class="hljs-built_in">top</span>(); pq.<span class="hljs-built_in">pop</span>();
+        res += c1; res += c2;
+        <span class="hljs-keyword">if</span> (--f1 &gt; <span class="hljs-number">0</span>) pq.<span class="hljs-built_in">push</span>({f1, c1});
+        <span class="hljs-keyword">if</span> (--f2 &gt; <span class="hljs-number">0</span>) pq.<span class="hljs-built_in">push</span>({f2, c2});
+    }
+    <span class="hljs-keyword">if</span> (!pq.<span class="hljs-built_in">empty</span>()) {
+        <span class="hljs-keyword">if</span> (pq.<span class="hljs-built_in">top</span>().first &gt; <span class="hljs-number">1</span>) <span class="hljs-keyword">return</span> <span class="hljs-string">""</span>;
+        res += pq.<span class="hljs-built_in">top</span>().second;
+    }
+    <span class="hljs-keyword">return</span> res;
+}</code></pre>
+                        </div>
+                    </div>
+                </div>

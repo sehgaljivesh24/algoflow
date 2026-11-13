@@ -1,0 +1,321 @@
+/*
+ * "The Only Cheatsheets" viewer — look of the GitHub "Architect" Jekyll theme (CC0) that the original site
+ * (https://malharchauhan7.github.io/the-only-cheatsheets/, MIT, Copyright (c) 2025 Malhar) is built with, plus the
+ * normalize.css v3.0.2 (MIT) rules it bundles. Everything is scoped under .cs-to; nothing leaks into the rest of AlgoFlow.
+ * Fonts and images are self-hosted under /fonts/cheatsheets/the-only/ (see src/content/cheatsheets/the-only/NOTICE.md).
+ */
+@font-face {
+  font-family: 'Architects Daughter';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(/fonts/cheatsheets/the-only/architects-daughter-latin-ext.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Architects Daughter';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(/fonts/cheatsheets/the-only/architects-daughter-latin.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/* ---------- base (normalize + body) ---------- */
+.cs-to, .cs-to *, .cs-to *::before, .cs-to *::after { box-sizing: content-box; }
+.cs-to {
+  color-scheme: light;
+  position: relative;
+  min-height: 100vh;
+  margin: 0;
+  font-family: 'Helvetica Neue', Helvetica, Arial, serif;
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 1.5;
+  color: #666;
+  background: #fafafa url(/fonts/cheatsheets/the-only/img/body-bg.jpg) 0 0 repeat;
+  -ms-text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;
+  text-align: left;
+}
+.cs-to article, .cs-to aside, .cs-to details, .cs-to figcaption, .cs-to figure, .cs-to footer, .cs-to header, .cs-to hgroup, .cs-to main, .cs-to menu, .cs-to nav, .cs-to section, .cs-to summary { display: block; }
+.cs-to a { color: #2879d0; text-decoration: none; background-color: transparent; }
+.cs-to a:hover { color: #2268b2; text-decoration: none; }
+.cs-to a:active, .cs-to a:hover { outline: 0; }
+.cs-to b, .cs-to strong { font-weight: bold; }
+.cs-to small { font-size: 80%; }
+.cs-to sub, .cs-to sup { font-size: 75%; line-height: 0; position: relative; vertical-align: baseline; }
+.cs-to sup { top: -0.5em; }
+.cs-to sub { bottom: -0.25em; }
+.cs-to img { border: 0; }
+.cs-to hr { box-sizing: content-box; height: 0; margin-top: 1em; margin-bottom: 1em; border: 0; border-top: solid 1px #ddd; }
+.cs-to mark { background: #ff0; color: #000; }
+.cs-to p { margin-top: 0; margin-bottom: 20px; }
+.cs-to p a { font-weight: 400; }
+.cs-to table { border-collapse: collapse; border-spacing: 0; width: 100%; border: 1px solid #ebebeb; }
+.cs-to td, .cs-to th { padding: 0; }
+.cs-to th { font-weight: 500; text-align: center; }
+.cs-to td { font-weight: 300; text-align: center; border: 1px solid #ebebeb; }
+.cs-to ul, .cs-to ol, .cs-to dl { margin-bottom: 20px; }
+.cs-to ul { list-style-position: inside; list-style: disc; padding-left: 20px; }
+.cs-to ol { list-style-position: inside; list-style: decimal; padding-left: 20px; }
+.cs-to dl dd { font-style: italic; font-weight: 100; }
+.cs-to blockquote { padding: 0 0 0 30px; margin-bottom: 20px; font-size: 15px; border-left: 10px solid #e9e9e9; }
+.cs-to input[type='checkbox'] { box-sizing: border-box; padding: 0; margin: 0 6px 0 0; vertical-align: middle; }
+
+/* code */
+.cs-to code, .cs-to pre {
+  margin-bottom: 30px;
+  font-family: Monaco, 'Bitstream Vera Sans Mono', 'Lucida Console', Terminal, monospace;
+  font-size: 13px;
+  color: #222;
+}
+.cs-to code { padding: 0 3px; background-color: #f2f8fc; border: solid 1px #dbe7f3; }
+.cs-to pre { padding: 20px; overflow: auto; text-shadow: none; background: #fff; border: solid 1px #f2f2f2; margin-top: 0; }
+.cs-to pre code { padding: 0; color: #2879d0; background-color: #fff; border: none; }
+.cs-to .highlight { background-color: #f8f8f8; }
+.cs-to .highlight pre, .cs-to pre.highlight { margin-top: 0; }
+.cs-to .highlighter-rouge { position: relative; }
+
+/* ---------- header ---------- */
+.cs-to header {
+  position: relative;
+  padding-top: 40px;
+  padding-bottom: 40px;
+  font-family: 'Architects Daughter', 'Helvetica Neue', Helvetica, Arial, serif;
+  background: #2e7bcf url(/fonts/cheatsheets/the-only/img/header-bg.jpg) 0 0 repeat-x;
+  border-bottom: solid 1px #275da1;
+}
+.cs-to header h1 { width: 540px; margin-top: 0; margin-bottom: 0.2em; font-size: 72px; font-weight: normal; line-height: 1; color: #fff; letter-spacing: -1px; }
+.cs-to header h2 { width: 540px; margin-top: 0; margin-bottom: 0; font-size: 26px; font-weight: normal; line-height: 1.3; color: #9ddcff; letter-spacing: 0; }
+.cs-to .inner { position: relative; width: 940px; margin: 0 auto; }
+.cs-to .cs-wrap { padding-top: 30px; border-top: solid 1px #fff; }
+.cs-to .cs-main { float: left; width: 690px; min-width: 0; }
+.cs-to .cs-main img { max-width: 100%; }
+.cs-to aside.cs-side {
+  float: right;
+  width: 200px;
+  min-height: 504px;
+  padding-left: 20px;
+  font-size: 12px;
+  line-height: 1.3;
+  background: transparent url(/fonts/cheatsheets/the-only/img/sidebar-bg.jpg) 0 0 no-repeat;
+}
+.cs-to aside.cs-side p.repo-owner, .cs-to aside.cs-side p.repo-owner a { font-weight: bold; }
+.cs-to a.button {
+  width: 134px;
+  height: 58px;
+  padding-top: 22px;
+  padding-left: 68px;
+  font-family: 'Architects Daughter', 'Helvetica Neue', Helvetica, Arial, serif;
+  font-size: 23px;
+  line-height: 1.2;
+  color: #fff;
+}
+.cs-to a.button:hover { color: #fff; }
+.cs-to a.button small { display: block; font-size: 11px; }
+.cs-to header a.button { position: absolute; top: 0; right: 0; background: transparent url(/fonts/cheatsheets/the-only/img/github-button.png) 0 0 no-repeat; }
+.cs-to aside a.button { display: block; width: 138px; padding-left: 64px; margin-bottom: 20px; font-size: 21px; background: transparent url(/fonts/cheatsheets/the-only/img/download-button.png) 0 0 no-repeat; }
+.cs-to .clearfix::after { display: block; height: 0; clear: both; visibility: hidden; content: '.'; }
+
+/* ---------- headings in the content column ---------- */
+.cs-to .cs-main h1, .cs-to .cs-main h2, .cs-to .cs-main h3, .cs-to .cs-main h4, .cs-to .cs-main h5, .cs-to .cs-main h6 {
+  font-family: 'Architects Daughter', 'Helvetica Neue', Helvetica, Arial, serif;
+  color: #474747;
+  text-indent: 3px;
+  overflow-wrap: break-word;
+}
+.cs-to .cs-main h1 { margin-top: 0; margin-bottom: 0; font-size: 2.8em; font-weight: normal; text-indent: 6px; letter-spacing: -1px; }
+.cs-to .cs-main h1::before { padding-right: 0.3em; margin-left: -0.9em; color: #9ddcff; content: '/'; }
+.cs-to .cs-main h2 { margin-top: 0.83em; margin-bottom: 8px; font-size: 22px; font-weight: bold; text-indent: 4px; }
+.cs-to .cs-main h2::before { padding-right: 0.3em; margin-left: -1.5em; content: '//'; color: #9ddcff; }
+.cs-to .cs-main h3 { margin-top: 24px; margin-bottom: 8px; font-size: 18px; font-weight: bold; }
+.cs-to .cs-main h3::before { padding-right: 0.3em; margin-left: -2em; content: '///'; color: #9ddcff; }
+.cs-to .cs-main h4 { margin-top: 1.33em; margin-bottom: 8px; font-size: 15px; font-weight: bold; }
+.cs-to .cs-main h4::before { padding-right: 0.3em; margin-left: -2.8em; content: '////'; color: #9ddcff; }
+.cs-to .cs-main h5 { margin-top: 1.67em; margin-bottom: 8px; font-size: 14px; font-weight: bold; }
+.cs-to .cs-main h5::before { padding-right: 0.3em; margin-left: -3.2em; content: '/////'; color: #9ddcff; }
+.cs-to .cs-main h6 { margin-top: 2.33em; margin-bottom: 8px; font-size: 0.8em; font-weight: bold; }
+.cs-to .cs-main h6::before { padding-right: 0.3em; margin-left: -3.7em; content: '//////'; color: #9ddcff; }
+/* the browser's default heading sizes for h5/h6 in the original are inherited from the UA sheet (bold) */
+.cs-to .cs-body { overflow-wrap: break-word; }
+.cs-to .cs-body [align='center'] { text-align: center; }
+.cs-to .table-wrap { overflow-x: auto; }
+.cs-to .table-wrap table { margin-bottom: 0; }
+.cs-to .cs-body li > p { margin-bottom: 10px; }
+
+/* landing: README badge (the original shows a shields.io image; we ship a static look-alike without the count) */
+.cs-to .cs-badge-stars {
+  display: inline-block;
+  box-sizing: border-box;
+  height: 20px;
+  padding: 0 7px 0 24px;
+  margin: 0 4px;
+  font: bold 11px/20px Verdana, 'DejaVu Sans', sans-serif;
+  color: #333;
+  vertical-align: middle;
+  background: #fcfcfc url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='%23333' d='M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z'/%3E%3C/svg%3E") 6px 3px / 14px 14px no-repeat;
+  border: 1px solid #d5d5d5;
+  border-radius: 3px;
+}
+.cs-to .cs-badge-stars:hover { color: #000; background-color: #fff; }
+
+/* ---------- AlgoFlow additions (kept unobtrusive) ---------- */
+.cs-to .cs-back {
+  position: absolute;
+  top: 8px;
+  left: 14px;
+  padding: 2px 8px;
+  font: 14px/1.3 'Architects Daughter', 'Helvetica Neue', Helvetica, Arial, serif;
+  color: #9ddcff;
+  border: 1px solid rgba(157, 220, 255, 0.45);
+  border-radius: 5px;
+  z-index: 2;
+}
+.cs-to .cs-back:hover { color: #fff; border-color: #fff; }
+.cs-to footer.cs-foot { padding-top: 20px; padding-bottom: 30px; margin-top: 40px; font-size: 13px; color: #aaa; clear: both; border-top: solid 1px #ddd; }
+.cs-to footer.cs-foot a { color: #666; text-decoration: underline; }
+.cs-to footer.cs-foot a:hover { color: #444; }
+.cs-to .cs-foot p { margin-bottom: 6px; }
+
+.cs-to .cs-pager { display: flex; justify-content: space-between; gap: 12px; margin: 40px 0 10px; padding-top: 14px; border-top: solid 1px #ddd; font-family: 'Architects Daughter', 'Helvetica Neue', Helvetica, Arial, serif; font-size: 16px; }
+.cs-to .cs-pager a { display: block; max-width: 48%; }
+.cs-to .cs-pager small { display: block; font: 11px 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #999; text-transform: uppercase; letter-spacing: 0.06em; }
+.cs-to .cs-pager .next { margin-left: auto; text-align: right; }
+
+/* copy button on code blocks */
+.cs-to .cs-copy {
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  padding: 1px 8px;
+  font: 12px/1.5 'Architects Daughter', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  color: #2879d0;
+  background: #fff;
+  border: 1px solid #dbe7f3;
+  border-radius: 4px;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+.cs-to .highlighter-rouge:hover .cs-copy, .cs-to .cs-copy:focus-visible, .cs-to .cs-copy.done { opacity: 1; }
+.cs-to .cs-copy:hover { background: #f2f8fc; }
+@media (hover: none) { .cs-to .cs-copy { opacity: 1; } }
+
+/* floating guide navigation */
+.cs-to .cs-fab {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  z-index: 60;
+  padding: 7px 14px;
+  font: 17px/1.2 'Architects Daughter', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  color: #fff;
+  background: #2879d0;
+  border: 1px solid #275da1;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+}
+.cs-to .cs-fab:hover { background: #2268b2; }
+.cs-to .cs-guides {
+  position: fixed;
+  right: 18px;
+  bottom: 64px;
+  z-index: 60;
+  box-sizing: border-box;
+  width: 300px;
+  max-width: calc(100vw - 36px);
+  max-height: min(70vh, 640px);
+  padding: 12px 6px 10px 14px;
+  overflow-y: auto;
+  font-size: 13px;
+  line-height: 1.35;
+  color: #666;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.22);
+}
+.cs-to .cs-guides h2 { margin: 0 0 6px; font: 17px/1.3 'Architects Daughter', 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #474747; }
+.cs-to .cs-guides h3 { margin: 10px 0 2px; font: bold 13px/1.3 'Architects Daughter', 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #474747; }
+.cs-to .cs-guides h3::before { content: '// '; color: #9ddcff; }
+.cs-to .cs-guides ul { margin: 0; padding: 0; list-style: none; }
+.cs-to .cs-guides li { margin: 0; }
+.cs-to .cs-guides li a { display: block; padding: 2px 8px 2px 10px; border-left: 3px solid transparent; border-radius: 0 3px 3px 0; }
+.cs-to .cs-guides li a:hover { background: #f2f8fc; }
+.cs-to .cs-guides li a[aria-current='page'] { font-weight: bold; color: #474747; background: #f2f8fc; border-left-color: #2879d0; }
+.cs-to .cs-guides .cs-home { display: block; margin-bottom: 4px; }
+
+/* ---------- responsive (same breakpoints as the theme) ---------- */
+@media only screen and (min-width: 768px) and (max-width: 959px) {
+  .cs-to .inner { width: 740px; }
+  .cs-to header h1, .cs-to header h2 { width: 340px; }
+  .cs-to header h1 { font-size: 60px; }
+  .cs-to header h2 { font-size: 30px; }
+  .cs-to .cs-main { width: 490px; }
+  .cs-to .cs-main h1::before, .cs-to .cs-main h2::before, .cs-to .cs-main h3::before, .cs-to .cs-main h4::before, .cs-to .cs-main h5::before, .cs-to .cs-main h6::before { padding-right: 0; margin-left: 0; content: none; }
+}
+@media only screen and (max-width: 767px) {
+  .cs-to .inner { width: 93%; }
+  .cs-to header { padding: 20px 0; }
+  .cs-to header .inner { position: relative; }
+  .cs-to header h1, .cs-to header h2 { width: 100%; }
+  .cs-to header h1 { font-size: 48px; }
+  .cs-to header h2 { font-size: 24px; }
+  .cs-to header a.button {
+    position: relative;
+    display: inline-block;
+    width: auto;
+    height: auto;
+    padding: 5px 10px;
+    margin-top: 15px;
+    font-size: 13px;
+    line-height: 1;
+    color: #2879d0;
+    text-align: center;
+    background-color: #9ddcff;
+    background-image: none;
+    border-radius: 5px;
+  }
+  .cs-to header a.button:hover { color: #2879d0; }
+  .cs-to header a.button small { display: inline; font-size: 13px; }
+  .cs-to .cs-main, .cs-to aside.cs-side { float: none; width: 100% !important; }
+  .cs-to aside.cs-side { min-height: 0; padding: 20px 0; margin-top: 20px; background-image: none; border-top: solid 1px #ddd; }
+  .cs-to aside.cs-side a.button { display: none; }
+  .cs-to .cs-main h1::before, .cs-to .cs-main h2::before, .cs-to .cs-main h3::before, .cs-to .cs-main h4::before, .cs-to .cs-main h5::before, .cs-to .cs-main h6::before { padding-right: 0; margin-left: 0; content: none; }
+  .cs-to .cs-back { top: 4px; left: 4px; font-size: 13px; }
+  .cs-to .cs-pager a { max-width: 47%; }
+}
+
+/* ---------- code colours (the theme's Rouge palette, applied to highlight.js tokens) ---------- */
+.cs-to .hljs-comment, .cs-to .hljs-quote { color: #999988; font-style: italic; }
+.cs-to .hljs-doctag { color: #999999; font-weight: bold; }
+.cs-to .hljs-keyword, .cs-to .hljs-selector-tag, .cs-to .hljs-literal, .cs-to .hljs-operator { color: #000000; font-weight: bold; }
+.cs-to .hljs-type { color: #445588; font-weight: bold; }
+.cs-to .hljs-built_in { color: #0086b3; }
+.cs-to .hljs-number { color: #009999; }
+.cs-to .hljs-string, .cs-to .hljs-template-tag { color: #dd1144; }
+.cs-to .hljs-regexp { color: #009926; }
+.cs-to .hljs-symbol, .cs-to .hljs-bullet { color: #990073; }
+.cs-to .hljs-title, .cs-to .hljs-section, .cs-to .hljs-title.function_ { color: #990000; font-weight: bold; }
+.cs-to .hljs-title.class_, .cs-to .hljs-title.class_.inherited__ { color: #445588; font-weight: bold; }
+.cs-to .hljs-meta { color: #999999; font-weight: bold; }
+.cs-to .hljs-meta .hljs-string { color: #dd1144; font-weight: normal; }
+.cs-to .hljs-tag, .cs-to .hljs-name, .cs-to .hljs-selector-id, .cs-to .hljs-selector-class { color: #000080; }
+.cs-to .hljs-selector-id, .cs-to .hljs-selector-class { color: #990000; font-weight: bold; }
+.cs-to .hljs-attr, .cs-to .hljs-attribute, .cs-to .hljs-variable, .cs-to .hljs-template-variable, .cs-to .hljs-property { color: #008080; }
+.cs-to .hljs-tag .hljs-attr { color: #008080; }
+.cs-to .hljs-tag .hljs-string { color: #dd1144; }
+.cs-to .hljs-params, .cs-to .hljs-subst { color: inherit; font-weight: normal; }
+.cs-to .hljs-link { color: #2879d0; text-decoration: underline; }
+.cs-to .hljs-emphasis { font-style: italic; }
+.cs-to .hljs-strong { font-weight: bold; }
+.cs-to .hljs-addition { color: #000; background-color: #ddffdd; }
+.cs-to .hljs-deletion { color: #000; background-color: #ffdddd; }
+
+/* print: the theme's print.css hides the download buttons; we also hide our own chrome */
+@media print {
+  .cs-to { background: #fff; }
+  .cs-to .cs-back, .cs-to .cs-fab, .cs-to .cs-guides, .cs-to .cs-copy, .cs-to aside.cs-side a.button, .cs-to .cs-pager { display: none; }
+}

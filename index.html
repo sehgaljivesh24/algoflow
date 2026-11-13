@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AlgoFlow — Watch algorithms run, step by step</title>
+    <meta
+      name="description"
+      content="Step-by-step animated walkthroughs of coding-interview problems, with synced Java and Python code, custom input and progress tracking."
+    />
+    <script>
+      // Apply the saved theme before first paint to avoid a flash.
+      try {
+        // Dark unless the user explicitly chose light (same default as the reference site).
+        document.documentElement.dataset.theme = localStorage.getItem('algoflow.theme') === 'light' ? 'light' : 'dark';
+      } catch (e) {
+        document.documentElement.dataset.theme = 'dark';
+      }
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

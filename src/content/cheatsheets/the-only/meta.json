@@ -1,0 +1,179 @@
+{
+  "id": "the-only",
+  "title": "The Only Cheatsheets",
+  "description": "A collection of 18 development cheatsheets and guides: core development, frontend and backend web development, DSA, DBMS and SQL, system design, Git and GitHub, aptitude.",
+  "sourceUrl": "https://malharchauhan7.github.io/the-only-cheatsheets/",
+  "repoUrl": "https://github.com/malharchauhan7/the-only-cheatsheets",
+  "license": "MIT",
+  "copyright": "Copyright (c) 2025 Malhar",
+  "retrieved": "2026-11-13",
+  "route": "/cheatsheets/the-only",
+  "categories": [
+    {
+      "title": "Core Development Guide",
+      "guides": [
+        {
+          "slug": "programming-prerequisites",
+          "title": "Programming Prerequisites",
+          "sourcePath": "core-guides/programming-prerequisites.md",
+          "words": 3103,
+          "description": "Prerequisites for programmer"
+        },
+        {
+          "slug": "developer-guide-framework",
+          "title": "Developer Guide",
+          "sourcePath": "core-guides/developer-guide-framework.md",
+          "words": 1295,
+          "description": "Comprehensive guide for writing maintainable, secure, and scalable software; Best practices across all domains; Software architecture patterns"
+        }
+      ]
+    },
+    {
+      "title": "Web Development — Frontend",
+      "guides": [
+        {
+          "slug": "frontend-development",
+          "title": "Frontend Development",
+          "sourcePath": "web-development/frontend-development.md",
+          "words": 590,
+          "description": "HTML, CSS, JavaScript fundamentals"
+        },
+        {
+          "slug": "javascript",
+          "title": "JavaScript",
+          "sourcePath": "web-development/javascript.md",
+          "words": 292,
+          "description": "Complete JavaScript reference"
+        },
+        {
+          "slug": "typescript",
+          "title": "TypeScript",
+          "sourcePath": "web-development/typescript.md",
+          "words": 450,
+          "description": "TypeScript language guide"
+        },
+        {
+          "slug": "reactjs",
+          "title": "React.js",
+          "sourcePath": "web-development/reactjs.md",
+          "words": 648,
+          "description": "React.js development guide"
+        },
+        {
+          "slug": "nextjs",
+          "title": "Next.js",
+          "sourcePath": "web-development/nextjs.md",
+          "words": 317,
+          "description": "Next.js framework reference"
+        },
+        {
+          "slug": "tailwindcss",
+          "title": "TailwindCSS",
+          "sourcePath": "web-development/tailwindcss.md",
+          "words": 403,
+          "description": "TailwindCSS utility framework"
+        }
+      ]
+    },
+    {
+      "title": "Web Development — Backend",
+      "guides": [
+        {
+          "slug": "backend-development",
+          "title": "Backend Development",
+          "sourcePath": "web-development/backend-development.md",
+          "words": 304,
+          "description": "Server-side development guide"
+        },
+        {
+          "slug": "api-development",
+          "title": "API Development",
+          "sourcePath": "web-development/api-development.md",
+          "words": 188,
+          "description": "RESTful & GraphQL API design"
+        }
+      ]
+    },
+    {
+      "title": "Data Structures and Algorithms",
+      "guides": [
+        {
+          "slug": "data-structure-algorithms",
+          "title": "DSA in Python",
+          "sourcePath": "dsa/data-structure-algorithms.md",
+          "words": 305,
+          "description": "Comprehensive DSA guide"
+        },
+        {
+          "slug": "basic-dsa-questions",
+          "title": "Beginner DSA Questions",
+          "sourcePath": "dsa/basic-dsa-questions.md",
+          "words": 3493,
+          "description": "Practice problems for beginners with solution"
+        },
+        {
+          "slug": "dsa-patterns",
+          "title": "LeetCode Patterns",
+          "sourcePath": "dsa/dsa-patterns.md",
+          "words": 2305,
+          "description": "Common problem-solving patterns"
+        }
+      ]
+    },
+    {
+      "title": "Database Management System",
+      "guides": [
+        {
+          "slug": "dbms-interview-questions",
+          "title": "DBMS Interview Guide",
+          "sourcePath": "dbms/dbms-interview-questions.md",
+          "words": 1619,
+          "description": "Essential concepts & questions"
+        },
+        {
+          "slug": "sql-postgresql-cheatsheet",
+          "title": "SQL & PostgreSQL",
+          "sourcePath": "dbms/sql-postgresql-cheatsheet.md",
+          "words": 727,
+          "description": "Complete SQL & PostgreSQL Cheatsheet"
+        }
+      ]
+    },
+    {
+      "title": "System Design",
+      "guides": [
+        {
+          "slug": "system-design",
+          "title": "System Design",
+          "sourcePath": "system-design/system-design.md",
+          "words": 2182,
+          "description": "High-Level Design (HLD); Low-Level Design (LLD); Architecture patterns; Scalability principles"
+        }
+      ]
+    },
+    {
+      "title": "Git & GitHub",
+      "guides": [
+        {
+          "slug": "git-github-cheatsheet",
+          "title": "Complete Git/GitHub Guide",
+          "sourcePath": "git-github/git-github-cheatsheet.md",
+          "words": 601,
+          "description": "Basic to advanced workflows; Branching strategies; Best practices"
+        }
+      ]
+    },
+    {
+      "title": "Aptitude guide",
+      "guides": [
+        {
+          "slug": "aptitude-guide",
+          "title": "Complete Aptitude Guide",
+          "sourcePath": "aptitude/aptitude-guide.md",
+          "words": 2141,
+          "description": ""
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,196 @@
+                <div class="topic-head">
+                    <span class="topic-num">21</span>
+                    <h2>Advanced Union-Find</h2>
+                </div>
+                <p class="topic-intro">Union-Find extensions: weighted edges, cycle detection, bipartite checking, and
+                    MST applications.</p>
+                <h3 class="block-label">Recognition</h3>
+                <div class="table-scroll"><table class="sig-table">
+                    <thead>
+                        <tr>
+                            <th>When you see…</th>
+                            <th>Pattern</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="sig">Minimum spanning tree (Kruskal)</td>
+                            <td class="pat"><span class="pat-tag">Sort edges by weight, union-find to add safely</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Bipartite graph checking</td>
+                            <td class="pat"><span class="pat-tag">Union-find with an enemy/opposite-group trick</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Cycle detection in undirected graph</td>
+                            <td class="pat"><span class="pat-tag">Union returns false if nodes already connected</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Connected components with weights</td>
+                            <td class="pat"><span class="pat-tag">Weighted union-find tracking rank/height</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Potential equation (difference constraint)</td>
+                            <td class="pat"><span class="pat-tag">Weighted union-find storing relative distances</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table></div>
+
+                <h3 class="block-label">Example algorithms</h3>
+                <div class="examples-grid">
+                    <div class="example">
+                        <h4>Kruskal's Algorithm — MST</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-keyword">struct</span> <span class="hljs-title class_">Edge</span> {
+    <span class="hljs-type">int</span> u, v, weight;
+    <span class="hljs-type">bool</span> <span class="hljs-keyword">operator</span>&lt;(<span class="hljs-type">const</span> Edge&amp; other) <span class="hljs-type">const</span> {
+        <span class="hljs-keyword">return</span> weight &lt; other.weight;
+    }
+};
+
+<span class="hljs-keyword">struct</span> <span class="hljs-title class_">DSU</span> {
+    vector&lt;<span class="hljs-type">int</span>&gt; parent, rank_;
+    <span class="hljs-built_in">DSU</span>(<span class="hljs-type">int</span> n) : <span class="hljs-built_in">parent</span>(n), <span class="hljs-built_in">rank_</span>(n, <span class="hljs-number">0</span>) {
+        <span class="hljs-built_in">iota</span>(parent.<span class="hljs-built_in">begin</span>(), parent.<span class="hljs-built_in">end</span>(), <span class="hljs-number">0</span>);
+    }
+    <span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">find</span><span class="hljs-params">(<span class="hljs-type">int</span> x)</span> </span>{
+        <span class="hljs-keyword">if</span> (parent[x] != x) parent[x] = <span class="hljs-built_in">find</span>(parent[x]);
+        <span class="hljs-keyword">return</span> parent[x];
+    }
+    <span class="hljs-function"><span class="hljs-type">bool</span> <span class="hljs-title">unite</span><span class="hljs-params">(<span class="hljs-type">int</span> x, <span class="hljs-type">int</span> y)</span> </span>{
+        <span class="hljs-type">int</span> rx = <span class="hljs-built_in">find</span>(x), ry = <span class="hljs-built_in">find</span>(y);
+        <span class="hljs-keyword">if</span> (rx == ry) <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;
+        <span class="hljs-keyword">if</span> (rank_[rx] &lt; rank_[ry]) <span class="hljs-built_in">swap</span>(rx, ry);
+        parent[ry] = rx;
+        <span class="hljs-keyword">if</span> (rank_[rx] == rank_[ry]) rank_[rx]++;
+        <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;
+    }
+};
+
+<span class="hljs-function"><span class="hljs-type">long</span> <span class="hljs-type">long</span> <span class="hljs-title">kruskal</span><span class="hljs-params">(<span class="hljs-type">int</span> n, vector&lt;Edge&gt;&amp; edges)</span> </span>{
+    <span class="hljs-built_in">sort</span>(edges.<span class="hljs-built_in">begin</span>(), edges.<span class="hljs-built_in">end</span>());
+    <span class="hljs-function">DSU <span class="hljs-title">dsu</span><span class="hljs-params">(n)</span></span>;
+    <span class="hljs-type">long</span> <span class="hljs-type">long</span> mst_weight = <span class="hljs-number">0</span>;
+
+    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">auto</span>&amp; e : edges) {
+        <span class="hljs-keyword">if</span> (dsu.<span class="hljs-built_in">unite</span>(e.u, e.v)) {
+            mst_weight += e.weight;
+        }
+    }
+    <span class="hljs-keyword">return</span> mst_weight;
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Bipartite Checking with Union–Find</h4>
+                        <p class="ex-note">The classic trick: union each node with the <em>opposite</em> group of its
+                            neighbor. If an edge's two endpoints ever end up in the same group, that's a contradiction
+                            — not bipartite.</p>
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-keyword">struct</span> <span class="hljs-title class_">BipartiteDSU</span> {
+    vector&lt;<span class="hljs-type">int</span>&gt; parent;
+    <span class="hljs-type">int</span> n;
+
+    <span class="hljs-built_in">BipartiteDSU</span>(<span class="hljs-type">int</span> n_) : <span class="hljs-built_in">n</span>(n_), <span class="hljs-built_in">parent</span>(<span class="hljs-number">2</span> * n_) {
+        <span class="hljs-built_in">iota</span>(parent.<span class="hljs-built_in">begin</span>(), parent.<span class="hljs-built_in">end</span>(), <span class="hljs-number">0</span>);
+    }
+
+    <span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">find</span><span class="hljs-params">(<span class="hljs-type">int</span> x)</span> </span>{
+        <span class="hljs-keyword">if</span> (parent[x] != x) parent[x] = <span class="hljs-built_in">find</span>(parent[x]);
+        <span class="hljs-keyword">return</span> parent[x];
+    }
+
+    <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">unite</span><span class="hljs-params">(<span class="hljs-type">int</span> x, <span class="hljs-type">int</span> y)</span> </span>{
+        parent[<span class="hljs-built_in">find</span>(x)] = <span class="hljs-built_in">find</span>(y);
+    }
+
+    <span class="hljs-comment">// call once per edge (u, v): they must end up different colors.</span>
+    <span class="hljs-comment">// returns false the moment bipartiteness is violated</span>
+    <span class="hljs-function"><span class="hljs-type">bool</span> <span class="hljs-title">addEdge</span><span class="hljs-params">(<span class="hljs-type">int</span> u, <span class="hljs-type">int</span> v)</span> </span>{
+        <span class="hljs-keyword">if</span> (<span class="hljs-built_in">find</span>(u) == <span class="hljs-built_in">find</span>(v)) <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;  <span class="hljs-comment">// already forced same color</span>
+        <span class="hljs-built_in">unite</span>(u, v + n);   <span class="hljs-comment">// u's color == v's opposite</span>
+        <span class="hljs-built_in">unite</span>(v, u + n);   <span class="hljs-comment">// v's color == u's opposite</span>
+        <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;
+    }
+};</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Weighted Union–Find — Potential Graph</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-keyword">struct</span> <span class="hljs-title class_">WeightedDSU</span> {
+    vector&lt;<span class="hljs-type">int</span>&gt; parent;
+    vector&lt;<span class="hljs-type">long</span> <span class="hljs-type">long</span>&gt; weight;
+
+    <span class="hljs-built_in">WeightedDSU</span>(<span class="hljs-type">int</span> n) : <span class="hljs-built_in">parent</span>(n), <span class="hljs-built_in">weight</span>(n, <span class="hljs-number">0</span>) {
+        <span class="hljs-built_in">iota</span>(parent.<span class="hljs-built_in">begin</span>(), parent.<span class="hljs-built_in">end</span>(), <span class="hljs-number">0</span>);
+    }
+
+    <span class="hljs-function">pair&lt;<span class="hljs-type">int</span>, <span class="hljs-type">long</span> <span class="hljs-type">long</span>&gt; <span class="hljs-title">find</span><span class="hljs-params">(<span class="hljs-type">int</span> x)</span> </span>{
+        <span class="hljs-keyword">if</span> (parent[x] == x) <span class="hljs-keyword">return</span> {x, <span class="hljs-number">0</span>};
+        <span class="hljs-keyword">auto</span> [root, w] = <span class="hljs-built_in">find</span>(parent[x]);
+        weight[x] += w;
+        parent[x] = root;
+        <span class="hljs-keyword">return</span> {root, weight[x]};
+    }
+
+    <span class="hljs-function"><span class="hljs-type">bool</span> <span class="hljs-title">unite</span><span class="hljs-params">(<span class="hljs-type">int</span> x, <span class="hljs-type">int</span> y, <span class="hljs-type">long</span> <span class="hljs-type">long</span> w)</span> </span>{
+        <span class="hljs-keyword">auto</span> [rx, wx] = <span class="hljs-built_in">find</span>(x);
+        <span class="hljs-keyword">auto</span> [ry, wy] = <span class="hljs-built_in">find</span>(y);
+        <span class="hljs-keyword">if</span> (rx == ry) <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;
+
+        parent[ry] = rx;
+        weight[ry] = wx - wy + w;
+        <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;
+    }
+};</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Cycle Detection / Redundant Connection (uses the DSU with bool unite from Kruskal)</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function">vector&lt;<span class="hljs-type">int</span>&gt; <span class="hljs-title">findRedundantConnection</span><span class="hljs-params">(vector&lt;vector&lt;<span class="hljs-type">int</span>&gt;&gt;&amp; edges)</span> </span>{
+    <span class="hljs-function">DSU <span class="hljs-title">dsu</span><span class="hljs-params">(edges.size() + <span class="hljs-number">1</span>)</span></span>;
+    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">auto</span>&amp; e : edges)
+        <span class="hljs-keyword">if</span> (!dsu.<span class="hljs-built_in">unite</span>(e[<span class="hljs-number">0</span>], e[<span class="hljs-number">1</span>])) <span class="hljs-keyword">return</span> e;        <span class="hljs-comment">// already connected =&gt; this edge closes a cycle</span>
+    <span class="hljs-keyword">return</span> {};
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>DSU with Component Size and Component Count</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-keyword">struct</span> <span class="hljs-title class_">DSUSize</span> {
+    vector&lt;<span class="hljs-type">int</span>&gt; parent, sz; <span class="hljs-type">int</span> components;
+    <span class="hljs-built_in">DSUSize</span>(<span class="hljs-type">int</span> n) : <span class="hljs-built_in">parent</span>(n), <span class="hljs-built_in">sz</span>(n, <span class="hljs-number">1</span>), <span class="hljs-built_in">components</span>(n) { <span class="hljs-built_in">iota</span>(parent.<span class="hljs-built_in">begin</span>(), parent.<span class="hljs-built_in">end</span>(), <span class="hljs-number">0</span>); }
+    <span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">find</span><span class="hljs-params">(<span class="hljs-type">int</span> x)</span> </span>{ <span class="hljs-keyword">return</span> parent[x] == x ? x : parent[x] = <span class="hljs-built_in">find</span>(parent[x]); }
+    <span class="hljs-function"><span class="hljs-type">bool</span> <span class="hljs-title">unite</span><span class="hljs-params">(<span class="hljs-type">int</span> a, <span class="hljs-type">int</span> b)</span> </span>{
+        a = <span class="hljs-built_in">find</span>(a); b = <span class="hljs-built_in">find</span>(b);
+        <span class="hljs-keyword">if</span> (a == b) <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;
+        <span class="hljs-keyword">if</span> (sz[a] &lt; sz[b]) <span class="hljs-built_in">swap</span>(a, b);
+        parent[b] = a; sz[a] += sz[b]; components--;
+        <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;
+    }
+    <span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">size</span><span class="hljs-params">(<span class="hljs-type">int</span> x)</span> </span>{ <span class="hljs-keyword">return</span> sz[<span class="hljs-built_in">find</span>(x)]; }
+};</code></pre>
+                        </div>
+                    </div>
+                </div>

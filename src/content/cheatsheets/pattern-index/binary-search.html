@@ -1,0 +1,703 @@
+                <div class="topic-head">
+                    <span class="topic-num">03</span>
+                    <h2>Binary Search</h2>
+                </div>
+                <p class="topic-intro">Core signal: the search space is sorted <em>or</em> monotonic — even a yes/no
+                    feasibility check that flips once as a value increases counts.</p>
+
+                <h3 class="block-label">1D array — Direct Search</h3>
+                <div class="table-scroll"><table class="sig-table">
+                    <thead>
+                        <tr>
+                            <th>When you see…</th>
+                            <th>Pattern</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="sig">Find an element in a sorted array</td>
+                            <td class="pat"><span class="pat-tag">Standard binary search: lo=0, hi=n-1, while
+                                    lo≤hi</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Find first / last occurrence of X</td>
+                            <td class="pat"><span class="pat-tag">Lower / upper bound: lo&lt;hi, shrink towards X</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Count total occurrences</td>
+                            <td class="pat"><span class="pat-tag">Upper bound − lower bound</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Search insert position</td>
+                            <td class="pat"><span class="pat-tag">Return lo (first position ≥ target)</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Floor and Ceil in sorted array</td>
+                            <td class="pat"><span class="pat-tag">Maintain boundaries while shrinking</span></td>
+                        </tr>
+                    </tbody>
+                </table></div>
+
+                <h3 class="block-label">1D array — Rotated Sorted Array</h3>
+                <div class="table-scroll"><table class="sig-table">
+                    <thead>
+                        <tr>
+                            <th>When you see…</th>
+                            <th>Pattern</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="sig">Search in rotated sorted array (no duplicates)</td>
+                            <td class="pat"><span class="pat-tag">Check a[lo]≤a[mid], identify sorted half, eliminate
+                                    unsorted</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Search rotated array with duplicates</td>
+                            <td class="pat"><span class="pat-tag">When a[lo]==a[mid]==a[hi], shrink: lo++, hi--</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Find minimum in rotated sorted array</td>
+                            <td class="pat"><span class="pat-tag">Compare mid with hi, eliminate larger side</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">How many times array is rotated</td>
+                            <td class="pat"><span class="pat-tag">Find index of minimum element</span></td>
+                        </tr>
+                    </tbody>
+                </table></div>
+
+                <h3 class="block-label">1D array — Peak / Extrema / Special Cases</h3>
+                <div class="table-scroll"><table class="sig-table">
+                    <thead>
+                        <tr>
+                            <th>When you see…</th>
+                            <th>Pattern</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="sig">Find a peak element</td>
+                            <td class="pat"><span class="pat-tag">Compare a[mid] with a[mid+1], move toward
+                                    larger</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Single element in sorted array (others ×2)</td>
+                            <td class="pat"><span class="pat-tag">Binary search on index parity (odd/even)</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Sqrt(x), Nth root</td>
+                            <td class="pat"><span class="pat-tag">Binary search on answer value: mid² vs x</span></td>
+                        </tr>
+                    </tbody>
+                </table></div>
+
+                <h3 class="block-label">Binary Search on Answer — Minimize/Maximize</h3>
+                <div class="table-scroll"><table class="sig-table">
+                    <thead>
+                        <tr>
+                            <th>When you see…</th>
+                            <th>Pattern</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="sig">Minimize X (speed, time, cost, capacity)</td>
+                            <td class="pat"><span class="pat-tag">BS on answer + feasibility: hi=mid if valid, else
+                                    lo=mid+1</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Maximize X (distance, hours, allocation)</td>
+                            <td class="pat"><span class="pat-tag">BS on answer + feasibility: lo=mid+1 if valid, else
+                                    hi=mid</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Minimize eating speed (hours ≤ h)(Koko eating bananas)</td>
+                            <td class="pat"><span class="pat-tag">Binary search on speed, check sum of
+                                    ceil(pile/speed)</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Ship packages in D days (min capacity)</td>
+                            <td class="pat"><span class="pat-tag">Binary search on capacity, greedy day packing</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Allocate books to K painters (minimize max)</td>
+                            <td class="pat"><span class="pat-tag">Binary search on max pages, greedy allocation</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Aggressive cows (maximize min distance)</td>
+                            <td class="pat"><span class="pat-tag">Binary search on distance, greedy placement
+                                    check</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Kth missing positive number</td>
+                            <td class="pat"><span class="pat-tag">Binary search on value, count missing ≤ mid</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Minimize max distance to gas station</td>
+                            <td class="pat"><span class="pat-tag">Binary search on distance, count stations
+                                    needed</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Minimize days to make M bouquets</td>
+                            <td class="pat"><span class="pat-tag">Binary search on days, check adjacent bloom
+                                    feasibility</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Find smallest divisor (threshold)</td>
+                            <td class="pat"><span class="pat-tag">Binary search on divisor, sum of divisions
+                                    check</span></td>
+                        </tr>
+                    </tbody>
+                </table></div>
+
+                <h3 class="block-label">2D array</h3>
+                <div class="table-scroll"><table class="sig-table">
+                    <thead>
+                        <tr>
+                            <th>When you see…</th>
+                            <th>Pattern</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="sig">Row-wise &amp; column-wise sorted matrix (search)</td>
+                            <td class="pat"><span class="pat-tag">Start top-right corner, move left if big, down if
+                                    small</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Find row with maximum 1's</td>
+                            <td class="pat"><span class="pat-tag">Binary search each row, optimize pointer
+                                    movement</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Matrix sorted like flattened 1D array</td>
+                            <td class="pat"><span class="pat-tag">Treat as 1D: row=mid/cols, col=mid%cols</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Kth smallest in sorted matrix</td>
+                            <td class="pat"><span class="pat-tag">Binary search on value, count elements ≤ mid</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Peak element in 2D (no larger neighbor)</td>
+                            <td class="pat"><span class="pat-tag">Binary search on column, compare mid neighbors</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Matrix median</td>
+                            <td class="pat"><span class="pat-tag">Binary search on value, binary count check</span></td>
+                        </tr>
+                    </tbody>
+                </table></div>
+
+                <h3 class="block-label">Two Sorted Arrays</h3>
+                <div class="table-scroll"><table class="sig-table">
+                    <thead>
+                        <tr>
+                            <th>When you see…</th>
+                            <th>Pattern</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="sig">Median of two sorted arrays</td>
+                            <td class="pat"><span class="pat-tag">Binary search on partition, balance left/right
+                                    halves</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Kth element of two sorted arrays</td>
+                            <td class="pat"><span class="pat-tag">Binary search on position or elimination
+                                    approach</span></td>
+                        </tr>
+                    </tbody>
+                </table></div>
+
+                <h3 class="block-label">Example algorithms</h3>
+                <div class="examples-grid">
+                    <div class="example">
+                        <h4>Binary Search — Standard Template</h4>
+                        <div class="code-wrap">
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">binarySearch</span><span class="hljs-params">(vector&lt;<span class="hljs-type">int</span>&gt;&amp; a, <span class="hljs-type">int</span> target)</span> </span>{
+    <span class="hljs-type">int</span> lo = <span class="hljs-number">0</span>, hi = a.<span class="hljs-built_in">size</span>() - <span class="hljs-number">1</span>;
+    <span class="hljs-keyword">while</span> (lo &lt;= hi) {
+        <span class="hljs-type">int</span> mid = lo + (hi - lo) / <span class="hljs-number">2</span>;
+        <span class="hljs-keyword">if</span> (a[mid] == target) <span class="hljs-keyword">return</span> mid;
+        <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (a[mid] &lt; target) lo = mid + <span class="hljs-number">1</span>;
+        <span class="hljs-keyword">else</span> hi = mid - <span class="hljs-number">1</span>;
+    }
+    <span class="hljs-keyword">return</span> <span class="hljs-number">-1</span>;
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Lower Bound (First ≥ Target)</h4>
+                        <div class="code-wrap">
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">lowerBound</span><span class="hljs-params">(vector&lt;<span class="hljs-type">int</span>&gt;&amp; a, <span class="hljs-type">int</span> target)</span> </span>{
+    <span class="hljs-type">int</span> lo = <span class="hljs-number">0</span>, hi = a.<span class="hljs-built_in">size</span>();
+    <span class="hljs-keyword">while</span> (lo &lt; hi) {
+        <span class="hljs-type">int</span> mid = lo + (hi - lo) / <span class="hljs-number">2</span>;
+        <span class="hljs-keyword">if</span> (a[mid] &lt; target) lo = mid + <span class="hljs-number">1</span>;
+        <span class="hljs-keyword">else</span> hi = mid;
+    }
+    <span class="hljs-keyword">return</span> lo;
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Search in Rotated Sorted Array</h4>
+                        <div class="code-wrap">
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">search</span><span class="hljs-params">(vector&lt;<span class="hljs-type">int</span>&gt;&amp; a, <span class="hljs-type">int</span> target)</span> </span>{
+    <span class="hljs-type">int</span> lo = <span class="hljs-number">0</span>, hi = a.<span class="hljs-built_in">size</span>() - <span class="hljs-number">1</span>;
+    <span class="hljs-keyword">while</span> (lo &lt;= hi) {
+        <span class="hljs-type">int</span> mid = lo + (hi - lo) / <span class="hljs-number">2</span>;
+        <span class="hljs-keyword">if</span> (a[mid] == target) <span class="hljs-keyword">return</span> mid;
+        <span class="hljs-keyword">if</span> (a[lo] &lt;= a[mid]) {
+            <span class="hljs-keyword">if</span> (a[lo] &lt;= target &amp;&amp; target &lt; a[mid]) hi = mid - <span class="hljs-number">1</span>;
+            <span class="hljs-keyword">else</span> lo = mid + <span class="hljs-number">1</span>;
+        } <span class="hljs-keyword">else</span> {
+            <span class="hljs-keyword">if</span> (a[mid] &lt; target &amp;&amp; target &lt;= a[hi]) lo = mid + <span class="hljs-number">1</span>;
+            <span class="hljs-keyword">else</span> hi = mid - <span class="hljs-number">1</span>;
+        }
+    }
+    <span class="hljs-keyword">return</span> <span class="hljs-number">-1</span>;
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Binary Search on Answer Template</h4>
+                        <div class="code-wrap">
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function"><span class="hljs-type">bool</span> <span class="hljs-title">canAchieve</span><span class="hljs-params">(vector&lt;<span class="hljs-type">int</span>&gt;&amp; arr, <span class="hljs-type">long</span> <span class="hljs-type">long</span> mid)</span> </span>{
+    <span class="hljs-comment">// Check if answer 'mid' satisfies constraint</span>
+    <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>/<span class="hljs-literal">false</span>;
+}
+
+<span class="hljs-function"><span class="hljs-type">long</span> <span class="hljs-type">long</span> <span class="hljs-title">binarySearchAnswer</span><span class="hljs-params">(vector&lt;<span class="hljs-type">int</span>&gt;&amp; arr)</span> </span>{
+    <span class="hljs-type">long</span> <span class="hljs-type">long</span> lo = MIN_VALUE;
+    <span class="hljs-type">long</span> <span class="hljs-type">long</span> hi = MAX_VALUE;
+    <span class="hljs-keyword">while</span> (lo &lt; hi) {
+        <span class="hljs-type">long</span> <span class="hljs-type">long</span> mid = lo + (hi - lo) / <span class="hljs-number">2</span>;
+        <span class="hljs-keyword">if</span> (<span class="hljs-built_in">canAchieve</span>(arr, mid)) {
+            hi = mid;  <span class="hljs-comment">// try smaller (minimize)</span>
+        } <span class="hljs-keyword">else</span> {
+            lo = mid + <span class="hljs-number">1</span>;
+        }
+    }
+    <span class="hljs-keyword">return</span> lo;
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Staircase Walk (2D Sorted Matrix)</h4>
+                        <div class="code-wrap">
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function"><span class="hljs-type">bool</span> <span class="hljs-title">searchMatrix</span><span class="hljs-params">(vector&lt;vector&lt;<span class="hljs-type">int</span>&gt;&gt;&amp; matrix, <span class="hljs-type">int</span> target)</span> </span>{
+    <span class="hljs-type">int</span> row = <span class="hljs-number">0</span>, col = matrix[<span class="hljs-number">0</span>].<span class="hljs-built_in">size</span>() - <span class="hljs-number">1</span>;  <span class="hljs-comment">// top-right</span>
+    <span class="hljs-keyword">while</span> (row &lt; matrix.<span class="hljs-built_in">size</span>() &amp;&amp; col &gt;= <span class="hljs-number">0</span>) {
+        <span class="hljs-keyword">if</span> (matrix[row][col] == target) <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;
+        <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (matrix[row][col] &gt; target) col--;
+        <span class="hljs-keyword">else</span> row++;
+    }
+    <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Upper bound, first/last occurrence, count (uses lowerBound from above)</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">upperBound</span><span class="hljs-params">(vector&lt;<span class="hljs-type">int</span>&gt;&amp; a, <span class="hljs-type">int</span> target)</span> </span>{      <span class="hljs-comment">// first index with a[i] &gt; target</span>
+    <span class="hljs-type">int</span> lo = <span class="hljs-number">0</span>, hi = a.<span class="hljs-built_in">size</span>();
+    <span class="hljs-keyword">while</span> (lo &lt; hi) {
+        <span class="hljs-type">int</span> mid = lo + (hi - lo) / <span class="hljs-number">2</span>;
+        <span class="hljs-keyword">if</span> (a[mid] &lt;= target) lo = mid + <span class="hljs-number">1</span>; <span class="hljs-keyword">else</span> hi = mid;
+    }
+    <span class="hljs-keyword">return</span> lo;
+}
+<span class="hljs-function">pair&lt;<span class="hljs-type">int</span>,<span class="hljs-type">int</span>&gt; <span class="hljs-title">firstLast</span><span class="hljs-params">(vector&lt;<span class="hljs-type">int</span>&gt;&amp; a, <span class="hljs-type">int</span> x)</span> </span>{
+    <span class="hljs-type">int</span> lb = <span class="hljs-built_in">lowerBound</span>(a, x), ub = <span class="hljs-built_in">upperBound</span>(a, x);
+    <span class="hljs-keyword">if</span> (lb == (<span class="hljs-type">int</span>)a.<span class="hljs-built_in">size</span>() || a[lb] != x) <span class="hljs-keyword">return</span> {<span class="hljs-number">-1</span>, <span class="hljs-number">-1</span>};
+    <span class="hljs-keyword">return</span> {lb, ub - <span class="hljs-number">1</span>};                          <span class="hljs-comment">// count = ub - lb</span>
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Search in Rotated Sorted Array II (duplicates)</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function"><span class="hljs-type">bool</span> <span class="hljs-title">searchRotatedII</span><span class="hljs-params">(vector&lt;<span class="hljs-type">int</span>&gt;&amp; a, <span class="hljs-type">int</span> target)</span> </span>{
+    <span class="hljs-type">int</span> lo = <span class="hljs-number">0</span>, hi = a.<span class="hljs-built_in">size</span>() - <span class="hljs-number">1</span>;
+    <span class="hljs-keyword">while</span> (lo &lt;= hi) {
+        <span class="hljs-type">int</span> mid = lo + (hi - lo) / <span class="hljs-number">2</span>;
+        <span class="hljs-keyword">if</span> (a[mid] == target) <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;
+        <span class="hljs-keyword">if</span> (a[lo] == a[mid] &amp;&amp; a[mid] == a[hi]) { lo++; hi--; <span class="hljs-keyword">continue</span>; }
+        <span class="hljs-keyword">if</span> (a[lo] &lt;= a[mid]) {
+            <span class="hljs-keyword">if</span> (a[lo] &lt;= target &amp;&amp; target &lt; a[mid]) hi = mid - <span class="hljs-number">1</span>; <span class="hljs-keyword">else</span> lo = mid + <span class="hljs-number">1</span>;
+        } <span class="hljs-keyword">else</span> {
+            <span class="hljs-keyword">if</span> (a[mid] &lt; target &amp;&amp; target &lt;= a[hi]) lo = mid + <span class="hljs-number">1</span>; <span class="hljs-keyword">else</span> hi = mid - <span class="hljs-number">1</span>;
+        }
+    }
+    <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Minimum in Rotated Sorted Array (index = rotation count)</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">findMinIndex</span><span class="hljs-params">(vector&lt;<span class="hljs-type">int</span>&gt;&amp; a)</span> </span>{
+    <span class="hljs-type">int</span> lo = <span class="hljs-number">0</span>, hi = a.<span class="hljs-built_in">size</span>() - <span class="hljs-number">1</span>;
+    <span class="hljs-keyword">while</span> (lo &lt; hi) {
+        <span class="hljs-type">int</span> mid = lo + (hi - lo) / <span class="hljs-number">2</span>;
+        <span class="hljs-keyword">if</span> (a[mid] &gt; a[hi]) lo = mid + <span class="hljs-number">1</span>; <span class="hljs-keyword">else</span> hi = mid;
+    }
+    <span class="hljs-keyword">return</span> lo;
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Peak Element</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">findPeak</span><span class="hljs-params">(vector&lt;<span class="hljs-type">int</span>&gt;&amp; a)</span> </span>{
+    <span class="hljs-type">int</span> lo = <span class="hljs-number">0</span>, hi = a.<span class="hljs-built_in">size</span>() - <span class="hljs-number">1</span>;
+    <span class="hljs-keyword">while</span> (lo &lt; hi) {
+        <span class="hljs-type">int</span> mid = lo + (hi - lo) / <span class="hljs-number">2</span>;
+        <span class="hljs-keyword">if</span> (a[mid] &lt; a[mid + <span class="hljs-number">1</span>]) lo = mid + <span class="hljs-number">1</span>; <span class="hljs-keyword">else</span> hi = mid;
+    }
+    <span class="hljs-keyword">return</span> lo;
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Single Element in Sorted Array (others twice), index parity</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">singleNonDuplicate</span><span class="hljs-params">(vector&lt;<span class="hljs-type">int</span>&gt;&amp; a)</span> </span>{
+    <span class="hljs-type">int</span> lo = <span class="hljs-number">0</span>, hi = a.<span class="hljs-built_in">size</span>() - <span class="hljs-number">1</span>;
+    <span class="hljs-keyword">while</span> (lo &lt; hi) {
+        <span class="hljs-type">int</span> mid = lo + (hi - lo) / <span class="hljs-number">2</span>;
+        <span class="hljs-keyword">if</span> (mid % <span class="hljs-number">2</span>) mid--;                     <span class="hljs-comment">// keep mid even</span>
+        <span class="hljs-keyword">if</span> (a[mid] == a[mid + <span class="hljs-number">1</span>]) lo = mid + <span class="hljs-number">2</span>; <span class="hljs-keyword">else</span> hi = mid;
+    }
+    <span class="hljs-keyword">return</span> a[lo];
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Sqrt(x)</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">mySqrt</span><span class="hljs-params">(<span class="hljs-type">int</span> x)</span> </span>{
+    <span class="hljs-type">long</span> <span class="hljs-type">long</span> lo = <span class="hljs-number">0</span>, hi = x, ans = <span class="hljs-number">0</span>;
+    <span class="hljs-keyword">while</span> (lo &lt;= hi) {
+        <span class="hljs-type">long</span> <span class="hljs-type">long</span> mid = lo + (hi - lo) / <span class="hljs-number">2</span>;
+        <span class="hljs-keyword">if</span> (mid * mid &lt;= x) { ans = mid; lo = mid + <span class="hljs-number">1</span>; } <span class="hljs-keyword">else</span> hi = mid - <span class="hljs-number">1</span>;
+    }
+    <span class="hljs-keyword">return</span> ans;
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Koko Eating Bananas, minimize speed</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">minEatingSpeed</span><span class="hljs-params">(vector&lt;<span class="hljs-type">int</span>&gt;&amp; piles, <span class="hljs-type">int</span> h)</span> </span>{
+    <span class="hljs-type">int</span> lo = <span class="hljs-number">1</span>, hi = *<span class="hljs-built_in">max_element</span>(piles.<span class="hljs-built_in">begin</span>(), piles.<span class="hljs-built_in">end</span>());
+    <span class="hljs-keyword">auto</span> hours = [&amp;](<span class="hljs-type">int</span> speed) { <span class="hljs-type">long</span> <span class="hljs-type">long</span> t = <span class="hljs-number">0</span>; <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> p : piles) t += (p + speed - <span class="hljs-number">1</span>) / speed; <span class="hljs-keyword">return</span> t; };
+    <span class="hljs-keyword">while</span> (lo &lt; hi) {
+        <span class="hljs-type">int</span> mid = lo + (hi - lo) / <span class="hljs-number">2</span>;
+        <span class="hljs-keyword">if</span> (<span class="hljs-built_in">hours</span>(mid) &lt;= h) hi = mid; <span class="hljs-keyword">else</span> lo = mid + <span class="hljs-number">1</span>;
+    }
+    <span class="hljs-keyword">return</span> lo;
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Ship Packages in D Days (also Allocate Books / Painter's Partition, same code: w = pages,
+                            days =
+                            students)</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">shipWithinDays</span><span class="hljs-params">(vector&lt;<span class="hljs-type">int</span>&gt;&amp; w, <span class="hljs-type">int</span> days)</span> </span>{
+    <span class="hljs-type">int</span> lo = *<span class="hljs-built_in">max_element</span>(w.<span class="hljs-built_in">begin</span>(), w.<span class="hljs-built_in">end</span>()), hi = <span class="hljs-built_in">accumulate</span>(w.<span class="hljs-built_in">begin</span>(), w.<span class="hljs-built_in">end</span>(), <span class="hljs-number">0</span>);
+    <span class="hljs-keyword">auto</span> daysNeeded = [&amp;](<span class="hljs-type">int</span> cap) {
+        <span class="hljs-type">int</span> d = <span class="hljs-number">1</span>, load = <span class="hljs-number">0</span>;
+        <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> x : w) { <span class="hljs-keyword">if</span> (load + x &gt; cap) { d++; load = <span class="hljs-number">0</span>; } load += x; }
+        <span class="hljs-keyword">return</span> d;
+    };
+    <span class="hljs-keyword">while</span> (lo &lt; hi) {
+        <span class="hljs-type">int</span> mid = lo + (hi - lo) / <span class="hljs-number">2</span>;
+        <span class="hljs-keyword">if</span> (<span class="hljs-built_in">daysNeeded</span>(mid) &lt;= days) hi = mid; <span class="hljs-keyword">else</span> lo = mid + <span class="hljs-number">1</span>;
+    }
+    <span class="hljs-keyword">return</span> lo;
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Aggressive Cows, maximize the minimum distance</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">aggressiveCows</span><span class="hljs-params">(vector&lt;<span class="hljs-type">int</span>&gt;&amp; stalls, <span class="hljs-type">int</span> cows)</span> </span>{
+    <span class="hljs-built_in">sort</span>(stalls.<span class="hljs-built_in">begin</span>(), stalls.<span class="hljs-built_in">end</span>());
+    <span class="hljs-type">int</span> lo = <span class="hljs-number">1</span>, hi = stalls.<span class="hljs-built_in">back</span>() - stalls[<span class="hljs-number">0</span>], ans = <span class="hljs-number">0</span>;
+    <span class="hljs-keyword">auto</span> can = [&amp;](<span class="hljs-type">int</span> dist) {
+        <span class="hljs-type">int</span> placed = <span class="hljs-number">1</span>, last = stalls[<span class="hljs-number">0</span>];
+        <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">1</span>; i &lt; (<span class="hljs-type">int</span>)stalls.<span class="hljs-built_in">size</span>(); i++)
+            <span class="hljs-keyword">if</span> (stalls[i] - last &gt;= dist) { placed++; last = stalls[i]; }
+        <span class="hljs-keyword">return</span> placed &gt;= cows;
+    };
+    <span class="hljs-keyword">while</span> (lo &lt;= hi) {
+        <span class="hljs-type">int</span> mid = lo + (hi - lo) / <span class="hljs-number">2</span>;
+        <span class="hljs-keyword">if</span> (<span class="hljs-built_in">can</span>(mid)) { ans = mid; lo = mid + <span class="hljs-number">1</span>; } <span class="hljs-keyword">else</span> hi = mid - <span class="hljs-number">1</span>;
+    }
+    <span class="hljs-keyword">return</span> ans;
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Minimum Days to Make M Bouquets</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">minDays</span><span class="hljs-params">(vector&lt;<span class="hljs-type">int</span>&gt;&amp; bloom, <span class="hljs-type">int</span> m, <span class="hljs-type">int</span> k)</span> </span>{
+    <span class="hljs-keyword">if</span> ((<span class="hljs-type">long</span> <span class="hljs-type">long</span>)m * k &gt; (<span class="hljs-type">long</span> <span class="hljs-type">long</span>)bloom.<span class="hljs-built_in">size</span>()) <span class="hljs-keyword">return</span> <span class="hljs-number">-1</span>;
+    <span class="hljs-type">int</span> lo = *<span class="hljs-built_in">min_element</span>(bloom.<span class="hljs-built_in">begin</span>(), bloom.<span class="hljs-built_in">end</span>()), hi = *<span class="hljs-built_in">max_element</span>(bloom.<span class="hljs-built_in">begin</span>(), bloom.<span class="hljs-built_in">end</span>());
+    <span class="hljs-keyword">auto</span> can = [&amp;](<span class="hljs-type">int</span> day) {
+        <span class="hljs-type">int</span> bouquets = <span class="hljs-number">0</span>, run = <span class="hljs-number">0</span>;
+        <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> b : bloom) {
+            <span class="hljs-keyword">if</span> (b &lt;= day) { <span class="hljs-keyword">if</span> (++run == k) { bouquets++; run = <span class="hljs-number">0</span>; } }
+            <span class="hljs-keyword">else</span> run = <span class="hljs-number">0</span>;
+        }
+        <span class="hljs-keyword">return</span> bouquets &gt;= m;
+    };
+    <span class="hljs-keyword">while</span> (lo &lt; hi) {
+        <span class="hljs-type">int</span> mid = lo + (hi - lo) / <span class="hljs-number">2</span>;
+        <span class="hljs-keyword">if</span> (<span class="hljs-built_in">can</span>(mid)) hi = mid; <span class="hljs-keyword">else</span> lo = mid + <span class="hljs-number">1</span>;
+    }
+    <span class="hljs-keyword">return</span> lo;
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Smallest Divisor given a Threshold</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">smallestDivisor</span><span class="hljs-params">(vector&lt;<span class="hljs-type">int</span>&gt;&amp; a, <span class="hljs-type">int</span> threshold)</span> </span>{
+    <span class="hljs-type">int</span> lo = <span class="hljs-number">1</span>, hi = *<span class="hljs-built_in">max_element</span>(a.<span class="hljs-built_in">begin</span>(), a.<span class="hljs-built_in">end</span>());
+    <span class="hljs-keyword">while</span> (lo &lt; hi) {
+        <span class="hljs-type">int</span> mid = lo + (hi - lo) / <span class="hljs-number">2</span>;
+        <span class="hljs-type">long</span> <span class="hljs-type">long</span> sum = <span class="hljs-number">0</span>;
+        <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> x : a) sum += (x + mid - <span class="hljs-number">1</span>) / mid;
+        <span class="hljs-keyword">if</span> (sum &lt;= threshold) hi = mid; <span class="hljs-keyword">else</span> lo = mid + <span class="hljs-number">1</span>;
+    }
+    <span class="hljs-keyword">return</span> lo;
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Kth Missing Positive Number</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">findKthPositive</span><span class="hljs-params">(vector&lt;<span class="hljs-type">int</span>&gt;&amp; a, <span class="hljs-type">int</span> k)</span> </span>{
+    <span class="hljs-type">int</span> lo = <span class="hljs-number">0</span>, hi = a.<span class="hljs-built_in">size</span>();
+    <span class="hljs-keyword">while</span> (lo &lt; hi) {
+        <span class="hljs-type">int</span> mid = lo + (hi - lo) / <span class="hljs-number">2</span>;
+        <span class="hljs-keyword">if</span> (a[mid] - (mid + <span class="hljs-number">1</span>) &lt; k) lo = mid + <span class="hljs-number">1</span>;   <span class="hljs-comment">// missing numbers before a[mid]</span>
+        <span class="hljs-keyword">else</span> hi = mid;
+    }
+    <span class="hljs-keyword">return</span> lo + k;
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Minimize Max Distance to Gas Station (real-valued BS)</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function"><span class="hljs-type">double</span> <span class="hljs-title">minMaxGasDist</span><span class="hljs-params">(vector&lt;<span class="hljs-type">int</span>&gt;&amp; st, <span class="hljs-type">int</span> K)</span> </span>{
+    <span class="hljs-type">double</span> lo = <span class="hljs-number">0</span>, hi = <span class="hljs-number">0</span>;
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">1</span>; i &lt; (<span class="hljs-type">int</span>)st.<span class="hljs-built_in">size</span>(); i++) hi = <span class="hljs-built_in">max</span>(hi, (<span class="hljs-type">double</span>)(st[i] - st[i - <span class="hljs-number">1</span>]));
+    <span class="hljs-keyword">while</span> (hi - lo &gt; <span class="hljs-number">1e-6</span>) {
+        <span class="hljs-type">double</span> mid = (lo + hi) / <span class="hljs-number">2</span>;
+        <span class="hljs-type">int</span> need = <span class="hljs-number">0</span>;
+        <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">1</span>; i &lt; (<span class="hljs-type">int</span>)st.<span class="hljs-built_in">size</span>(); i++) need += (<span class="hljs-type">int</span>)((st[i] - st[i - <span class="hljs-number">1</span>]) / mid);
+        <span class="hljs-keyword">if</span> (need &lt;= K) hi = mid; <span class="hljs-keyword">else</span> lo = mid;
+    }
+    <span class="hljs-keyword">return</span> hi;
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Matrix sorted like a flattened array (row = mid / C, col = mid % C)</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function"><span class="hljs-type">bool</span> <span class="hljs-title">searchMatrix1D</span><span class="hljs-params">(vector&lt;vector&lt;<span class="hljs-type">int</span>&gt;&gt;&amp; m, <span class="hljs-type">int</span> target)</span> </span>{
+    <span class="hljs-type">int</span> R = m.<span class="hljs-built_in">size</span>(), C = m[<span class="hljs-number">0</span>].<span class="hljs-built_in">size</span>(), lo = <span class="hljs-number">0</span>, hi = R * C - <span class="hljs-number">1</span>;
+    <span class="hljs-keyword">while</span> (lo &lt;= hi) {
+        <span class="hljs-type">int</span> mid = lo + (hi - lo) / <span class="hljs-number">2</span>, val = m[mid / C][mid % C];
+        <span class="hljs-keyword">if</span> (val == target) <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;
+        <span class="hljs-keyword">if</span> (val &lt; target) lo = mid + <span class="hljs-number">1</span>; <span class="hljs-keyword">else</span> hi = mid - <span class="hljs-number">1</span>;
+    }
+    <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Row with Maximum 1's (rows sorted)</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">rowWithMax1s</span><span class="hljs-params">(vector&lt;vector&lt;<span class="hljs-type">int</span>&gt;&gt;&amp; m)</span> </span>{
+    <span class="hljs-type">int</span> best = <span class="hljs-number">-1</span>, maxOnes = <span class="hljs-number">0</span>;
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> r = <span class="hljs-number">0</span>; r &lt; (<span class="hljs-type">int</span>)m.<span class="hljs-built_in">size</span>(); r++) {
+        <span class="hljs-type">int</span> ones = m[r].<span class="hljs-built_in">end</span>() - <span class="hljs-built_in">lower_bound</span>(m[r].<span class="hljs-built_in">begin</span>(), m[r].<span class="hljs-built_in">end</span>(), <span class="hljs-number">1</span>);
+        <span class="hljs-keyword">if</span> (ones &gt; maxOnes) { maxOnes = ones; best = r; }
+    }
+    <span class="hljs-keyword">return</span> best;
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Kth Smallest in a Sorted Matrix, BS on value</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">kthSmallestMatrix</span><span class="hljs-params">(vector&lt;vector&lt;<span class="hljs-type">int</span>&gt;&gt;&amp; m, <span class="hljs-type">int</span> k)</span> </span>{
+    <span class="hljs-type">int</span> n = m.<span class="hljs-built_in">size</span>(), lo = m[<span class="hljs-number">0</span>][<span class="hljs-number">0</span>], hi = m[n - <span class="hljs-number">1</span>][n - <span class="hljs-number">1</span>];
+    <span class="hljs-keyword">auto</span> countLE = [&amp;](<span class="hljs-type">int</span> x) {
+        <span class="hljs-type">int</span> cnt = <span class="hljs-number">0</span>, col = n - <span class="hljs-number">1</span>;
+        <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> r = <span class="hljs-number">0</span>; r &lt; n; r++) {
+            <span class="hljs-keyword">while</span> (col &gt;= <span class="hljs-number">0</span> &amp;&amp; m[r][col] &gt; x) col--;
+            cnt += col + <span class="hljs-number">1</span>;
+        }
+        <span class="hljs-keyword">return</span> cnt;
+    };
+    <span class="hljs-keyword">while</span> (lo &lt; hi) {
+        <span class="hljs-type">int</span> mid = lo + (hi - lo) / <span class="hljs-number">2</span>;
+        <span class="hljs-keyword">if</span> (<span class="hljs-built_in">countLE</span>(mid) &gt;= k) hi = mid; <span class="hljs-keyword">else</span> lo = mid + <span class="hljs-number">1</span>;
+    }
+    <span class="hljs-keyword">return</span> lo;
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Matrix Median (odd R*C, rows sorted)</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">matrixMedian</span><span class="hljs-params">(vector&lt;vector&lt;<span class="hljs-type">int</span>&gt;&gt;&amp; m)</span> </span>{
+    <span class="hljs-type">int</span> R = m.<span class="hljs-built_in">size</span>(), C = m[<span class="hljs-number">0</span>].<span class="hljs-built_in">size</span>(), lo = INT_MAX, hi = INT_MIN;
+    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">auto</span>&amp; row : m) { lo = <span class="hljs-built_in">min</span>(lo, row[<span class="hljs-number">0</span>]); hi = <span class="hljs-built_in">max</span>(hi, row[C - <span class="hljs-number">1</span>]); }
+    <span class="hljs-type">int</span> need = (R * C + <span class="hljs-number">1</span>) / <span class="hljs-number">2</span>;
+    <span class="hljs-keyword">while</span> (lo &lt; hi) {
+        <span class="hljs-type">int</span> mid = lo + (hi - lo) / <span class="hljs-number">2</span>, cnt = <span class="hljs-number">0</span>;
+        <span class="hljs-keyword">for</span> (<span class="hljs-keyword">auto</span>&amp; row : m) cnt += <span class="hljs-built_in">upper_bound</span>(row.<span class="hljs-built_in">begin</span>(), row.<span class="hljs-built_in">end</span>(), mid) - row.<span class="hljs-built_in">begin</span>();
+        <span class="hljs-keyword">if</span> (cnt &lt; need) lo = mid + <span class="hljs-number">1</span>; <span class="hljs-keyword">else</span> hi = mid;
+    }
+    <span class="hljs-keyword">return</span> lo;
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Peak Element in 2D (values ≥ 0)</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function">vector&lt;<span class="hljs-type">int</span>&gt; <span class="hljs-title">findPeak2D</span><span class="hljs-params">(vector&lt;vector&lt;<span class="hljs-type">int</span>&gt;&gt;&amp; m)</span> </span>{
+    <span class="hljs-type">int</span> R = m.<span class="hljs-built_in">size</span>(), C = m[<span class="hljs-number">0</span>].<span class="hljs-built_in">size</span>(), lo = <span class="hljs-number">0</span>, hi = C - <span class="hljs-number">1</span>;
+    <span class="hljs-keyword">while</span> (lo &lt;= hi) {
+        <span class="hljs-type">int</span> mc = lo + (hi - lo) / <span class="hljs-number">2</span>, mr = <span class="hljs-number">0</span>;
+        <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> r = <span class="hljs-number">1</span>; r &lt; R; r++) <span class="hljs-keyword">if</span> (m[r][mc] &gt; m[mr][mc]) mr = r;
+        <span class="hljs-type">int</span> left  = mc &gt; <span class="hljs-number">0</span>     ? m[mr][mc - <span class="hljs-number">1</span>] : <span class="hljs-number">-1</span>;
+        <span class="hljs-type">int</span> right = mc &lt; C - <span class="hljs-number">1</span> ? m[mr][mc + <span class="hljs-number">1</span>] : <span class="hljs-number">-1</span>;
+        <span class="hljs-keyword">if</span> (m[mr][mc] &gt; left &amp;&amp; m[mr][mc] &gt; right) <span class="hljs-keyword">return</span> {mr, mc};
+        <span class="hljs-keyword">if</span> (left &gt; m[mr][mc]) hi = mc - <span class="hljs-number">1</span>; <span class="hljs-keyword">else</span> lo = mc + <span class="hljs-number">1</span>;
+    }
+    <span class="hljs-keyword">return</span> {<span class="hljs-number">-1</span>, <span class="hljs-number">-1</span>};
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Median of Two Sorted Arrays, partition BS</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function"><span class="hljs-type">double</span> <span class="hljs-title">findMedianSortedArrays</span><span class="hljs-params">(vector&lt;<span class="hljs-type">int</span>&gt;&amp; A, vector&lt;<span class="hljs-type">int</span>&gt;&amp; B)</span> </span>{
+    <span class="hljs-keyword">if</span> (A.<span class="hljs-built_in">size</span>() &gt; B.<span class="hljs-built_in">size</span>()) <span class="hljs-keyword">return</span> <span class="hljs-built_in">findMedianSortedArrays</span>(B, A);
+    <span class="hljs-type">int</span> n = A.<span class="hljs-built_in">size</span>(), m = B.<span class="hljs-built_in">size</span>(), lo = <span class="hljs-number">0</span>, hi = n, half = (n + m + <span class="hljs-number">1</span>) / <span class="hljs-number">2</span>;
+    <span class="hljs-keyword">while</span> (lo &lt;= hi) {
+        <span class="hljs-type">int</span> i = lo + (hi - lo) / <span class="hljs-number">2</span>, j = half - i;
+        <span class="hljs-type">int</span> l1 = i &gt; <span class="hljs-number">0</span> ? A[i - <span class="hljs-number">1</span>] : INT_MIN, r1 = i &lt; n ? A[i] : INT_MAX;
+        <span class="hljs-type">int</span> l2 = j &gt; <span class="hljs-number">0</span> ? B[j - <span class="hljs-number">1</span>] : INT_MIN, r2 = j &lt; m ? B[j] : INT_MAX;
+        <span class="hljs-keyword">if</span> (l1 &lt;= r2 &amp;&amp; l2 &lt;= r1) {
+            <span class="hljs-keyword">if</span> ((n + m) % <span class="hljs-number">2</span>) <span class="hljs-keyword">return</span> <span class="hljs-built_in">max</span>(l1, l2);
+            <span class="hljs-keyword">return</span> (<span class="hljs-built_in">max</span>(l1, l2) + <span class="hljs-built_in">min</span>(r1, r2)) / <span class="hljs-number">2.0</span>;
+        }
+        <span class="hljs-keyword">if</span> (l1 &gt; r2) hi = i - <span class="hljs-number">1</span>; <span class="hljs-keyword">else</span> lo = i + <span class="hljs-number">1</span>;
+    }
+    <span class="hljs-keyword">return</span> <span class="hljs-number">0.0</span>;
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Kth Element of Two Sorted Arrays</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">kthOfTwo</span><span class="hljs-params">(vector&lt;<span class="hljs-type">int</span>&gt;&amp; A, vector&lt;<span class="hljs-type">int</span>&gt;&amp; B, <span class="hljs-type">int</span> k)</span> </span>{
+    <span class="hljs-keyword">if</span> (A.<span class="hljs-built_in">size</span>() &gt; B.<span class="hljs-built_in">size</span>()) <span class="hljs-keyword">return</span> <span class="hljs-built_in">kthOfTwo</span>(B, A, k);
+    <span class="hljs-type">int</span> n = A.<span class="hljs-built_in">size</span>(), m = B.<span class="hljs-built_in">size</span>(), lo = <span class="hljs-built_in">max</span>(<span class="hljs-number">0</span>, k - m), hi = <span class="hljs-built_in">min</span>(k, n);
+    <span class="hljs-keyword">while</span> (lo &lt;= hi) {
+        <span class="hljs-type">int</span> i = lo + (hi - lo) / <span class="hljs-number">2</span>, j = k - i;
+        <span class="hljs-type">int</span> l1 = i &gt; <span class="hljs-number">0</span> ? A[i - <span class="hljs-number">1</span>] : INT_MIN, r1 = i &lt; n ? A[i] : INT_MAX;
+        <span class="hljs-type">int</span> l2 = j &gt; <span class="hljs-number">0</span> ? B[j - <span class="hljs-number">1</span>] : INT_MIN, r2 = j &lt; m ? B[j] : INT_MAX;
+        <span class="hljs-keyword">if</span> (l1 &lt;= r2 &amp;&amp; l2 &lt;= r1) <span class="hljs-keyword">return</span> <span class="hljs-built_in">max</span>(l1, l2);
+        <span class="hljs-keyword">if</span> (l1 &gt; r2) hi = i - <span class="hljs-number">1</span>; <span class="hljs-keyword">else</span> lo = i + <span class="hljs-number">1</span>;
+    }
+    <span class="hljs-keyword">return</span> <span class="hljs-number">-1</span>;
+}</code></pre>
+                        </div>
+                    </div>
+                </div>

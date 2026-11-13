@@ -1,0 +1,111 @@
+import type { ProblemDef } from '../engine/types.ts';
+import { find, parseTree } from './treeKit.ts';
+import type { TreeIn } from './treeKit.ts';
+import { runMorris } from './morrisKit.ts';
+import type { MorrisLines } from './morrisKit.ts';
+
+const java = [
+  'public List<Integer> inorderMorris(TreeNode root) {',
+  '    List<Integer> res = new ArrayList<>();',
+  '    TreeNode cur = root;',
+  '    while (cur != null) {',
+  '        if (cur.left == null) {',
+  '            res.add(cur.val);                 // no left subtree: visit, then go right',
+  '            cur = cur.right;',
+  '        } else {',
+  '            TreeNode pred = cur.left;         // rightmost node of the left subtree',
+  '            while (pred.right != null && pred.right != cur) pred = pred.right;',
+  '            if (pred.right == null) {',
+  '                pred.right = cur;             // leave a thread back to cur',
+  '                cur = cur.left;',
+  '            } else {',
+  '                pred.right = null;            // left side finished: cut the thread',
+  '                res.add(cur.val);             // visit',
+  '                cur = cur.right;',
+  '            }',
+  '        }',
+  '    }',
+  '    return res;',
+  '}',
+];
+const python = [
+  'def inorder_morris(root):',
+  '    res, cur = [], root',
+  '    while cur:',
+  '        if not cur.left:',
+  '            res.append(cur.val)               # no left subtree: visit, then go right',
+  '            cur = cur.right',
+  '        else:',
+  '            pred = cur.left                   # rightmost node of the left subtree',
+  '            while pred.right and pred.right is not cur:',
+  '                pred = pred.right',
+  '            if pred.right is None:',
+  '                pred.right = cur              # leave a thread back to cur',
+  '                cur = cur.left',
+  '            else:',
+  '                pred.right = None             # left side finished: cut the thread',
+  '                res.append(cur.val)           # visit',
+  '                cur = cur.right',
+  '    return res',
+];
+const J: MorrisLines = {
+  start: find(java, 'List<Integer> res', 'TreeNode cur = root'),
+  leaf: find(java, 'if (cur.left == null)', 'res.add(cur.val);                 //', 'cur = cur.right;'),
+  find: find(java, 'TreeNode pred = cur.left'),
+  hop: find(java, 'while (pred.right != null'),
+  link: find(java, 'if (pred.right == null)', 'pred.right = cur;', 'cur = cur.left;'),
+  cut: find(java, 'pred.right = null;', 'res.add(cur.val);             //', ['cur = cur.right;', 2]),
+  fix: find(java, 'return res;'),
+  ret: find(java, 'return res;'),
+};
+const P: MorrisLines = {
+  start: find(python, 'res, cur = [], root'),
+  leaf: find(python, 'if not cur.left', 'res.append(cur.val)               #', 'cur = cur.right'),
+  find: find(python, 'pred = cur.left'),
+  hop: find(python, 'while pred.right and', 'pred = pred.right'),
+  link: find(python, 'if pred.right is None', 'pred.right = cur', 'cur = cur.left'),
+  cut: find(python, 'pred.right = None', 'res.append(cur.val)           #', ['cur = cur.right', 2]),
+  fix: find(python, 'return res'),
+  ret: find(python, 'return res'),
+};
+
+export const morrisInorder: ProblemDef<TreeIn> = {
+  slug: 'alg-morris-inorder-traversal',
+  id: 'ALG', title: 'Morris Inorder Traversal', difficulty: 'Medium', category: 'Tree', tag: 'Morris threads, O(1) space',
+  statement: 'Traverse a binary tree in-order using O(1) extra space: no recursion and no explicit stack. Temporarily rewire each in-order predecessor so that its null right pointer points back to the node, walk the left subtree, then undo the rewiring.',
+  constraints: '0 ≤ nodes ≤ 100 (animation input is limited to 12 nodes; write the tree in level order, using null for gaps). The tree must be restored when the walk ends.',
+  examples: [
+    { label: '1 2 3 4 5', input: { tokens: [1, 2, 3, 4, 5] }, output: '[4,2,5,1,3]' },
+    { label: '4 2 6 1 3 5 7', input: { tokens: [4, 2, 6, 1, 3, 5, 7] }, output: '[1,2,3,4,5,6,7]' },
+    { label: '1 null 2 3', input: { tokens: [1, null, 2, 3] }, output: '[1,3,2]' },
+  ],
+  inputPlaceholder: 'e.g. 1 2 3 4 5',
+  parseInput: parseTree,
+  buildSteps: ({ tokens }) => runMorris({ tokens, mode: 'inorder', J, P, orderName: 'In-order traversal' }),
+  viz: 'cells',
+  vizTitle: 'Binary tree with Morris threads',
+  legend: [{ label: 'cur (current node)', state: 'active' }, { label: 'pred (walking to the predecessor)', state: 'compare' }, { label: 'Visited (#k = output position)', state: 'found' }],
+  varLabels: ['cur', 'pred', 'threads', 'visited'],
+  emphasis: ['no recursion', 'O(1)', 'in-order', 'thread'],
+  phases: [
+    { icon: '🚀', label: 'Init: cur = root', tone: 'blue' },
+    { icon: '🍃', label: 'No left child: visit', tone: 'gold' },
+    { icon: '🔍', label: 'Find predecessor', tone: 'cyan' },
+    { icon: '🧵', label: 'Thread or cut', tone: 'orange' },
+    { icon: '✅', label: 'Done', tone: 'green' },
+  ],
+  approach: {
+    title: 'Threads replace the stack',
+    text: 'If cur has no left child, visit it and go right. Otherwise find the rightmost node pred of its left subtree. If pred.right is null, set it to cur (a thread) and go left. If it already points at cur, the left subtree is done: cut the thread, visit cur and go right.',
+  },
+  java, python,
+  algorithm: [
+    'Start with cur = root and an empty result',
+    'No left child: visit cur and move to cur.right (this may be a thread back up)',
+    'Otherwise walk pred = cur.left, then right as far as possible, stopping at null or at cur',
+    'pred.right null: thread it to cur and go left; pred.right == cur: cut it, visit cur, go right',
+    'When cur is null the result holds the in-order sequence and every thread is gone',
+  ],
+  complexity: [{ label: 'Time', value: 'O(n)' }, { label: 'Space', value: 'O(1) extra' }],
+  why: 'The in-order predecessor of a node with a left subtree is the rightmost node of that subtree, and its right pointer is always null in the original tree. Pointing it at the node is exactly what a recursive call would remember, so when the left subtree is exhausted we can climb back without a stack. The second time we reach the node the thread is already there, which tells us the left side is complete. Each edge on a predecessor path is walked at most twice, so the total is linear, and every thread is removed so the tree is intact afterwards.',
+};

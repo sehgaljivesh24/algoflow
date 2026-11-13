@@ -1,0 +1,1988 @@
+<h1 id="complete-nextjs-cheat-sheet---beginner-to-advanced">Complete Next.js Cheat Sheet - Beginner to Advanced</h1>
+<h3 id="download-pdf"><a href="https://github.com/malharchauhan7/the-only-cheatsheets/raw/main/downloads/pdfs/web-development/nextjs.pdf" target="_blank" rel="noopener noreferrer">Download PDF</a></h3>
+<h2 id="table-of-contents">Table of Contents</h2>
+<ol>
+<li><a href="#getting-started">Getting Started</a></li>
+<li><a href="#project-structure">Project Structure</a></li>
+<li><a href="#pages-and-routing">Pages and Routing</a></li>
+<li><a href="#components">Components</a></li>
+<li><a href="#styling">Styling</a></li>
+<li><a href="#data-fetching">Data Fetching</a></li>
+<li><a href="#api-routes">API Routes</a></li>
+<li><a href="#state-management">State Management</a></li>
+<li><a href="#authentication">Authentication</a></li>
+<li><a href="#performance-optimization">Performance Optimization</a></li>
+<li><a href="#deployment">Deployment</a></li>
+<li><a href="#advanced-features">Advanced Features</a></li>
+<li><a href="#best-practices">Best Practices</a></li>
+<li><a href="#troubleshooting">Troubleshooting</a></li>
+</ol>
+<hr>
+<h2 id="getting-started">Getting Started</h2>
+<h3 id="installation--setup">Installation &amp; Setup</h3>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="hljs-comment"># Create new Next.js app</span>
+npx create-next-app@latest my-app
+<span class="hljs-built_in">cd</span> my-app
+
+<span class="hljs-comment"># With TypeScript</span>
+npx create-next-app@latest my-app --typescript
+
+<span class="hljs-comment"># With specific template</span>
+npx create-next-app@latest my-app --example with-tailwindcss
+
+<span class="hljs-comment"># Start development server</span>
+npm run dev
+<span class="hljs-comment"># or</span>
+yarn dev
+<span class="hljs-comment"># or</span>
+pnpm dev
+</code></pre></div></div>
+<h3 id="essential-dependencies">Essential Dependencies</h3>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="hljs-comment"># Core dependencies (usually included)</span>
+npm install next react react-dom
+
+<span class="hljs-comment"># TypeScript support</span>
+npm install --save-dev typescript @types/react @types/node
+
+<span class="hljs-comment"># Styling</span>
+npm install tailwindcss postcss autoprefixer
+npm install styled-components
+npm install @emotion/react @emotion/styled
+
+<span class="hljs-comment"># State Management</span>
+npm install zustand
+npm install @reduxjs/toolkit react-redux
+
+<span class="hljs-comment"># Forms</span>
+npm install react-hook-form
+npm install formik yup
+
+<span class="hljs-comment"># HTTP Client</span>
+npm install axios
+npm install swr
+
+<span class="hljs-comment"># Authentication</span>
+npm install next-auth
+npm install @auth0/nextjs-auth0
+
+<span class="hljs-comment"># Database</span>
+npm install prisma @prisma/client
+npm install mongoose
+</code></pre></div></div>
+<hr>
+<h2 id="project-structure">Project Structure</h2>
+<h3 id="app-router-structure-nextjs-13">App Router Structure (Next.js 13+)</h3>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>my-app/
+├── app/
+│   ├── globals.css
+│   ├── layout.tsx
+│   ├── page.tsx
+│   ├── loading.tsx
+│   ├── error.tsx
+│   ├── not-found.tsx
+│   ├── about/
+│   │   └── page.tsx
+│   ├── blog/
+│   │   ├── page.tsx
+│   │   └── [slug]/
+│   │       └── page.tsx
+│   └── api/
+│       ├── auth/
+│       └── users/
+├── components/
+├── lib/
+├── public/
+├── styles/
+└── next.config.js
+</code></pre></div></div>
+<h3 id="pages-router-structure-legacy">Pages Router Structure (Legacy)</h3>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>my-app/
+├── pages/
+│   ├── _app.tsx
+│   ├── _document.tsx
+│   ├── index.tsx
+│   ├── about.tsx
+│   ├── blog/
+│   │   ├── index.tsx
+│   │   └── [slug].tsx
+│   └── api/
+│       ├── auth/
+│       └── users.ts
+├── components/
+├── lib/
+├── public/
+├── styles/
+└── next.config.js
+</code></pre></div></div>
+<hr>
+<h2 id="pages-and-routing">Pages and Routing</h2>
+<h3 id="app-router-nextjs-13">App Router (Next.js 13+)</h3>
+<h4 id="basic-page-creation">Basic Page Creation</h4>
+<div class="language-tsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="hljs-comment">// app/page.tsx (Home page)</span>
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">HomePage</span>(<span class="hljs-params"></span>) {
+  <span class="hljs-keyword">return</span> <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">h1</span>&gt;</span>Welcome to Next.js!<span class="hljs-tag">&lt;/<span class="hljs-name">h1</span>&gt;</span></span>
+}
+
+<span class="hljs-comment">// app/about/page.tsx</span>
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">AboutPage</span>(<span class="hljs-params"></span>) {
+  <span class="hljs-keyword">return</span> <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">h1</span>&gt;</span>About Us<span class="hljs-tag">&lt;/<span class="hljs-name">h1</span>&gt;</span></span>
+}
+
+<span class="hljs-comment">// app/blog/[slug]/page.tsx (Dynamic route)</span>
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">BlogPost</span>(<span class="hljs-params">{ params }: { params: { slug: <span class="hljs-built_in">string</span> } }</span>) {
+  <span class="hljs-keyword">return</span> <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">h1</span>&gt;</span>Blog Post: {params.slug}<span class="hljs-tag">&lt;/<span class="hljs-name">h1</span>&gt;</span></span>
+}
+</code></pre></div></div>
+<h4 id="layout-components">Layout Components</h4>
+<div class="language-tsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="hljs-comment">// app/layout.tsx (Root layout)</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">'./globals.css'</span>
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> metadata = {
+  <span class="hljs-attr">title</span>: <span class="hljs-string">'My App'</span>,
+  <span class="hljs-attr">description</span>: <span class="hljs-string">'Generated by Next.js'</span>,
+}
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">RootLayout</span>(<span class="hljs-params">{
+  children,
+}: {
+  children: React.ReactNode
+}</span>) {
+  <span class="hljs-keyword">return</span> (
+    <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">html</span> <span class="hljs-attr">lang</span>=<span class="hljs-string">"en"</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">body</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">nav</span>&gt;</span>Navigation<span class="hljs-tag">&lt;/<span class="hljs-name">nav</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">main</span>&gt;</span>{children}<span class="hljs-tag">&lt;/<span class="hljs-name">main</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">footer</span>&gt;</span>Footer<span class="hljs-tag">&lt;/<span class="hljs-name">footer</span>&gt;</span>
+      <span class="hljs-tag">&lt;/<span class="hljs-name">body</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">html</span>&gt;</span></span>
+  )
+}
+
+<span class="hljs-comment">// app/blog/layout.tsx (Nested layout)</span>
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">BlogLayout</span>(<span class="hljs-params">{
+  children,
+}: {
+  children: React.ReactNode
+}</span>) {
+  <span class="hljs-keyword">return</span> (
+    <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">className</span>=<span class="hljs-string">"blog-container"</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">aside</span>&gt;</span>Blog Sidebar<span class="hljs-tag">&lt;/<span class="hljs-name">aside</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>{children}<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span>
+  )
+}
+</code></pre></div></div>
+<h4 id="special-files">Special Files</h4>
+<div class="language-tsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="hljs-comment">// app/loading.tsx</span>
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">Loading</span>(<span class="hljs-params"></span>) {
+  <span class="hljs-keyword">return</span> <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>Loading...<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span>
+}
+
+<span class="hljs-comment">// app/error.tsx</span>
+<span class="hljs-string">'use client'</span>
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">Error</span>(<span class="hljs-params">{
+  error,
+  reset,
+}: {
+  error: <span class="hljs-built_in">Error</span> &amp; { digest?: <span class="hljs-built_in">string</span> }
+  reset: () =&gt; <span class="hljs-built_in">void</span>
+}</span>) {
+  <span class="hljs-keyword">return</span> (
+    <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">h2</span>&gt;</span>Something went wrong!<span class="hljs-tag">&lt;/<span class="hljs-name">h2</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">onClick</span>=<span class="hljs-string">{()</span> =&gt;</span> reset()}&gt;Try again<span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span>
+  )
+}
+
+<span class="hljs-comment">// app/not-found.tsx</span>
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">NotFound</span>(<span class="hljs-params"></span>) {
+  <span class="hljs-keyword">return</span> (
+    <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">h2</span>&gt;</span>Not Found<span class="hljs-tag">&lt;/<span class="hljs-name">h2</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">p</span>&gt;</span>Could not find requested resource<span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span>
+  )
+}
+</code></pre></div></div>
+<h3 id="pages-router-legacy">Pages Router (Legacy)</h3>
+<h4 id="basic-pages">Basic Pages</h4>
+<div class="language-tsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="hljs-comment">// pages/index.tsx</span>
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">Home</span>(<span class="hljs-params"></span>) {
+  <span class="hljs-keyword">return</span> <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">h1</span>&gt;</span>Home Page<span class="hljs-tag">&lt;/<span class="hljs-name">h1</span>&gt;</span></span>
+}
+
+<span class="hljs-comment">// pages/about.tsx</span>
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">About</span>(<span class="hljs-params"></span>) {
+  <span class="hljs-keyword">return</span> <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">h1</span>&gt;</span>About Page<span class="hljs-tag">&lt;/<span class="hljs-name">h1</span>&gt;</span></span>
+}
+
+<span class="hljs-comment">// pages/blog/[slug].tsx</span>
+<span class="hljs-keyword">import</span> { useRouter } <span class="hljs-keyword">from</span> <span class="hljs-string">'next/router'</span>
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">BlogPost</span>(<span class="hljs-params"></span>) {
+  <span class="hljs-keyword">const</span> router = <span class="hljs-title function_">useRouter</span>()
+  <span class="hljs-keyword">const</span> { slug } = router.<span class="hljs-property">query</span>
+
+  <span class="hljs-keyword">return</span> <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">h1</span>&gt;</span>Blog Post: {slug}<span class="hljs-tag">&lt;/<span class="hljs-name">h1</span>&gt;</span></span>
+}
+</code></pre></div></div>
+<h4 id="custom-app-and-document">Custom App and Document</h4>
+<div class="language-tsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="hljs-comment">// pages/_app.tsx</span>
+<span class="hljs-keyword">import</span> <span class="hljs-keyword">type</span> { <span class="hljs-title class_">AppProps</span> } <span class="hljs-keyword">from</span> <span class="hljs-string">'next/app'</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">'../styles/globals.css'</span>
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">App</span>(<span class="hljs-params">{ Component, pageProps }: <span class="hljs-title class_">AppProps</span></span>) {
+  <span class="hljs-keyword">return</span> (
+    <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">nav</span>&gt;</span>Navigation<span class="hljs-tag">&lt;/<span class="hljs-name">nav</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">Component</span> {<span class="hljs-attr">...pageProps</span>} /&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span>
+  )
+}
+
+<span class="hljs-comment">// pages/_document.tsx</span>
+<span class="hljs-keyword">import</span> { <span class="hljs-title class_">Html</span>, <span class="hljs-title class_">Head</span>, <span class="hljs-title class_">Main</span>, <span class="hljs-title class_">NextScript</span> } <span class="hljs-keyword">from</span> <span class="hljs-string">'next/document'</span>
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">Document</span>(<span class="hljs-params"></span>) {
+  <span class="hljs-keyword">return</span> (
+    <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">Html</span> <span class="hljs-attr">lang</span>=<span class="hljs-string">"en"</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">Head</span> /&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">body</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">Main</span> /&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">NextScript</span> /&gt;</span>
+      <span class="hljs-tag">&lt;/<span class="hljs-name">body</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">Html</span>&gt;</span></span>
+  )
+}
+</code></pre></div></div>
+<h3 id="navigation">Navigation</h3>
+<h4 id="link-component">Link Component</h4>
+<div class="language-tsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="hljs-keyword">import</span> <span class="hljs-title class_">Link</span> <span class="hljs-keyword">from</span> <span class="hljs-string">'next/link'</span>
+
+<span class="hljs-comment">// Basic link</span>
+&lt;<span class="hljs-title class_">Link</span> href=<span class="hljs-string">"/about"</span>&gt;<span class="hljs-title class_">About</span>&lt;/<span class="hljs-title class_">Link</span>&gt;
+
+<span class="hljs-comment">// Dynamic link</span>
+<span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">Link</span> <span class="hljs-attr">href</span>=<span class="hljs-string">{</span>`/<span class="hljs-attr">blog</span>/${<span class="hljs-attr">post.slug</span>}`}&gt;</span>Read More<span class="hljs-tag">&lt;/<span class="hljs-name">Link</span>&gt;</span></span>
+
+<span class="hljs-comment">// External link</span>
+<span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">Link</span> <span class="hljs-attr">href</span>=<span class="hljs-string">"https://example.com"</span> <span class="hljs-attr">target</span>=<span class="hljs-string">"_blank"</span>&gt;</span>
+  External Link
+<span class="hljs-tag">&lt;/<span class="hljs-name">Link</span>&gt;</span></span>
+
+<span class="hljs-comment">// With custom styling</span>
+<span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">Link</span> <span class="hljs-attr">href</span>=<span class="hljs-string">"/about"</span> <span class="hljs-attr">className</span>=<span class="hljs-string">"nav-link"</span>&gt;</span>
+  About
+<span class="hljs-tag">&lt;/<span class="hljs-name">Link</span>&gt;</span></span>
+</code></pre></div></div>
+<h4 id="programmatic-navigation">Programmatic Navigation</h4>
+<div class="language-tsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="hljs-comment">// App Router</span>
+<span class="hljs-keyword">import</span> { useRouter } <span class="hljs-keyword">from</span> <span class="hljs-string">'next/navigation'</span>
+
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">MyComponent</span>(<span class="hljs-params"></span>) {
+  <span class="hljs-keyword">const</span> router = <span class="hljs-title function_">useRouter</span>()
+  
+  <span class="hljs-keyword">const</span> <span class="hljs-title function_">handleClick</span> = (<span class="hljs-params"></span>) =&gt; {
+    router.<span class="hljs-title function_">push</span>(<span class="hljs-string">'/about'</span>)
+    router.<span class="hljs-title function_">replace</span>(<span class="hljs-string">'/about'</span>) <span class="hljs-comment">// No history entry</span>
+    router.<span class="hljs-title function_">back</span>()
+    router.<span class="hljs-title function_">forward</span>()
+    router.<span class="hljs-title function_">refresh</span>()
+  }
+}
+
+<span class="hljs-comment">// Pages Router</span>
+<span class="hljs-keyword">import</span> { useRouter } <span class="hljs-keyword">from</span> <span class="hljs-string">'next/router'</span>
+
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">MyComponent</span>(<span class="hljs-params"></span>) {
+  <span class="hljs-keyword">const</span> router = <span class="hljs-title function_">useRouter</span>()
+  
+  <span class="hljs-keyword">const</span> <span class="hljs-title function_">handleClick</span> = (<span class="hljs-params"></span>) =&gt; {
+    router.<span class="hljs-title function_">push</span>(<span class="hljs-string">'/about'</span>)
+    router.<span class="hljs-title function_">replace</span>(<span class="hljs-string">'/about'</span>)
+    router.<span class="hljs-title function_">back</span>()
+    router.<span class="hljs-title function_">reload</span>()
+  }
+}
+</code></pre></div></div>
+<hr>
+<h2 id="components">Components</h2>
+<h3 id="client-vs-server-components-app-router">Client vs Server Components (App Router)</h3>
+<h4 id="server-components-default">Server Components (Default)</h4>
+<div class="language-tsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="hljs-comment">// app/components/ServerComponent.tsx</span>
+<span class="hljs-comment">// Server components run on the server</span>
+<span class="hljs-keyword">async</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">ServerComponent</span>(<span class="hljs-params"></span>) {
+  <span class="hljs-keyword">const</span> data = <span class="hljs-keyword">await</span> <span class="hljs-title function_">fetch</span>(<span class="hljs-string">'https://api.example.com/data'</span>)
+  <span class="hljs-keyword">const</span> json = <span class="hljs-keyword">await</span> data.<span class="hljs-title function_">json</span>()
+  
+  <span class="hljs-keyword">return</span> (
+    <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">h1</span>&gt;</span>Server Component<span class="hljs-tag">&lt;/<span class="hljs-name">h1</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">pre</span>&gt;</span>{JSON.stringify(json, null, 2)}<span class="hljs-tag">&lt;/<span class="hljs-name">pre</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span>
+  )
+}
+</code></pre></div></div>
+<h4 id="client-components">Client Components</h4>
+<div class="language-tsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="hljs-comment">// app/components/ClientComponent.tsx</span>
+<span class="hljs-string">'use client'</span>
+
+<span class="hljs-keyword">import</span> { useState, useEffect } <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">ClientComponent</span>(<span class="hljs-params"></span>) {
+  <span class="hljs-keyword">const</span> [count, setCount] = <span class="hljs-title function_">useState</span>(<span class="hljs-number">0</span>)
+  
+  <span class="hljs-title function_">useEffect</span>(<span class="hljs-function">() =&gt;</span> {
+    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">'Client component mounted'</span>)
+  }, [])
+  
+  <span class="hljs-keyword">return</span> (
+    <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">h1</span>&gt;</span>Client Component<span class="hljs-tag">&lt;/<span class="hljs-name">h1</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">p</span>&gt;</span>Count: {count}<span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">onClick</span>=<span class="hljs-string">{()</span> =&gt;</span> setCount(count + 1)}&gt;
+        Increment
+      <span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span>
+  )
+}
+</code></pre></div></div>
+<h3 id="component-patterns">Component Patterns</h3>
+<h4 id="higher-order-component-hoc">Higher-Order Component (HOC)</h4>
+<div class="language-tsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="hljs-keyword">function</span> withAuth&lt;T <span class="hljs-keyword">extends</span> <span class="hljs-built_in">object</span>&gt;(<span class="hljs-title class_">Component</span>: <span class="hljs-title class_">React</span>.<span class="hljs-property">ComponentType</span>&lt;T&gt;) {
+  <span class="hljs-keyword">return</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">AuthenticatedComponent</span>(<span class="hljs-params"><span class="hljs-attr">props</span>: T</span>) {
+    <span class="hljs-keyword">const</span> [isAuthenticated, setIsAuthenticated] = <span class="hljs-title function_">useState</span>(<span class="hljs-literal">false</span>)
+    
+    <span class="hljs-keyword">if</span> (!isAuthenticated) {
+      <span class="hljs-keyword">return</span> <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>Please log in<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span>
+    }
+    
+    <span class="hljs-keyword">return</span> <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">Component</span> {<span class="hljs-attr">...props</span>} /&gt;</span></span>
+  }
+}
+
+<span class="hljs-comment">// Usage</span>
+<span class="hljs-keyword">const</span> <span class="hljs-title class_">ProtectedPage</span> = <span class="hljs-title function_">withAuth</span>(<span class="hljs-title class_">MyPage</span>)
+</code></pre></div></div>
+<h4 id="custom-hooks">Custom Hooks</h4>
+<div class="language-tsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="hljs-comment">// hooks/useCounter.ts</span>
+<span class="hljs-keyword">import</span> { useState } <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">useCounter</span>(<span class="hljs-params"><span class="hljs-attr">initialValue</span>: <span class="hljs-built_in">number</span> = <span class="hljs-number">0</span></span>) {
+  <span class="hljs-keyword">const</span> [count, setCount] = <span class="hljs-title function_">useState</span>(initialValue)
+  
+  <span class="hljs-keyword">const</span> <span class="hljs-title function_">increment</span> = (<span class="hljs-params"></span>) =&gt; <span class="hljs-title function_">setCount</span>(count + <span class="hljs-number">1</span>)
+  <span class="hljs-keyword">const</span> <span class="hljs-title function_">decrement</span> = (<span class="hljs-params"></span>) =&gt; <span class="hljs-title function_">setCount</span>(count - <span class="hljs-number">1</span>)
+  <span class="hljs-keyword">const</span> <span class="hljs-title function_">reset</span> = (<span class="hljs-params"></span>) =&gt; <span class="hljs-title function_">setCount</span>(initialValue)
+  
+  <span class="hljs-keyword">return</span> { count, increment, decrement, reset }
+}
+
+<span class="hljs-comment">// Usage in component</span>
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">Counter</span>(<span class="hljs-params"></span>) {
+  <span class="hljs-keyword">const</span> { count, increment, decrement, reset } = <span class="hljs-title function_">useCounter</span>(<span class="hljs-number">0</span>)
+  
+  <span class="hljs-keyword">return</span> (
+    <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">p</span>&gt;</span>Count: {count}<span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">onClick</span>=<span class="hljs-string">{increment}</span>&gt;</span>+<span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">onClick</span>=<span class="hljs-string">{decrement}</span>&gt;</span>-<span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">onClick</span>=<span class="hljs-string">{reset}</span>&gt;</span>Reset<span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span>
+  )
+}
+</code></pre></div></div>
+<hr>
+<h2 id="styling">Styling</h2>
+<h3 id="css-modules">CSS Modules</h3>
+<div class="language-tsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="hljs-comment">// styles/Home.module.css</span>
+.<span class="hljs-property">container</span> {
+  <span class="hljs-attr">padding</span>: 2rem;
+  background-<span class="hljs-attr">color</span>: #f0f0f0;
+}
+
+.<span class="hljs-property">title</span> {
+  font-<span class="hljs-attr">size</span>: 2rem;
+  <span class="hljs-attr">color</span>: #<span class="hljs-number">333</span>;
+}
+
+<span class="hljs-comment">// components/Home.tsx</span>
+<span class="hljs-keyword">import</span> styles <span class="hljs-keyword">from</span> <span class="hljs-string">'../styles/Home.module.css'</span>
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">Home</span>(<span class="hljs-params"></span>) {
+  <span class="hljs-keyword">return</span> (
+    <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">className</span>=<span class="hljs-string">{styles.container}</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">h1</span> <span class="hljs-attr">className</span>=<span class="hljs-string">{styles.title}</span>&gt;</span>Home Page<span class="hljs-tag">&lt;/<span class="hljs-name">h1</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span>
+  )
+}
+</code></pre></div></div>
+<h3 id="tailwind-css">Tailwind CSS</h3>
+<div class="language-tsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="hljs-comment">// tailwind.config.js</span>
+<span class="hljs-variable language_">module</span>.<span class="hljs-property">exports</span> = {
+  <span class="hljs-attr">content</span>: [
+    <span class="hljs-string">'./pages/**/*.{js,ts,jsx,tsx}'</span>,
+    <span class="hljs-string">'./components/**/*.{js,ts,jsx,tsx}'</span>,
+    <span class="hljs-string">'./app/**/*.{js,ts,jsx,tsx}'</span>,
+  ],
+  <span class="hljs-attr">theme</span>: {
+    <span class="hljs-attr">extend</span>: {
+      <span class="hljs-attr">colors</span>: {
+        <span class="hljs-attr">primary</span>: <span class="hljs-string">'#3b82f6'</span>,
+        <span class="hljs-attr">secondary</span>: <span class="hljs-string">'#64748b'</span>,
+      },
+    },
+  },
+  <span class="hljs-attr">plugins</span>: [],
+}
+
+<span class="hljs-comment">// Component usage</span>
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">Button</span>(<span class="hljs-params">{ children, variant = <span class="hljs-string">'primary'</span> }</span>) {
+  <span class="hljs-keyword">const</span> baseClasses = <span class="hljs-string">'px-4 py-2 rounded font-medium'</span>
+  <span class="hljs-keyword">const</span> variantClasses = {
+    <span class="hljs-attr">primary</span>: <span class="hljs-string">'bg-blue-500 text-white hover:bg-blue-600'</span>,
+    <span class="hljs-attr">secondary</span>: <span class="hljs-string">'bg-gray-500 text-white hover:bg-gray-600'</span>,
+  }
+  
+  <span class="hljs-keyword">return</span> (
+    <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">className</span>=<span class="hljs-string">{</span>`${<span class="hljs-attr">baseClasses</span>} ${<span class="hljs-attr">variantClasses</span>[<span class="hljs-attr">variant</span>]}`}&gt;</span>
+      {children}
+    <span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span></span>
+  )
+}
+</code></pre></div></div>
+<h3 id="styled-components">Styled Components</h3>
+<div class="language-tsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="hljs-comment">// components/StyledButton.tsx</span>
+<span class="hljs-keyword">import</span> styled <span class="hljs-keyword">from</span> <span class="hljs-string">'styled-components'</span>
+
+<span class="hljs-keyword">const</span> <span class="hljs-title class_">StyledButton</span> = styled.<span class="hljs-property">button</span><span class="hljs-string">`
+  background-color: <span class="hljs-subst">${props =&gt; props.primary ? <span class="hljs-string">'#3b82f6'</span> : <span class="hljs-string">'#64748b'</span>}</span>;
+  color: white;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  
+  &amp;:hover {
+    opacity: 0.8;
+  }
+`</span>
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">Button</span>(<span class="hljs-params">{ primary, children }</span>) {
+  <span class="hljs-keyword">return</span> (
+    <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">StyledButton</span> <span class="hljs-attr">primary</span>=<span class="hljs-string">{primary}</span>&gt;</span>
+      {children}
+    <span class="hljs-tag">&lt;/<span class="hljs-name">StyledButton</span>&gt;</span></span>
+  )
+}
+</code></pre></div></div>
+<h3 id="global-styles">Global Styles</h3>
+<div class="language-css highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="hljs-comment">/* styles/globals.css */</span>
+<span class="hljs-keyword">@tailwind</span> base;
+<span class="hljs-keyword">@tailwind</span> components;
+<span class="hljs-keyword">@tailwind</span> utilities;
+
+* {
+  <span class="hljs-attribute">box-sizing</span>: border-box;
+  <span class="hljs-attribute">padding</span>: <span class="hljs-number">0</span>;
+  <span class="hljs-attribute">margin</span>: <span class="hljs-number">0</span>;
+}
+
+<span class="hljs-selector-tag">html</span>,
+<span class="hljs-selector-tag">body</span> {
+  <span class="hljs-attribute">max-width</span>: <span class="hljs-number">100vw</span>;
+  <span class="hljs-attribute">overflow-x</span>: hidden;
+  <span class="hljs-attribute">font-family</span>: Inter, sans-serif;
+}
+
+<span class="hljs-keyword">@layer</span> components {
+  <span class="hljs-selector-class">.btn-primary</span> {
+    <span class="hljs-keyword">@apply</span> bg-blue-<span class="hljs-number">500</span> <span class="hljs-attribute">hover</span>:bg-blue-<span class="hljs-number">700</span> text-white font-bold py-<span class="hljs-number">2</span> px-<span class="hljs-number">4</span> rounded;
+  }
+}
+</code></pre></div></div>
+<hr>
+<h2 id="data-fetching">Data Fetching</h2>
+<h3 id="app-router-data-fetching">App Router Data Fetching</h3>
+<h4 id="server-components-recommended">Server Components (Recommended)</h4>
+<div class="language-tsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="hljs-comment">// app/posts/page.tsx</span>
+<span class="hljs-keyword">async</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">getPosts</span>(<span class="hljs-params"></span>) {
+  <span class="hljs-keyword">const</span> res = <span class="hljs-keyword">await</span> <span class="hljs-title function_">fetch</span>(<span class="hljs-string">'https://jsonplaceholder.typicode.com/posts'</span>, {
+    <span class="hljs-attr">cache</span>: <span class="hljs-string">'force-cache'</span>, <span class="hljs-comment">// Default caching</span>
+  })
+  
+  <span class="hljs-keyword">if</span> (!res.<span class="hljs-property">ok</span>) {
+    <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Error</span>(<span class="hljs-string">'Failed to fetch data'</span>)
+  }
+  
+  <span class="hljs-keyword">return</span> res.<span class="hljs-title function_">json</span>()
+}
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-keyword">async</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">PostsPage</span>(<span class="hljs-params"></span>) {
+  <span class="hljs-keyword">const</span> posts = <span class="hljs-keyword">await</span> <span class="hljs-title function_">getPosts</span>()
+  
+  <span class="hljs-keyword">return</span> (
+    <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">h1</span>&gt;</span>Posts<span class="hljs-tag">&lt;/<span class="hljs-name">h1</span>&gt;</span>
+      {posts.map(post =&gt; (
+        <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">key</span>=<span class="hljs-string">{post.id}</span>&gt;</span>
+          <span class="hljs-tag">&lt;<span class="hljs-name">h2</span>&gt;</span>{post.title}<span class="hljs-tag">&lt;/<span class="hljs-name">h2</span>&gt;</span>
+          <span class="hljs-tag">&lt;<span class="hljs-name">p</span>&gt;</span>{post.body}<span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span>
+        <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>
+      ))}
+    <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span>
+  )
+}
+</code></pre></div></div>
+<h4 id="caching-options">Caching Options</h4>
+<div class="language-tsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="hljs-comment">// No caching</span>
+<span class="hljs-title function_">fetch</span>(<span class="hljs-string">'https://api.example.com/data'</span>, { <span class="hljs-attr">cache</span>: <span class="hljs-string">'no-store'</span> })
+
+<span class="hljs-comment">// Revalidate every 60 seconds</span>
+<span class="hljs-title function_">fetch</span>(<span class="hljs-string">'https://api.example.com/data'</span>, { <span class="hljs-attr">next</span>: { <span class="hljs-attr">revalidate</span>: <span class="hljs-number">60</span> } })
+
+<span class="hljs-comment">// Cache forever (default)</span>
+<span class="hljs-title function_">fetch</span>(<span class="hljs-string">'https://api.example.com/data'</span>, { <span class="hljs-attr">cache</span>: <span class="hljs-string">'force-cache'</span> })
+</code></pre></div></div>
+<h4 id="dynamic-data-with-client-components">Dynamic Data with Client Components</h4>
+<div class="language-tsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="hljs-string">'use client'</span>
+
+<span class="hljs-keyword">import</span> { useState, useEffect } <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">ClientPosts</span>(<span class="hljs-params"></span>) {
+  <span class="hljs-keyword">const</span> [posts, setPosts] = <span class="hljs-title function_">useState</span>([])
+  <span class="hljs-keyword">const</span> [loading, setLoading] = <span class="hljs-title function_">useState</span>(<span class="hljs-literal">true</span>)
+  
+  <span class="hljs-title function_">useEffect</span>(<span class="hljs-function">() =&gt;</span> {
+    <span class="hljs-keyword">async</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">fetchPosts</span>(<span class="hljs-params"></span>) {
+      <span class="hljs-keyword">try</span> {
+        <span class="hljs-keyword">const</span> res = <span class="hljs-keyword">await</span> <span class="hljs-title function_">fetch</span>(<span class="hljs-string">'/api/posts'</span>)
+        <span class="hljs-keyword">const</span> data = <span class="hljs-keyword">await</span> res.<span class="hljs-title function_">json</span>()
+        <span class="hljs-title function_">setPosts</span>(data)
+      } <span class="hljs-keyword">catch</span> (error) {
+        <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">error</span>(<span class="hljs-string">'Error fetching posts:'</span>, error)
+      } <span class="hljs-keyword">finally</span> {
+        <span class="hljs-title function_">setLoading</span>(<span class="hljs-literal">false</span>)
+      }
+    }
+    
+    <span class="hljs-title function_">fetchPosts</span>()
+  }, [])
+  
+  <span class="hljs-keyword">if</span> (loading) <span class="hljs-keyword">return</span> <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>Loading...<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span>
+  
+  <span class="hljs-keyword">return</span> (
+    <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>
+      {posts.map(post =&gt; (
+        <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">key</span>=<span class="hljs-string">{post.id}</span>&gt;</span>{post.title}<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>
+      ))}
+    <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span>
+  )
+}
+</code></pre></div></div>
+<h3 id="pages-router-data-fetching">Pages Router Data Fetching</h3>
+<h4 id="getstaticprops-ssg">getStaticProps (SSG)</h4>
+<div class="language-tsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="hljs-comment">// pages/posts.tsx</span>
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">async</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">getStaticProps</span>(<span class="hljs-params"></span>) {
+  <span class="hljs-keyword">const</span> res = <span class="hljs-keyword">await</span> <span class="hljs-title function_">fetch</span>(<span class="hljs-string">'https://jsonplaceholder.typicode.com/posts'</span>)
+  <span class="hljs-keyword">const</span> posts = <span class="hljs-keyword">await</span> res.<span class="hljs-title function_">json</span>()
+  
+  <span class="hljs-keyword">return</span> {
+    <span class="hljs-attr">props</span>: {
+      posts,
+    },
+    <span class="hljs-attr">revalidate</span>: <span class="hljs-number">60</span>, <span class="hljs-comment">// ISR - revalidate every 60 seconds</span>
+  }
+}
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">Posts</span>(<span class="hljs-params">{ posts }</span>) {
+  <span class="hljs-keyword">return</span> (
+    <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>
+      {posts.map(post =&gt; (
+        <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">key</span>=<span class="hljs-string">{post.id}</span>&gt;</span>{post.title}<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>
+      ))}
+    <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span>
+  )
+}
+</code></pre></div></div>
+<h4 id="getserversideprops-ssr">getServerSideProps (SSR)</h4>
+<div class="language-tsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="hljs-comment">// pages/profile.tsx</span>
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">async</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">getServerSideProps</span>(<span class="hljs-params">context</span>) {
+  <span class="hljs-keyword">const</span> { req, res, params, query } = context
+  
+  <span class="hljs-comment">// Access cookies, headers, etc.</span>
+  <span class="hljs-keyword">const</span> token = req.<span class="hljs-property">cookies</span>.<span class="hljs-property">token</span>
+  
+  <span class="hljs-keyword">if</span> (!token) {
+    <span class="hljs-keyword">return</span> {
+      <span class="hljs-attr">redirect</span>: {
+        <span class="hljs-attr">destination</span>: <span class="hljs-string">'/login'</span>,
+        <span class="hljs-attr">permanent</span>: <span class="hljs-literal">false</span>,
+      },
+    }
+  }
+  
+  <span class="hljs-keyword">const</span> userData = <span class="hljs-keyword">await</span> <span class="hljs-title function_">fetchUserData</span>(token)
+  
+  <span class="hljs-keyword">return</span> {
+    <span class="hljs-attr">props</span>: {
+      <span class="hljs-attr">user</span>: userData,
+    },
+  }
+}
+</code></pre></div></div>
+<h4 id="getstaticpaths-dynamic-ssg">getStaticPaths (Dynamic SSG)</h4>
+<div class="language-tsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="hljs-comment">// pages/posts/[id].tsx</span>
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">async</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">getStaticPaths</span>(<span class="hljs-params"></span>) {
+  <span class="hljs-keyword">const</span> res = <span class="hljs-keyword">await</span> <span class="hljs-title function_">fetch</span>(<span class="hljs-string">'https://jsonplaceholder.typicode.com/posts'</span>)
+  <span class="hljs-keyword">const</span> posts = <span class="hljs-keyword">await</span> res.<span class="hljs-title function_">json</span>()
+  
+  <span class="hljs-keyword">const</span> paths = posts.<span class="hljs-title function_">map</span>(<span class="hljs-function"><span class="hljs-params">post</span> =&gt;</span> ({
+    <span class="hljs-attr">params</span>: { <span class="hljs-attr">id</span>: post.<span class="hljs-property">id</span>.<span class="hljs-title function_">toString</span>() },
+  }))
+  
+  <span class="hljs-keyword">return</span> {
+    paths,
+    <span class="hljs-attr">fallback</span>: <span class="hljs-string">'blocking'</span>, <span class="hljs-comment">// or false, true</span>
+  }
+}
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">async</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">getStaticProps</span>(<span class="hljs-params">{ params }</span>) {
+  <span class="hljs-keyword">const</span> res = <span class="hljs-keyword">await</span> <span class="hljs-title function_">fetch</span>(<span class="hljs-string">`https://jsonplaceholder.typicode.com/posts/<span class="hljs-subst">${params.id}</span>`</span>)
+  <span class="hljs-keyword">const</span> post = <span class="hljs-keyword">await</span> res.<span class="hljs-title function_">json</span>()
+  
+  <span class="hljs-keyword">return</span> {
+    <span class="hljs-attr">props</span>: {
+      post,
+    },
+  }
+}
+</code></pre></div></div>
+<h3 id="swr-for-client-side-data-fetching">SWR for Client-Side Data Fetching</h3>
+<div class="language-tsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="hljs-keyword">import</span> useSWR <span class="hljs-keyword">from</span> <span class="hljs-string">'swr'</span>
+
+<span class="hljs-keyword">const</span> <span class="hljs-title function_">fetcher</span> = (<span class="hljs-params"><span class="hljs-attr">url</span>: <span class="hljs-built_in">string</span></span>) =&gt; <span class="hljs-title function_">fetch</span>(url).<span class="hljs-title function_">then</span>(<span class="hljs-function"><span class="hljs-params">res</span> =&gt;</span> res.<span class="hljs-title function_">json</span>())
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">Profile</span>(<span class="hljs-params"></span>) {
+  <span class="hljs-keyword">const</span> { data, error, isLoading } = <span class="hljs-title function_">useSWR</span>(<span class="hljs-string">'/api/user'</span>, fetcher)
+  
+  <span class="hljs-keyword">if</span> (error) <span class="hljs-keyword">return</span> <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>Failed to load<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span>
+  <span class="hljs-keyword">if</span> (isLoading) <span class="hljs-keyword">return</span> <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>Loading...<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span>
+  
+  <span class="hljs-keyword">return</span> <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>Hello {data.name}!<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span>
+}
+
+<span class="hljs-comment">// With custom hook</span>
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">useUser</span>(<span class="hljs-params"><span class="hljs-attr">id</span>: <span class="hljs-built_in">string</span></span>) {
+  <span class="hljs-keyword">const</span> { data, error, isLoading } = <span class="hljs-title function_">useSWR</span>(
+    id ? <span class="hljs-string">`/api/user/<span class="hljs-subst">${id}</span>`</span> : <span class="hljs-literal">null</span>,
+    fetcher
+  )
+  
+  <span class="hljs-keyword">return</span> {
+    <span class="hljs-attr">user</span>: data,
+    isLoading,
+    <span class="hljs-attr">isError</span>: error
+  }
+}
+</code></pre></div></div>
+<hr>
+<h2 id="api-routes">API Routes</h2>
+<h3 id="app-router-api-routes">App Router API Routes</h3>
+<h4 id="basic-api-route">Basic API Route</h4>
+<div class="language-tsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="hljs-comment">// app/api/users/route.ts</span>
+<span class="hljs-keyword">import</span> { <span class="hljs-title class_">NextRequest</span>, <span class="hljs-title class_">NextResponse</span> } <span class="hljs-keyword">from</span> <span class="hljs-string">'next/server'</span>
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">async</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">GET</span>(<span class="hljs-params"><span class="hljs-attr">request</span>: <span class="hljs-title class_">NextRequest</span></span>) {
+  <span class="hljs-keyword">const</span> searchParams = request.<span class="hljs-property">nextUrl</span>.<span class="hljs-property">searchParams</span>
+  <span class="hljs-keyword">const</span> query = searchParams.<span class="hljs-title function_">get</span>(<span class="hljs-string">'query'</span>)
+  
+  <span class="hljs-comment">// Fetch data from database</span>
+  <span class="hljs-keyword">const</span> users = <span class="hljs-keyword">await</span> <span class="hljs-title function_">fetchUsers</span>(query)
+  
+  <span class="hljs-keyword">return</span> <span class="hljs-title class_">NextResponse</span>.<span class="hljs-title function_">json</span>({ users })
+}
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">async</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">POST</span>(<span class="hljs-params"><span class="hljs-attr">request</span>: <span class="hljs-title class_">NextRequest</span></span>) {
+  <span class="hljs-keyword">const</span> body = <span class="hljs-keyword">await</span> request.<span class="hljs-title function_">json</span>()
+  
+  <span class="hljs-comment">// Validate data</span>
+  <span class="hljs-keyword">if</span> (!body.<span class="hljs-property">name</span> || !body.<span class="hljs-property">email</span>) {
+    <span class="hljs-keyword">return</span> <span class="hljs-title class_">NextResponse</span>.<span class="hljs-title function_">json</span>(
+      { <span class="hljs-attr">error</span>: <span class="hljs-string">'Name and email are required'</span> },
+      { <span class="hljs-attr">status</span>: <span class="hljs-number">400</span> }
+    )
+  }
+  
+  <span class="hljs-comment">// Create user</span>
+  <span class="hljs-keyword">const</span> user = <span class="hljs-keyword">await</span> <span class="hljs-title function_">createUser</span>(body)
+  
+  <span class="hljs-keyword">return</span> <span class="hljs-title class_">NextResponse</span>.<span class="hljs-title function_">json</span>({ user }, { <span class="hljs-attr">status</span>: <span class="hljs-number">201</span> })
+}
+</code></pre></div></div>
+<h4 id="dynamic-api-routes">Dynamic API Routes</h4>
+<div class="language-tsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="hljs-comment">// app/api/users/[id]/route.ts</span>
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">async</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">GET</span>(<span class="hljs-params">
+  <span class="hljs-attr">request</span>: <span class="hljs-title class_">NextRequest</span>,
+  { params }: { params: { id: <span class="hljs-built_in">string</span> } }
+</span>) {
+  <span class="hljs-keyword">const</span> id = params.<span class="hljs-property">id</span>
+  <span class="hljs-keyword">const</span> user = <span class="hljs-keyword">await</span> <span class="hljs-title function_">fetchUserById</span>(id)
+  
+  <span class="hljs-keyword">if</span> (!user) {
+    <span class="hljs-keyword">return</span> <span class="hljs-title class_">NextResponse</span>.<span class="hljs-title function_">json</span>(
+      { <span class="hljs-attr">error</span>: <span class="hljs-string">'User not found'</span> },
+      { <span class="hljs-attr">status</span>: <span class="hljs-number">404</span> }
+    )
+  }
+  
+  <span class="hljs-keyword">return</span> <span class="hljs-title class_">NextResponse</span>.<span class="hljs-title function_">json</span>({ user })
+}
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">async</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">PUT</span>(<span class="hljs-params">
+  <span class="hljs-attr">request</span>: <span class="hljs-title class_">NextRequest</span>,
+  { params }: { params: { id: <span class="hljs-built_in">string</span> } }
+</span>) {
+  <span class="hljs-keyword">const</span> id = params.<span class="hljs-property">id</span>
+  <span class="hljs-keyword">const</span> body = <span class="hljs-keyword">await</span> request.<span class="hljs-title function_">json</span>()
+  
+  <span class="hljs-keyword">const</span> updatedUser = <span class="hljs-keyword">await</span> <span class="hljs-title function_">updateUser</span>(id, body)
+  
+  <span class="hljs-keyword">return</span> <span class="hljs-title class_">NextResponse</span>.<span class="hljs-title function_">json</span>({ <span class="hljs-attr">user</span>: updatedUser })
+}
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">async</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">DELETE</span>(<span class="hljs-params">
+  <span class="hljs-attr">request</span>: <span class="hljs-title class_">NextRequest</span>,
+  { params }: { params: { id: <span class="hljs-built_in">string</span> } }
+</span>) {
+  <span class="hljs-keyword">const</span> id = params.<span class="hljs-property">id</span>
+  <span class="hljs-keyword">await</span> <span class="hljs-title function_">deleteUser</span>(id)
+  
+  <span class="hljs-keyword">return</span> <span class="hljs-title class_">NextResponse</span>.<span class="hljs-title function_">json</span>({ <span class="hljs-attr">message</span>: <span class="hljs-string">'User deleted'</span> })
+}
+</code></pre></div></div>
+<h3 id="pages-router-api-routes">Pages Router API Routes</h3>
+<h4 id="basic-api-route-1">Basic API Route</h4>
+<div class="language-tsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="hljs-comment">// pages/api/users.ts</span>
+<span class="hljs-keyword">import</span> <span class="hljs-keyword">type</span> { <span class="hljs-title class_">NextApiRequest</span>, <span class="hljs-title class_">NextApiResponse</span> } <span class="hljs-keyword">from</span> <span class="hljs-string">'next'</span>
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-keyword">async</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">handler</span>(<span class="hljs-params">
+  <span class="hljs-attr">req</span>: <span class="hljs-title class_">NextApiRequest</span>,
+  <span class="hljs-attr">res</span>: <span class="hljs-title class_">NextApiResponse</span>
+</span>) {
+  <span class="hljs-keyword">const</span> { method } = req
+  
+  <span class="hljs-keyword">switch</span> (method) {
+    <span class="hljs-keyword">case</span> <span class="hljs-string">'GET'</span>:
+      <span class="hljs-keyword">const</span> users = <span class="hljs-keyword">await</span> <span class="hljs-title function_">fetchUsers</span>()
+      res.<span class="hljs-title function_">status</span>(<span class="hljs-number">200</span>).<span class="hljs-title function_">json</span>({ users })
+      <span class="hljs-keyword">break</span>
+      
+    <span class="hljs-keyword">case</span> <span class="hljs-string">'POST'</span>:
+      <span class="hljs-keyword">const</span> { name, email } = req.<span class="hljs-property">body</span>
+      
+      <span class="hljs-keyword">if</span> (!name || !email) {
+        <span class="hljs-keyword">return</span> res.<span class="hljs-title function_">status</span>(<span class="hljs-number">400</span>).<span class="hljs-title function_">json</span>({ <span class="hljs-attr">error</span>: <span class="hljs-string">'Name and email required'</span> })
+      }
+      
+      <span class="hljs-keyword">const</span> user = <span class="hljs-keyword">await</span> <span class="hljs-title function_">createUser</span>({ name, email })
+      res.<span class="hljs-title function_">status</span>(<span class="hljs-number">201</span>).<span class="hljs-title function_">json</span>({ user })
+      <span class="hljs-keyword">break</span>
+      
+    <span class="hljs-attr">default</span>:
+      res.<span class="hljs-title function_">setHeader</span>(<span class="hljs-string">'Allow'</span>, [<span class="hljs-string">'GET'</span>, <span class="hljs-string">'POST'</span>])
+      res.<span class="hljs-title function_">status</span>(<span class="hljs-number">405</span>).<span class="hljs-title function_">end</span>(<span class="hljs-string">`Method <span class="hljs-subst">${method}</span> Not Allowed`</span>)
+  }
+}
+</code></pre></div></div>
+<h4 id="dynamic-api-route">Dynamic API Route</h4>
+<div class="language-tsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="hljs-comment">// pages/api/users/[id].ts</span>
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-keyword">async</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">handler</span>(<span class="hljs-params">req, res</span>) {
+  <span class="hljs-keyword">const</span> { id } = req.<span class="hljs-property">query</span>
+  <span class="hljs-keyword">const</span> { method } = req
+  
+  <span class="hljs-keyword">switch</span> (method) {
+    <span class="hljs-keyword">case</span> <span class="hljs-string">'GET'</span>:
+      <span class="hljs-keyword">const</span> user = <span class="hljs-keyword">await</span> <span class="hljs-title function_">fetchUserById</span>(id)
+      <span class="hljs-keyword">if</span> (!user) {
+        <span class="hljs-keyword">return</span> res.<span class="hljs-title function_">status</span>(<span class="hljs-number">404</span>).<span class="hljs-title function_">json</span>({ <span class="hljs-attr">error</span>: <span class="hljs-string">'User not found'</span> })
+      }
+      res.<span class="hljs-title function_">status</span>(<span class="hljs-number">200</span>).<span class="hljs-title function_">json</span>({ user })
+      <span class="hljs-keyword">break</span>
+      
+    <span class="hljs-keyword">case</span> <span class="hljs-string">'PUT'</span>:
+      <span class="hljs-keyword">const</span> updatedUser = <span class="hljs-keyword">await</span> <span class="hljs-title function_">updateUser</span>(id, req.<span class="hljs-property">body</span>)
+      res.<span class="hljs-title function_">status</span>(<span class="hljs-number">200</span>).<span class="hljs-title function_">json</span>({ <span class="hljs-attr">user</span>: updatedUser })
+      <span class="hljs-keyword">break</span>
+      
+    <span class="hljs-keyword">case</span> <span class="hljs-string">'DELETE'</span>:
+      <span class="hljs-keyword">await</span> <span class="hljs-title function_">deleteUser</span>(id)
+      res.<span class="hljs-title function_">status</span>(<span class="hljs-number">200</span>).<span class="hljs-title function_">json</span>({ <span class="hljs-attr">message</span>: <span class="hljs-string">'User deleted'</span> })
+      <span class="hljs-keyword">break</span>
+      
+    <span class="hljs-attr">default</span>:
+      res.<span class="hljs-title function_">setHeader</span>(<span class="hljs-string">'Allow'</span>, [<span class="hljs-string">'GET'</span>, <span class="hljs-string">'PUT'</span>, <span class="hljs-string">'DELETE'</span>])
+      res.<span class="hljs-title function_">status</span>(<span class="hljs-number">405</span>).<span class="hljs-title function_">end</span>(<span class="hljs-string">`Method <span class="hljs-subst">${method}</span> Not Allowed`</span>)
+  }
+}
+</code></pre></div></div>
+<h3 id="middleware">Middleware</h3>
+<div class="language-tsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="hljs-comment">// middleware.ts</span>
+<span class="hljs-keyword">import</span> { <span class="hljs-title class_">NextResponse</span> } <span class="hljs-keyword">from</span> <span class="hljs-string">'next/server'</span>
+<span class="hljs-keyword">import</span> <span class="hljs-keyword">type</span> { <span class="hljs-title class_">NextRequest</span> } <span class="hljs-keyword">from</span> <span class="hljs-string">'next/server'</span>
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">middleware</span>(<span class="hljs-params"><span class="hljs-attr">request</span>: <span class="hljs-title class_">NextRequest</span></span>) {
+  <span class="hljs-comment">// Check authentication</span>
+  <span class="hljs-keyword">const</span> token = request.<span class="hljs-property">cookies</span>.<span class="hljs-title function_">get</span>(<span class="hljs-string">'token'</span>)
+  
+  <span class="hljs-keyword">if</span> (!token &amp;&amp; request.<span class="hljs-property">nextUrl</span>.<span class="hljs-property">pathname</span>.<span class="hljs-title function_">startsWith</span>(<span class="hljs-string">'/dashboard'</span>)) {
+    <span class="hljs-keyword">return</span> <span class="hljs-title class_">NextResponse</span>.<span class="hljs-title function_">redirect</span>(<span class="hljs-keyword">new</span> <span class="hljs-title function_">URL</span>(<span class="hljs-string">'/login'</span>, request.<span class="hljs-property">url</span>))
+  }
+  
+  <span class="hljs-comment">// Add custom headers</span>
+  <span class="hljs-keyword">const</span> response = <span class="hljs-title class_">NextResponse</span>.<span class="hljs-title function_">next</span>()
+  response.<span class="hljs-property">headers</span>.<span class="hljs-title function_">set</span>(<span class="hljs-string">'X-Custom-Header'</span>, <span class="hljs-string">'custom-value'</span>)
+  
+  <span class="hljs-keyword">return</span> response
+}
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> config = {
+  <span class="hljs-attr">matcher</span>: [
+    <span class="hljs-string">'/dashboard/:path*'</span>,
+    <span class="hljs-string">'/api/:path*'</span>,
+    <span class="hljs-string">'/((?!api|_next/static|_next/image|favicon.ico).*)'</span>,
+  ],
+}
+</code></pre></div></div>
+<hr>
+<h2 id="state-management">State Management</h2>
+<h3 id="react-built-in-state">React Built-in State</h3>
+<div class="language-tsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="hljs-comment">// useState</span>
+<span class="hljs-keyword">import</span> { useState } <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>
+
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">Counter</span>(<span class="hljs-params"></span>) {
+  <span class="hljs-keyword">const</span> [count, setCount] = <span class="hljs-title function_">useState</span>(<span class="hljs-number">0</span>)
+  
+  <span class="hljs-keyword">return</span> (
+    <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">p</span>&gt;</span>Count: {count}<span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">onClick</span>=<span class="hljs-string">{()</span> =&gt;</span> setCount(count + 1)}&gt;Increment<span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span>
+  )
+}
+
+<span class="hljs-comment">// useReducer</span>
+<span class="hljs-keyword">import</span> { useReducer } <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>
+
+<span class="hljs-keyword">const</span> initialState = { <span class="hljs-attr">count</span>: <span class="hljs-number">0</span> }
+
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">reducer</span>(<span class="hljs-params">state, action</span>) {
+  <span class="hljs-keyword">switch</span> (action.<span class="hljs-property">type</span>) {
+    <span class="hljs-keyword">case</span> <span class="hljs-string">'increment'</span>:
+      <span class="hljs-keyword">return</span> { <span class="hljs-attr">count</span>: state.<span class="hljs-property">count</span> + <span class="hljs-number">1</span> }
+    <span class="hljs-keyword">case</span> <span class="hljs-string">'decrement'</span>:
+      <span class="hljs-keyword">return</span> { <span class="hljs-attr">count</span>: state.<span class="hljs-property">count</span> - <span class="hljs-number">1</span> }
+    <span class="hljs-keyword">case</span> <span class="hljs-string">'reset'</span>:
+      <span class="hljs-keyword">return</span> initialState
+    <span class="hljs-attr">default</span>:
+      <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Error</span>()
+  }
+}
+
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">Counter</span>(<span class="hljs-params"></span>) {
+  <span class="hljs-keyword">const</span> [state, dispatch] = <span class="hljs-title function_">useReducer</span>(reducer, initialState)
+  
+  <span class="hljs-keyword">return</span> (
+    <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>
+      Count: {state.count}
+      <span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">onClick</span>=<span class="hljs-string">{()</span> =&gt;</span> dispatch({ type: 'increment' })}&gt;+<span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">onClick</span>=<span class="hljs-string">{()</span> =&gt;</span> dispatch({ type: 'decrement' })}&gt;-<span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">onClick</span>=<span class="hljs-string">{()</span> =&gt;</span> dispatch({ type: 'reset' })}&gt;Reset<span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span>
+  )
+}
+</code></pre></div></div>
+<h3 id="context-api">Context API</h3>
+<div class="language-tsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="hljs-comment">// contexts/AuthContext.tsx</span>
+<span class="hljs-keyword">import</span> { createContext, useContext, useState } <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>
+
+<span class="hljs-keyword">type</span> <span class="hljs-title class_">AuthContextType</span> = {
+  <span class="hljs-attr">user</span>: <span class="hljs-title class_">User</span> | <span class="hljs-literal">null</span>
+  <span class="hljs-attr">login</span>: <span class="hljs-function">(<span class="hljs-params"><span class="hljs-attr">user</span>: <span class="hljs-title class_">User</span></span>) =&gt;</span> <span class="hljs-built_in">void</span>
+  <span class="hljs-attr">logout</span>: <span class="hljs-function">() =&gt;</span> <span class="hljs-built_in">void</span>
+}
+
+<span class="hljs-keyword">const</span> <span class="hljs-title class_">AuthContext</span> = createContext&lt;<span class="hljs-title class_">AuthContextType</span> | <span class="hljs-literal">undefined</span>&gt;(<span class="hljs-literal">undefined</span>)
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">AuthProvider</span>(<span class="hljs-params">{ children }: { children: React.ReactNode }</span>) {
+  <span class="hljs-keyword">const</span> [user, setUser] = useState&lt;<span class="hljs-title class_">User</span> | <span class="hljs-literal">null</span>&gt;(<span class="hljs-literal">null</span>)
+  
+  <span class="hljs-keyword">const</span> <span class="hljs-title function_">login</span> = (<span class="hljs-params"><span class="hljs-attr">user</span>: <span class="hljs-title class_">User</span></span>) =&gt; {
+    <span class="hljs-title function_">setUser</span>(user)
+    <span class="hljs-variable language_">localStorage</span>.<span class="hljs-title function_">setItem</span>(<span class="hljs-string">'user'</span>, <span class="hljs-title class_">JSON</span>.<span class="hljs-title function_">stringify</span>(user))
+  }
+  
+  <span class="hljs-keyword">const</span> <span class="hljs-title function_">logout</span> = (<span class="hljs-params"></span>) =&gt; {
+    <span class="hljs-title function_">setUser</span>(<span class="hljs-literal">null</span>)
+    <span class="hljs-variable language_">localStorage</span>.<span class="hljs-title function_">removeItem</span>(<span class="hljs-string">'user'</span>)
+  }
+  
+  <span class="hljs-keyword">return</span> (
+    <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">AuthContext.Provider</span> <span class="hljs-attr">value</span>=<span class="hljs-string">{{</span> <span class="hljs-attr">user</span>, <span class="hljs-attr">login</span>, <span class="hljs-attr">logout</span> }}&gt;</span>
+      {children}
+    <span class="hljs-tag">&lt;/<span class="hljs-name">AuthContext.Provider</span>&gt;</span></span>
+  )
+}
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">useAuth</span>(<span class="hljs-params"></span>) {
+  <span class="hljs-keyword">const</span> context = <span class="hljs-title function_">useContext</span>(<span class="hljs-title class_">AuthContext</span>)
+  <span class="hljs-keyword">if</span> (context === <span class="hljs-literal">undefined</span>) {
+    <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Error</span>(<span class="hljs-string">'useAuth must be used within an AuthProvider'</span>)
+  }
+  <span class="hljs-keyword">return</span> context
+}
+
+<span class="hljs-comment">// Usage in component</span>
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">Profile</span>(<span class="hljs-params"></span>) {
+  <span class="hljs-keyword">const</span> { user, logout } = <span class="hljs-title function_">useAuth</span>()
+  
+  <span class="hljs-keyword">return</span> (
+    <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">h1</span>&gt;</span>Welcome, {user?.name}<span class="hljs-tag">&lt;/<span class="hljs-name">h1</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">onClick</span>=<span class="hljs-string">{logout}</span>&gt;</span>Logout<span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span>
+  )
+}
+</code></pre></div></div>
+<h3 id="zustand">Zustand</h3>
+<div class="language-tsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="hljs-comment">// store/useStore.ts</span>
+<span class="hljs-keyword">import</span> { create } <span class="hljs-keyword">from</span> <span class="hljs-string">'zustand'</span>
+<span class="hljs-keyword">import</span> { persist } <span class="hljs-keyword">from</span> <span class="hljs-string">'zustand/middleware'</span>
+
+<span class="hljs-keyword">interface</span> <span class="hljs-title class_">CounterState</span> {
+  <span class="hljs-attr">count</span>: <span class="hljs-built_in">number</span>
+  <span class="hljs-attr">increment</span>: <span class="hljs-function">() =&gt;</span> <span class="hljs-built_in">void</span>
+  <span class="hljs-attr">decrement</span>: <span class="hljs-function">() =&gt;</span> <span class="hljs-built_in">void</span>
+  <span class="hljs-attr">reset</span>: <span class="hljs-function">() =&gt;</span> <span class="hljs-built_in">void</span>
+}
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> useCounterStore = create&lt;<span class="hljs-title class_">CounterState</span>&gt;()(
+  <span class="hljs-title function_">persist</span>(
+    <span class="hljs-function">(<span class="hljs-params">set</span>) =&gt;</span> ({
+      <span class="hljs-attr">count</span>: <span class="hljs-number">0</span>,
+      <span class="hljs-attr">increment</span>: <span class="hljs-function">() =&gt;</span> <span class="hljs-title function_">set</span>(<span class="hljs-function">(<span class="hljs-params">state</span>) =&gt;</span> ({ <span class="hljs-attr">count</span>: state.<span class="hljs-property">count</span> + <span class="hljs-number">1</span> })),
+      <span class="hljs-attr">decrement</span>: <span class="hljs-function">() =&gt;</span> <span class="hljs-title function_">set</span>(<span class="hljs-function">(<span class="hljs-params">state</span>) =&gt;</span> ({ <span class="hljs-attr">count</span>: state.<span class="hljs-property">count</span> - <span class="hljs-number">1</span> })),
+      <span class="hljs-attr">reset</span>: <span class="hljs-function">() =&gt;</span> <span class="hljs-title function_">set</span>({ <span class="hljs-attr">count</span>: <span class="hljs-number">0</span> }),
+    }),
+    {
+      <span class="hljs-attr">name</span>: <span class="hljs-string">'counter-storage'</span>,
+    }
+  )
+)
+
+<span class="hljs-comment">// Usage in component</span>
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">Counter</span>(<span class="hljs-params"></span>) {
+  <span class="hljs-keyword">const</span> { count, increment, decrement, reset } = <span class="hljs-title function_">useCounterStore</span>()
+  
+  <span class="hljs-keyword">return</span> (
+    <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">p</span>&gt;</span>Count: {count}<span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">onClick</span>=<span class="hljs-string">{increment}</span>&gt;</span>+<span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">onClick</span>=<span class="hljs-string">{decrement}</span>&gt;</span>-<span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">onClick</span>=<span class="hljs-string">{reset}</span>&gt;</span>Reset<span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span>
+  )
+}
+</code></pre></div></div>
+<h3 id="redux-toolkit">Redux Toolkit</h3>
+<div class="language-tsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="hljs-comment">// store/store.ts</span>
+<span class="hljs-keyword">import</span> { configureStore } <span class="hljs-keyword">from</span> <span class="hljs-string">'@reduxjs/toolkit'</span>
+<span class="hljs-keyword">import</span> counterReducer <span class="hljs-keyword">from</span> <span class="hljs-string">'./counterSlice'</span>
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> store = <span class="hljs-title function_">configureStore</span>({
+  <span class="hljs-attr">reducer</span>: {
+    <span class="hljs-attr">counter</span>: counterReducer,
+  },
+})
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">type</span> <span class="hljs-title class_">RootState</span> = <span class="hljs-title class_">ReturnType</span>&lt;<span class="hljs-keyword">typeof</span> store.<span class="hljs-property">getState</span>&gt;
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">type</span> <span class="hljs-title class_">AppDispatch</span> = <span class="hljs-keyword">typeof</span> store.<span class="hljs-property">dispatch</span>
+
+<span class="hljs-comment">// store/counterSlice.ts</span>
+<span class="hljs-keyword">import</span> { createSlice, <span class="hljs-title class_">PayloadAction</span> } <span class="hljs-keyword">from</span> <span class="hljs-string">'@reduxjs/toolkit'</span>
+
+<span class="hljs-keyword">interface</span> <span class="hljs-title class_">CounterState</span> {
+  <span class="hljs-attr">value</span>: <span class="hljs-built_in">number</span>
+}
+
+<span class="hljs-keyword">const</span> <span class="hljs-attr">initialState</span>: <span class="hljs-title class_">CounterState</span> = {
+  <span class="hljs-attr">value</span>: <span class="hljs-number">0</span>,
+}
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> counterSlice = <span class="hljs-title function_">createSlice</span>({
+  <span class="hljs-attr">name</span>: <span class="hljs-string">'counter'</span>,
+  initialState,
+  <span class="hljs-attr">reducers</span>: {
+    <span class="hljs-attr">increment</span>: <span class="hljs-function">(<span class="hljs-params">state</span>) =&gt;</span> {
+      state.<span class="hljs-property">value</span> += <span class="hljs-number">1</span>
+    },
+    <span class="hljs-attr">decrement</span>: <span class="hljs-function">(<span class="hljs-params">state</span>) =&gt;</span> {
+      state.<span class="hljs-property">value</span> -= <span class="hljs-number">1</span>
+    },
+    <span class="hljs-attr">incrementByAmount</span>: <span class="hljs-function">(<span class="hljs-params">state, <span class="hljs-attr">action</span>: <span class="hljs-title class_">PayloadAction</span>&lt;<span class="hljs-built_in">number</span>&gt;</span>) =&gt;</span> {
+      state.<span class="hljs-property">value</span> += action.<span class="hljs-property">payload</span>
+    },
+  },
+})
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> { increment, decrement, incrementByAmount } = counterSlice.<span class="hljs-property">actions</span>
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> counterSlice.<span class="hljs-property">reducer</span>
+
+<span class="hljs-comment">// Usage in component</span>
+<span class="hljs-keyword">import</span> { useSelector, useDispatch } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-redux'</span>
+<span class="hljs-keyword">import</span> { <span class="hljs-title class_">RootState</span> } <span class="hljs-keyword">from</span> <span class="hljs-string">'../store/store'</span>
+<span class="hljs-keyword">import</span> { increment, decrement } <span class="hljs-keyword">from</span> <span class="hljs-string">'../store/counterSlice'</span>
+
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">Counter</span>(<span class="hljs-params"></span>) {
+  <span class="hljs-keyword">const</span> count = <span class="hljs-title function_">useSelector</span>(<span class="hljs-function">(<span class="hljs-params"><span class="hljs-attr">state</span>: <span class="hljs-title class_">RootState</span></span>) =&gt;</span> state.<span class="hljs-property">counter</span>.<span class="hljs-property">value</span>)
+  <span class="hljs-keyword">const</span> dispatch = <span class="hljs-title function_">useDispatch</span>()
+  
+  <span class="hljs-keyword">return</span> (
+    <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">p</span>&gt;</span>Count: {count}<span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">onClick</span>=<span class="hljs-string">{()</span> =&gt;</span> dispatch(increment())}&gt;+<span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">onClick</span>=<span class="hljs-string">{()</span> =&gt;</span> dispatch(decrement())}&gt;-<span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span>
+  )
+}
+</code></pre></div></div>
+<hr>
+<h2 id="authentication">Authentication</h2>
+<h3 id="nextauthjs-setup">NextAuth.js Setup</h3>
+<div class="language-tsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="hljs-comment">// app/api/auth/[...nextauth]/route.ts</span>
+<span class="hljs-keyword">import</span> <span class="hljs-title class_">NextAuth</span> <span class="hljs-keyword">from</span> <span class="hljs-string">'next-auth'</span>
+<span class="hljs-keyword">import</span> <span class="hljs-title class_">GoogleProvider</span> <span class="hljs-keyword">from</span> <span class="hljs-string">'next-auth/providers/google'</span>
+<span class="hljs-keyword">import</span> <span class="hljs-title class_">CredentialsProvider</span> <span class="hljs-keyword">from</span> <span class="hljs-string">'next-auth/providers/credentials'</span>
+
+<span class="hljs-keyword">const</span> handler = <span class="hljs-title class_">NextAuth</span>({
+  <span class="hljs-attr">providers</span>: [
+    <span class="hljs-title class_">GoogleProvider</span>({
+      <span class="hljs-attr">clientId</span>: process.<span class="hljs-property">env</span>.<span class="hljs-property">GOOGLE_CLIENT_ID</span>!,
+      <span class="hljs-attr">clientSecret</span>: process.<span class="hljs-property">env</span>.<span class="hljs-property">GOOGLE_CLIENT_SECRET</span>!,
+    }),
+    <span class="hljs-title class_">CredentialsProvider</span>({
+      <span class="hljs-attr">name</span>: <span class="hljs-string">'credentials'</span>,
+      <span class="hljs-attr">credentials</span>: {
+        <span class="hljs-attr">email</span>: { <span class="hljs-attr">label</span>: <span class="hljs-string">'Email'</span>, <span class="hljs-attr">type</span>: <span class="hljs-string">'email'</span> },
+        <span class="hljs-attr">password</span>: { <span class="hljs-attr">label</span>: <span class="hljs-string">'Password'</span>, <span class="hljs-attr">type</span>: <span class="hljs-string">'password'</span> }
+      },
+      <span class="hljs-keyword">async</span> <span class="hljs-title function_">authorize</span>(<span class="hljs-params">credentials</span>) {
+        <span class="hljs-comment">// Validate credentials</span>
+        <span class="hljs-keyword">const</span> user = <span class="hljs-keyword">await</span> <span class="hljs-title function_">validateUser</span>(credentials)
+        
+        <span class="hljs-keyword">if</span> (user) {
+          <span class="hljs-keyword">return</span> {
+            <span class="hljs-attr">id</span>: user.<span class="hljs-property">id</span>,
+            <span class="hljs-attr">email</span>: user.<span class="hljs-property">email</span>,
+            <span class="hljs-attr">name</span>: user.<span class="hljs-property">name</span>,
+          }
+        }
+        <span class="hljs-keyword">return</span> <span class="hljs-literal">null</span>
+      }
+    })
+  ],
+  <span class="hljs-attr">callbacks</span>: {
+    <span class="hljs-keyword">async</span> <span class="hljs-title function_">jwt</span>(<span class="hljs-params">{ token, user }</span>) {
+      <span class="hljs-keyword">if</span> (user) {
+        token.<span class="hljs-property">id</span> = user.<span class="hljs-property">id</span>
+      }
+      <span class="hljs-keyword">return</span> token
+    },
+    <span class="hljs-keyword">async</span> <span class="hljs-title function_">session</span>(<span class="hljs-params">{ session, token }</span>) {
+      session.<span class="hljs-property">user</span>.<span class="hljs-property">id</span> = token.<span class="hljs-property">id</span>
+      <span class="hljs-keyword">return</span> session
+    },
+  },
+  <span class="hljs-attr">pages</span>: {
+    <span class="hljs-attr">signIn</span>: <span class="hljs-string">'/auth/signin'</span>,
+    <span class="hljs-attr">signOut</span>: <span class="hljs-string">'/auth/signout'</span>,
+    <span class="hljs-attr">error</span>: <span class="hljs-string">'/auth/error'</span>,
+  },
+})
+
+<span class="hljs-keyword">export</span> { handler <span class="hljs-keyword">as</span> <span class="hljs-variable constant_">GET</span>, handler <span class="hljs-keyword">as</span> <span class="hljs-variable constant_">POST</span> }
+</code></pre></div></div>
+<h3 id="session-provider-setup">Session Provider Setup</h3>
+<div class="language-tsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="hljs-comment">// app/providers.tsx</span>
+<span class="hljs-string">'use client'</span>
+
+<span class="hljs-keyword">import</span> { <span class="hljs-title class_">SessionProvider</span> } <span class="hljs-keyword">from</span> <span class="hljs-string">'next-auth/react'</span>
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">Providers</span>(<span class="hljs-params">{ children }: { children: React.ReactNode }</span>) {
+  <span class="hljs-keyword">return</span> <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">SessionProvider</span>&gt;</span>{children}<span class="hljs-tag">&lt;/<span class="hljs-name">SessionProvider</span>&gt;</span></span>
+}
+
+<span class="hljs-comment">// app/layout.tsx</span>
+<span class="hljs-keyword">import</span> { <span class="hljs-title class_">Providers</span> } <span class="hljs-keyword">from</span> <span class="hljs-string">'./providers'</span>
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">RootLayout</span>(<span class="hljs-params">{
+  children,
+}: {
+  children: React.ReactNode
+}</span>) {
+  <span class="hljs-keyword">return</span> (
+    <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">html</span> <span class="hljs-attr">lang</span>=<span class="hljs-string">"en"</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">body</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">Providers</span>&gt;</span>{children}<span class="hljs-tag">&lt;/<span class="hljs-name">Providers</span>&gt;</span>
+      <span class="hljs-tag">&lt;/<span class="hljs-name">body</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">html</span>&gt;</span></span>
+  )
+}
+</code></pre></div></div>
+<h3 id="using-authentication-in-components">Using Authentication in Components</h3>
+<div class="language-tsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="hljs-string">'use client'</span>
+
+<span class="hljs-keyword">import</span> { useSession, signIn, signOut } <span class="hljs-keyword">from</span> <span class="hljs-string">'next-auth/react'</span>
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">Component</span>(<span class="hljs-params"></span>) {
+  <span class="hljs-keyword">const</span> { <span class="hljs-attr">data</span>: session, status } = <span class="hljs-title function_">useSession</span>()
+  
+  <span class="hljs-keyword">if</span> (status === <span class="hljs-string">'loading'</span>) <span class="hljs-keyword">return</span> <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">p</span>&gt;</span>Loading...<span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span></span>
+  
+  <span class="hljs-keyword">if</span> (session) {
+    <span class="hljs-keyword">return</span> (
+      <span class="language-xml"><span class="hljs-tag">&lt;&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">p</span>&gt;</span>Signed in as {session.user?.email}<span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">onClick</span>=<span class="hljs-string">{()</span> =&gt;</span> signOut()}&gt;Sign out<span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span>
+      <span class="hljs-tag">&lt;/&gt;</span></span>
+    )
+  }
+  
+  <span class="hljs-keyword">return</span> (
+    <span class="language-xml"><span class="hljs-tag">&lt;&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">p</span>&gt;</span>Not signed in<span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">onClick</span>=<span class="hljs-string">{()</span> =&gt;</span> signIn()}&gt;Sign in<span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span>
+    <span class="hljs-tag">&lt;/&gt;</span></span>
+  )
+}
+</code></pre></div></div>
+<h3 id="server-side-authentication">Server-Side Authentication</h3>
+<div class="language-tsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="hljs-comment">// app/protected/page.tsx</span>
+<span class="hljs-keyword">import</span> { getServerSession } <span class="hljs-keyword">from</span> <span class="hljs-string">'next-auth/next'</span>
+<span class="hljs-keyword">import</span> { redirect } <span class="hljs-keyword">from</span> <span class="hljs-string">'next/navigation'</span>
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-keyword">async</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">ProtectedPage</span>(<span class="hljs-params"></span>) {
+  <span class="hljs-keyword">const</span> session = <span class="hljs-keyword">await</span> <span class="hljs-title function_">getServerSession</span>()
+  
+  <span class="hljs-keyword">if</span> (!session) {
+    <span class="hljs-title function_">redirect</span>(<span class="hljs-string">'/auth/signin'</span>)
+  }
+  
+  <span class="hljs-keyword">return</span> (
+    <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">h1</span>&gt;</span>Protected Content<span class="hljs-tag">&lt;/<span class="hljs-name">h1</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">p</span>&gt;</span>Welcome, {session.user?.name}!<span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span>
+  )
+}
+</code></pre></div></div>
+<h3 id="custom-login-page">Custom Login Page</h3>
+<div class="language-tsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="hljs-comment">// app/auth/signin/page.tsx</span>
+<span class="hljs-string">'use client'</span>
+
+<span class="hljs-keyword">import</span> { signIn, getProviders } <span class="hljs-keyword">from</span> <span class="hljs-string">'next-auth/react'</span>
+<span class="hljs-keyword">import</span> { useState, useEffect } <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">SignIn</span>(<span class="hljs-params"></span>) {
+  <span class="hljs-keyword">const</span> [providers, setProviders] = <span class="hljs-title function_">useState</span>(<span class="hljs-literal">null</span>)
+  
+  <span class="hljs-title function_">useEffect</span>(<span class="hljs-function">() =&gt;</span> {
+    <span class="hljs-keyword">const</span> <span class="hljs-title function_">fetchProviders</span> = <span class="hljs-keyword">async</span> (<span class="hljs-params"></span>) =&gt; {
+      <span class="hljs-keyword">const</span> res = <span class="hljs-keyword">await</span> <span class="hljs-title function_">getProviders</span>()
+      <span class="hljs-title function_">setProviders</span>(res)
+    }
+    <span class="hljs-title function_">fetchProviders</span>()
+  }, [])
+  
+  <span class="hljs-keyword">return</span> (
+    <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">className</span>=<span class="hljs-string">"min-h-screen flex items-center justify-center"</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">className</span>=<span class="hljs-string">"max-w-md w-full space-y-8"</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">h2</span> <span class="hljs-attr">className</span>=<span class="hljs-string">"text-center text-3xl font-bold"</span>&gt;</span>Sign in<span class="hljs-tag">&lt;/<span class="hljs-name">h2</span>&gt;</span>
+        
+        {providers &amp;&amp; Object.values(providers).map((provider) =&gt; (
+          <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">key</span>=<span class="hljs-string">{provider.name}</span>&gt;</span>
+            <span class="hljs-tag">&lt;<span class="hljs-name">button</span>
+              <span class="hljs-attr">onClick</span>=<span class="hljs-string">{()</span> =&gt;</span> signIn(provider.id)}
+              className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700"
+            &gt;
+              Sign in with {provider.name}
+            <span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span>
+          <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>
+        ))}
+      <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span>
+  )
+}
+</code></pre></div></div>
+<hr>
+<h2 id="performance-optimization">Performance Optimization</h2>
+<h3 id="image-optimization">Image Optimization</h3>
+<div class="language-tsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="hljs-keyword">import</span> <span class="hljs-title class_">Image</span> <span class="hljs-keyword">from</span> <span class="hljs-string">'next/image'</span>
+
+<span class="hljs-comment">// Basic usage</span>
+&lt;<span class="hljs-title class_">Image</span>
+  src=<span class="hljs-string">"/hero.jpg"</span>
+  alt=<span class="hljs-string">"Hero image"</span>
+  width={<span class="hljs-number">800</span>}
+  height={<span class="hljs-number">600</span>}
+/&gt;
+
+<span class="hljs-comment">// With priority loading</span>
+<span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">Image</span>
+  <span class="hljs-attr">src</span>=<span class="hljs-string">"/hero.jpg"</span>
+  <span class="hljs-attr">alt</span>=<span class="hljs-string">"Hero image"</span>
+  <span class="hljs-attr">width</span>=<span class="hljs-string">{800}</span>
+  <span class="hljs-attr">height</span>=<span class="hljs-string">{600}</span>
+  <span class="hljs-attr">priority</span>
+/&gt;</span></span>
+
+<span class="hljs-comment">// Fill container</span>
+<span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span> <span class="hljs-attr">position:</span> '<span class="hljs-attr">relative</span>', <span class="hljs-attr">width:</span> '<span class="hljs-attr">100</span>%', <span class="hljs-attr">height:</span> '<span class="hljs-attr">400px</span>' }}&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">Image</span>
+    <span class="hljs-attr">src</span>=<span class="hljs-string">"/hero.jpg"</span>
+    <span class="hljs-attr">alt</span>=<span class="hljs-string">"Hero image"</span>
+    <span class="hljs-attr">fill</span>
+    <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span> <span class="hljs-attr">objectFit:</span> '<span class="hljs-attr">cover</span>' }}
+  /&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span>
+
+<span class="hljs-comment">// Responsive images</span>
+<span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">Image</span>
+  <span class="hljs-attr">src</span>=<span class="hljs-string">"/hero.jpg"</span>
+  <span class="hljs-attr">alt</span>=<span class="hljs-string">"Hero image"</span>
+  <span class="hljs-attr">width</span>=<span class="hljs-string">{800}</span>
+  <span class="hljs-attr">height</span>=<span class="hljs-string">{600}</span>
+  <span class="hljs-attr">sizes</span>=<span class="hljs-string">"(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"</span>
+/&gt;</span></span>
+</code></pre></div></div>
+<h3 id="font-optimization">Font Optimization</h3>
+<div class="language-tsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="hljs-comment">// app/layout.tsx</span>
+<span class="hljs-keyword">import</span> { <span class="hljs-title class_">Inter</span>, <span class="hljs-title class_">Roboto</span>_Mono } <span class="hljs-keyword">from</span> <span class="hljs-string">'next/font/google'</span>
+
+<span class="hljs-keyword">const</span> inter = <span class="hljs-title class_">Inter</span>({
+  <span class="hljs-attr">subsets</span>: [<span class="hljs-string">'latin'</span>],
+  <span class="hljs-attr">display</span>: <span class="hljs-string">'swap'</span>,
+})
+
+<span class="hljs-keyword">const</span> robotoMono = <span class="hljs-title class_">Roboto</span>_Mono({
+  <span class="hljs-attr">subsets</span>: [<span class="hljs-string">'latin'</span>],
+  <span class="hljs-attr">display</span>: <span class="hljs-string">'swap'</span>,
+})
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">RootLayout</span>(<span class="hljs-params">{
+  children,
+}: {
+  children: React.ReactNode
+}</span>) {
+  <span class="hljs-keyword">return</span> (
+    <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">html</span> <span class="hljs-attr">lang</span>=<span class="hljs-string">"en"</span> <span class="hljs-attr">className</span>=<span class="hljs-string">{inter.className}</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">body</span>&gt;</span>{children}<span class="hljs-tag">&lt;/<span class="hljs-name">body</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">html</span>&gt;</span></span>
+  )
+}
+</code></pre></div></div>
+<h3 id="code-splitting">Code Splitting</h3>
+<div class="language-tsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="hljs-comment">// Dynamic imports</span>
+<span class="hljs-keyword">import</span> dynamic <span class="hljs-keyword">from</span> <span class="hljs-string">'next/dynamic'</span>
+
+<span class="hljs-keyword">const</span> <span class="hljs-title class_">DynamicComponent</span> = <span class="hljs-title function_">dynamic</span>(<span class="hljs-function">() =&gt;</span> <span class="hljs-keyword">import</span>(<span class="hljs-string">'../components/MyComponent'</span>), {
+  <span class="hljs-attr">loading</span>: <span class="hljs-function">() =&gt;</span> <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">p</span>&gt;</span>Loading...<span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span></span>,
+  <span class="hljs-attr">ssr</span>: <span class="hljs-literal">false</span>, <span class="hljs-comment">// Disable server-side rendering</span>
+})
+
+<span class="hljs-comment">// Conditional loading</span>
+<span class="hljs-keyword">const</span> <span class="hljs-title class_">DynamicChart</span> = <span class="hljs-title function_">dynamic</span>(<span class="hljs-function">() =&gt;</span> <span class="hljs-keyword">import</span>(<span class="hljs-string">'../components/Chart'</span>), {
+  <span class="hljs-attr">loading</span>: <span class="hljs-function">() =&gt;</span> <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">p</span>&gt;</span>Loading chart...<span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span></span>,
+})
+
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">Dashboard</span>(<span class="hljs-params"></span>) {
+  <span class="hljs-keyword">const</span> [showChart, setShowChart] = <span class="hljs-title function_">useState</span>(<span class="hljs-literal">false</span>)
+  
+  <span class="hljs-keyword">return</span> (
+    <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">h1</span>&gt;</span>Dashboard<span class="hljs-tag">&lt;/<span class="hljs-name">h1</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">onClick</span>=<span class="hljs-string">{()</span> =&gt;</span> setShowChart(true)}&gt;Show Chart<span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span>
+      {showChart &amp;&amp; <span class="hljs-tag">&lt;<span class="hljs-name">DynamicChart</span> /&gt;</span>}
+    <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span>
+  )
+}
+</code></pre></div></div>
+<h3 id="memoization">Memoization</h3>
+<div class="language-tsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="hljs-keyword">import</span> { memo, useMemo, useCallback } <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>
+
+<span class="hljs-comment">// Component memoization</span>
+<span class="hljs-keyword">const</span> <span class="hljs-title class_">ExpensiveComponent</span> = <span class="hljs-title function_">memo</span>(<span class="hljs-keyword">function</span> <span class="hljs-title function_">ExpensiveComponent</span>(<span class="hljs-params">{ data }</span>) {
+  <span class="hljs-keyword">return</span> (
+    <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>
+      {data.map(item =&gt; (
+        <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">key</span>=<span class="hljs-string">{item.id}</span>&gt;</span>{item.name}<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>
+      ))}
+    <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span>
+  )
+})
+
+<span class="hljs-comment">// Value memoization</span>
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">Component</span>(<span class="hljs-params">{ items, filter }</span>) {
+  <span class="hljs-keyword">const</span> filteredItems = <span class="hljs-title function_">useMemo</span>(<span class="hljs-function">() =&gt;</span> {
+    <span class="hljs-keyword">return</span> items.<span class="hljs-title function_">filter</span>(<span class="hljs-function"><span class="hljs-params">item</span> =&gt;</span> item.<span class="hljs-property">category</span> === filter)
+  }, [items, filter])
+  
+  <span class="hljs-keyword">const</span> handleClick = <span class="hljs-title function_">useCallback</span>(<span class="hljs-function">(<span class="hljs-params">id</span>) =&gt;</span> {
+    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">'Item clicked:'</span>, id)
+  }, [])
+  
+  <span class="hljs-keyword">return</span> (
+    <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>
+      {filteredItems.map(item =&gt; (
+        <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">key</span>=<span class="hljs-string">{item.id}</span> <span class="hljs-attr">onClick</span>=<span class="hljs-string">{()</span> =&gt;</span> handleClick(item.id)}&gt;
+          {item.name}
+        <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>
+      ))}
+    <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span>
+  )
+}
+</code></pre></div></div>
+<h3 id="bundle-analysis">Bundle Analysis</h3>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="hljs-comment"># Install bundle analyzer</span>
+npm install --save-dev @next/bundle-analyzer
+
+<span class="hljs-comment"># Add to next.config.js</span>
+const withBundleAnalyzer = require(<span class="hljs-string">'@next/bundle-analyzer'</span>)({
+  enabled: process.env.ANALYZE === <span class="hljs-string">'true'</span>,
+})
+
+module.exports = withBundleAnalyzer({
+  // Your Next.js config
+})
+
+<span class="hljs-comment"># Run analysis</span>
+ANALYZE=<span class="hljs-literal">true</span> npm run build
+</code></pre></div></div>
+<hr>
+<h2 id="deployment">Deployment</h2>
+<h3 id="vercel-deployment">Vercel Deployment</h3>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="hljs-comment"># Install Vercel CLI</span>
+npm install -g vercel
+
+<span class="hljs-comment"># Deploy</span>
+vercel
+
+<span class="hljs-comment"># Environment variables</span>
+vercel <span class="hljs-built_in">env</span> add NEXT_PUBLIC_API_URL
+vercel <span class="hljs-built_in">env</span> add DATABASE_URL
+</code></pre></div></div>
+<h3 id="docker-deployment">Docker Deployment</h3>
+<div class="language-dockerfile highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="hljs-comment"># Dockerfile</span>
+<span class="hljs-keyword">FROM</span> node:<span class="hljs-number">18</span>-alpine AS deps
+<span class="hljs-keyword">WORKDIR</span><span class="language-bash"> /app</span>
+<span class="hljs-keyword">COPY</span><span class="language-bash"> package.json package-lock.json ./</span>
+<span class="hljs-keyword">RUN</span><span class="language-bash"> npm ci --only=production</span>
+
+<span class="hljs-keyword">FROM</span> node:<span class="hljs-number">18</span>-alpine AS builder
+<span class="hljs-keyword">WORKDIR</span><span class="language-bash"> /app</span>
+<span class="hljs-keyword">COPY</span><span class="language-bash"> --from=deps /app/node_modules ./node_modules</span>
+<span class="hljs-keyword">COPY</span><span class="language-bash"> . .</span>
+<span class="hljs-keyword">RUN</span><span class="language-bash"> npm run build</span>
+
+<span class="hljs-keyword">FROM</span> node:<span class="hljs-number">18</span>-alpine AS runner
+<span class="hljs-keyword">WORKDIR</span><span class="language-bash"> /app</span>
+<span class="hljs-keyword">ENV</span> NODE_ENV production
+
+<span class="hljs-keyword">RUN</span><span class="language-bash"> addgroup --system --gid 1001 nodejs</span>
+<span class="hljs-keyword">RUN</span><span class="language-bash"> adduser --system --uid 1001 nextjs</span>
+
+<span class="hljs-keyword">COPY</span><span class="language-bash"> --from=builder /app/public ./public</span>
+<span class="hljs-keyword">COPY</span><span class="language-bash"> --from=builder --<span class="hljs-built_in">chown</span>=nextjs:nodejs /app/.next/standalone ./</span>
+<span class="hljs-keyword">COPY</span><span class="language-bash"> --from=builder --<span class="hljs-built_in">chown</span>=nextjs:nodejs /app/.next/static ./.next/static</span>
+
+<span class="hljs-keyword">USER</span> nextjs
+<span class="hljs-keyword">EXPOSE</span> <span class="hljs-number">3000</span>
+<span class="hljs-keyword">ENV</span> PORT <span class="hljs-number">3000</span>
+
+<span class="hljs-keyword">CMD</span><span class="language-bash"> [<span class="hljs-string">"node"</span>, <span class="hljs-string">"server.js"</span>]</span>
+</code></pre></div></div>
+<h3 id="environment-variables">Environment Variables</h3>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="hljs-comment"># .env.local</span>
+NEXT_PUBLIC_API_URL=https://api.example.com
+DATABASE_URL=postgresql://username:password@localhost:5432/mydb
+NEXTAUTH_SECRET=your-secret-key
+NEXTAUTH_URL=http://localhost:3000
+</code></pre></div></div>
+<h3 id="nextjs-configuration">Next.js Configuration</h3>
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="hljs-comment">// next.config.js</span>
+<span class="hljs-comment">/** <span class="hljs-doctag">@type</span> {<span class="hljs-type">import('next').NextConfig</span>} */</span>
+<span class="hljs-keyword">const</span> nextConfig = {
+  <span class="hljs-attr">experimental</span>: {
+    <span class="hljs-attr">appDir</span>: <span class="hljs-literal">true</span>,
+  },
+  <span class="hljs-attr">images</span>: {
+    <span class="hljs-attr">domains</span>: [<span class="hljs-string">'example.com'</span>, <span class="hljs-string">'cdn.example.com'</span>],
+  },
+  <span class="hljs-attr">env</span>: {
+    <span class="hljs-attr">CUSTOM_KEY</span>: <span class="hljs-string">'custom-value'</span>,
+  },
+  <span class="hljs-keyword">async</span> <span class="hljs-title function_">redirects</span>(<span class="hljs-params"></span>) {
+    <span class="hljs-keyword">return</span> [
+      {
+        <span class="hljs-attr">source</span>: <span class="hljs-string">'/old-path'</span>,
+        <span class="hljs-attr">destination</span>: <span class="hljs-string">'/new-path'</span>,
+        <span class="hljs-attr">permanent</span>: <span class="hljs-literal">true</span>,
+      },
+    ]
+  },
+  <span class="hljs-keyword">async</span> <span class="hljs-title function_">rewrites</span>(<span class="hljs-params"></span>) {
+    <span class="hljs-keyword">return</span> [
+      {
+        <span class="hljs-attr">source</span>: <span class="hljs-string">'/api/:path*'</span>,
+        <span class="hljs-attr">destination</span>: <span class="hljs-string">'https://api.example.com/:path*'</span>,
+      },
+    ]
+  },
+  <span class="hljs-keyword">async</span> <span class="hljs-title function_">headers</span>(<span class="hljs-params"></span>) {
+    <span class="hljs-keyword">return</span> [
+      {
+        <span class="hljs-attr">source</span>: <span class="hljs-string">'/(.*)'</span>,
+        <span class="hljs-attr">headers</span>: [
+          {
+            <span class="hljs-attr">key</span>: <span class="hljs-string">'X-Custom-Header'</span>,
+            <span class="hljs-attr">value</span>: <span class="hljs-string">'custom-value'</span>,
+          },
+        ],
+      },
+    ]
+  },
+}
+
+<span class="hljs-variable language_">module</span>.<span class="hljs-property">exports</span> = nextConfig
+</code></pre></div></div>
+<hr>
+<h2 id="advanced-features">Advanced Features</h2>
+<h3 id="internationalization-i18n">Internationalization (i18n)</h3>
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="hljs-comment">// next.config.js</span>
+<span class="hljs-variable language_">module</span>.<span class="hljs-property">exports</span> = {
+  <span class="hljs-attr">i18n</span>: {
+    <span class="hljs-attr">locales</span>: [<span class="hljs-string">'en'</span>, <span class="hljs-string">'fr'</span>, <span class="hljs-string">'es'</span>],
+    <span class="hljs-attr">defaultLocale</span>: <span class="hljs-string">'en'</span>,
+    <span class="hljs-attr">domains</span>: [
+      {
+        <span class="hljs-attr">domain</span>: <span class="hljs-string">'example.com'</span>,
+        <span class="hljs-attr">defaultLocale</span>: <span class="hljs-string">'en'</span>,
+      },
+      {
+        <span class="hljs-attr">domain</span>: <span class="hljs-string">'example.fr'</span>,
+        <span class="hljs-attr">defaultLocale</span>: <span class="hljs-string">'fr'</span>,
+      },
+    ],
+  },
+}
+</code></pre></div></div>
+<div class="language-tsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="hljs-comment">// pages/index.tsx</span>
+<span class="hljs-keyword">import</span> { useRouter } <span class="hljs-keyword">from</span> <span class="hljs-string">'next/router'</span>
+<span class="hljs-keyword">import</span> { <span class="hljs-title class_">GetStaticProps</span> } <span class="hljs-keyword">from</span> <span class="hljs-string">'next'</span>
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">Home</span>(<span class="hljs-params">{ translations }</span>) {
+  <span class="hljs-keyword">const</span> { locale, locales, asPath } = <span class="hljs-title function_">useRouter</span>()
+  
+  <span class="hljs-keyword">return</span> (
+    <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">h1</span>&gt;</span>{translations.title}<span class="hljs-tag">&lt;/<span class="hljs-name">h1</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">p</span>&gt;</span>Current locale: {locale}<span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">p</span>&gt;</span>Available locales: {locales.join(', ')}<span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span>
+  )
+}
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> <span class="hljs-attr">getStaticProps</span>: <span class="hljs-title class_">GetStaticProps</span> = <span class="hljs-title function_">async</span> ({ locale }) =&gt; {
+  <span class="hljs-keyword">const</span> translations = <span class="hljs-keyword">await</span> <span class="hljs-keyword">import</span>(<span class="hljs-string">`../locales/<span class="hljs-subst">${locale}</span>.json`</span>)
+  
+  <span class="hljs-keyword">return</span> {
+    <span class="hljs-attr">props</span>: {
+      <span class="hljs-attr">translations</span>: translations.<span class="hljs-property">default</span>,
+    },
+  }
+}
+</code></pre></div></div>
+<h3 id="progressive-web-app-pwa">Progressive Web App (PWA)</h3>
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="hljs-comment">// next.config.js</span>
+<span class="hljs-keyword">const</span> withPWA = <span class="hljs-built_in">require</span>(<span class="hljs-string">'next-pwa'</span>)({
+  <span class="hljs-attr">dest</span>: <span class="hljs-string">'public'</span>,
+  <span class="hljs-attr">register</span>: <span class="hljs-literal">true</span>,
+  <span class="hljs-attr">skipWaiting</span>: <span class="hljs-literal">true</span>,
+})
+
+<span class="hljs-variable language_">module</span>.<span class="hljs-property">exports</span> = <span class="hljs-title function_">withPWA</span>({
+  <span class="hljs-comment">// Your Next.js config</span>
+})
+</code></pre></div></div>
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="hljs-comment">// public/manifest.json</span>
+<span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">"name"</span><span class="hljs-punctuation">:</span> <span class="hljs-string">"My Next.js App"</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">"short_name"</span><span class="hljs-punctuation">:</span> <span class="hljs-string">"NextApp"</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">"description"</span><span class="hljs-punctuation">:</span> <span class="hljs-string">"A Next.js PWA"</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">"start_url"</span><span class="hljs-punctuation">:</span> <span class="hljs-string">"/"</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">"display"</span><span class="hljs-punctuation">:</span> <span class="hljs-string">"standalone"</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">"background_color"</span><span class="hljs-punctuation">:</span> <span class="hljs-string">"#ffffff"</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">"theme_color"</span><span class="hljs-punctuation">:</span> <span class="hljs-string">"#000000"</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">"icons"</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span>
+    <span class="hljs-punctuation">{</span>
+      <span class="hljs-attr">"src"</span><span class="hljs-punctuation">:</span> <span class="hljs-string">"/icons/icon-192x192.png"</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">"sizes"</span><span class="hljs-punctuation">:</span> <span class="hljs-string">"192x192"</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">"type"</span><span class="hljs-punctuation">:</span> <span class="hljs-string">"image/png"</span>
+    <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-punctuation">{</span>
+      <span class="hljs-attr">"src"</span><span class="hljs-punctuation">:</span> <span class="hljs-string">"/icons/icon-512x512.png"</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">"sizes"</span><span class="hljs-punctuation">:</span> <span class="hljs-string">"512x512"</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">"type"</span><span class="hljs-punctuation">:</span> <span class="hljs-string">"image/png"</span>
+    <span class="hljs-punctuation">}</span>
+  <span class="hljs-punctuation">]</span>
+<span class="hljs-punctuation">}</span>
+</code></pre></div></div>
+<h3 id="streaming-and-suspense">Streaming and Suspense</h3>
+<div class="language-tsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="hljs-comment">// App Router with Streaming</span>
+<span class="hljs-keyword">import</span> { <span class="hljs-title class_">Suspense</span> } <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>
+
+<span class="hljs-keyword">async</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">SlowComponent</span>(<span class="hljs-params"></span>) {
+  <span class="hljs-keyword">await</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Promise</span>(<span class="hljs-function"><span class="hljs-params">resolve</span> =&gt;</span> <span class="hljs-built_in">setTimeout</span>(resolve, <span class="hljs-number">2000</span>))
+  <span class="hljs-keyword">return</span> <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>Slow content loaded!<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span>
+}
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">Page</span>(<span class="hljs-params"></span>) {
+  <span class="hljs-keyword">return</span> (
+    <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">h1</span>&gt;</span>Fast content<span class="hljs-tag">&lt;/<span class="hljs-name">h1</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">Suspense</span> <span class="hljs-attr">fallback</span>=<span class="hljs-string">{</span>&lt;<span class="hljs-attr">div</span>&gt;</span>Loading slow content...<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>}&gt;
+        <span class="hljs-tag">&lt;<span class="hljs-name">SlowComponent</span> /&gt;</span>
+      <span class="hljs-tag">&lt;/<span class="hljs-name">Suspense</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span>
+  )
+}
+</code></pre></div></div>
+<h3 id="edge-runtime">Edge Runtime</h3>
+<div class="language-tsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="hljs-comment">// app/api/edge/route.ts</span>
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> runtime = <span class="hljs-string">'edge'</span>
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">async</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">GET</span>(<span class="hljs-params"></span>) {
+  <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Response</span>(<span class="hljs-string">'Hello from Edge Runtime!'</span>)
+}
+</code></pre></div></div>
+<h3 id="server-actions-app-router">Server Actions (App Router)</h3>
+<div class="language-tsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="hljs-comment">// app/actions.ts</span>
+<span class="hljs-string">'use server'</span>
+
+<span class="hljs-keyword">import</span> { revalidatePath } <span class="hljs-keyword">from</span> <span class="hljs-string">'next/cache'</span>
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">async</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">createPost</span>(<span class="hljs-params"><span class="hljs-attr">formData</span>: <span class="hljs-title class_">FormData</span></span>) {
+  <span class="hljs-keyword">const</span> title = formData.<span class="hljs-title function_">get</span>(<span class="hljs-string">'title'</span>) <span class="hljs-keyword">as</span> <span class="hljs-built_in">string</span>
+  <span class="hljs-keyword">const</span> content = formData.<span class="hljs-title function_">get</span>(<span class="hljs-string">'content'</span>) <span class="hljs-keyword">as</span> <span class="hljs-built_in">string</span>
+  
+  <span class="hljs-comment">// Save to database</span>
+  <span class="hljs-keyword">await</span> <span class="hljs-title function_">savePost</span>({ title, content })
+  
+  <span class="hljs-comment">// Revalidate the posts page</span>
+  <span class="hljs-title function_">revalidatePath</span>(<span class="hljs-string">'/posts'</span>)
+}
+
+<span class="hljs-comment">// app/create-post/page.tsx</span>
+<span class="hljs-keyword">import</span> { createPost } <span class="hljs-keyword">from</span> <span class="hljs-string">'../actions'</span>
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">CreatePost</span>(<span class="hljs-params"></span>) {
+  <span class="hljs-keyword">return</span> (
+    <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">form</span> <span class="hljs-attr">action</span>=<span class="hljs-string">{createPost}</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"title"</span> <span class="hljs-attr">placeholder</span>=<span class="hljs-string">"Title"</span> <span class="hljs-attr">required</span> /&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">textarea</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"content"</span> <span class="hljs-attr">placeholder</span>=<span class="hljs-string">"Content"</span> <span class="hljs-attr">required</span> /&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">type</span>=<span class="hljs-string">"submit"</span>&gt;</span>Create Post<span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">form</span>&gt;</span></span>
+  )
+}
+</code></pre></div></div>
+<hr>
+<h2 id="best-practices">Best Practices</h2>
+<h3 id="file-and-folder-structure">File and Folder Structure</h3>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>src/
+├── app/
+│   ├── (auth)/
+│   │   ├── login/
+│   │   └── register/
+│   ├── dashboard/
+│   │   ├── analytics/
+│   │   └── settings/
+│   └── globals.css
+├── components/
+│   ├── ui/
+│   │   ├── Button.tsx
+│   │   ├── Input.tsx
+│   │   └── Modal.tsx
+│   ├── forms/
+│   └── layout/
+├── lib/
+│   ├── auth.ts
+│   ├── db.ts
+│   └── utils.ts
+├── hooks/
+│   ├── useAuth.ts
+│   └── useLocalStorage.ts
+├── types/
+│   └── index.ts
+└── utils/
+    ├── constants.ts
+    └── helpers.ts
+</code></pre></div></div>
+<h3 id="error-handling">Error Handling</h3>
+<div class="language-tsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="hljs-comment">// Global error boundary</span>
+<span class="hljs-string">'use client'</span>
+
+<span class="hljs-keyword">import</span> { useEffect } <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">GlobalError</span>(<span class="hljs-params">{
+  error,
+  reset,
+}: {
+  error: <span class="hljs-built_in">Error</span> &amp; { digest?: <span class="hljs-built_in">string</span> }
+  reset: () =&gt; <span class="hljs-built_in">void</span>
+}</span>) {
+  <span class="hljs-title function_">useEffect</span>(<span class="hljs-function">() =&gt;</span> {
+    <span class="hljs-comment">// Log the error to an error reporting service</span>
+    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">error</span>(error)
+  }, [error])
+
+  <span class="hljs-keyword">return</span> (
+    <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">html</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">body</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">h2</span>&gt;</span>Something went wrong!<span class="hljs-tag">&lt;/<span class="hljs-name">h2</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">onClick</span>=<span class="hljs-string">{()</span> =&gt;</span> reset()}&gt;Try again<span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span>
+      <span class="hljs-tag">&lt;/<span class="hljs-name">body</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">html</span>&gt;</span></span>
+  )
+}
+
+<span class="hljs-comment">// Custom error page for specific routes</span>
+<span class="hljs-comment">// app/dashboard/error.tsx</span>
+<span class="hljs-string">'use client'</span>
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">DashboardError</span>(<span class="hljs-params">{
+  error,
+  reset,
+}: {
+  error: <span class="hljs-built_in">Error</span> &amp; { digest?: <span class="hljs-built_in">string</span> }
+  reset: () =&gt; <span class="hljs-built_in">void</span>
+}</span>) {
+  <span class="hljs-keyword">return</span> (
+    <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">className</span>=<span class="hljs-string">"error-container"</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">h2</span>&gt;</span>Dashboard Error<span class="hljs-tag">&lt;/<span class="hljs-name">h2</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">p</span>&gt;</span>{error.message}<span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">onClick</span>=<span class="hljs-string">{reset}</span>&gt;</span>Try again<span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span>
+  )
+}
+</code></pre></div></div>
+<h3 id="seo-optimization">SEO Optimization</h3>
+<div class="language-tsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="hljs-comment">// app/blog/[slug]/page.tsx</span>
+<span class="hljs-keyword">import</span> { <span class="hljs-title class_">Metadata</span> } <span class="hljs-keyword">from</span> <span class="hljs-string">'next'</span>
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">async</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">generateMetadata</span>(<span class="hljs-params">{
+  params,
+}: {
+  params: { slug: <span class="hljs-built_in">string</span> }
+}</span>): <span class="hljs-title class_">Promise</span>&lt;<span class="hljs-title class_">Metadata</span>&gt; {
+  <span class="hljs-keyword">const</span> post = <span class="hljs-keyword">await</span> <span class="hljs-title function_">getPost</span>(params.<span class="hljs-property">slug</span>)
+  
+  <span class="hljs-keyword">return</span> {
+    <span class="hljs-attr">title</span>: post.<span class="hljs-property">title</span>,
+    <span class="hljs-attr">description</span>: post.<span class="hljs-property">excerpt</span>,
+    <span class="hljs-attr">openGraph</span>: {
+      <span class="hljs-attr">title</span>: post.<span class="hljs-property">title</span>,
+      <span class="hljs-attr">description</span>: post.<span class="hljs-property">excerpt</span>,
+      <span class="hljs-attr">images</span>: [post.<span class="hljs-property">image</span>],
+    },
+    <span class="hljs-attr">twitter</span>: {
+      <span class="hljs-attr">card</span>: <span class="hljs-string">'summary_large_image'</span>,
+      <span class="hljs-attr">title</span>: post.<span class="hljs-property">title</span>,
+      <span class="hljs-attr">description</span>: post.<span class="hljs-property">excerpt</span>,
+      <span class="hljs-attr">images</span>: [post.<span class="hljs-property">image</span>],
+    },
+  }
+}
+
+<span class="hljs-comment">// JSON-LD structured data</span>
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">BlogPost</span>(<span class="hljs-params">{ params }</span>) {
+  <span class="hljs-keyword">const</span> post = <span class="hljs-keyword">await</span> <span class="hljs-title function_">getPost</span>(params.<span class="hljs-property">slug</span>)
+  
+  <span class="hljs-keyword">const</span> jsonLd = {
+    <span class="hljs-string">'@context'</span>: <span class="hljs-string">'https://schema.org'</span>,
+    <span class="hljs-string">'@type'</span>: <span class="hljs-string">'Article'</span>,
+    <span class="hljs-attr">headline</span>: post.<span class="hljs-property">title</span>,
+    <span class="hljs-attr">description</span>: post.<span class="hljs-property">excerpt</span>,
+    <span class="hljs-attr">author</span>: {
+      <span class="hljs-string">'@type'</span>: <span class="hljs-string">'Person'</span>,
+      <span class="hljs-attr">name</span>: post.<span class="hljs-property">author</span>.<span class="hljs-property">name</span>,
+    },
+    <span class="hljs-attr">datePublished</span>: post.<span class="hljs-property">publishedAt</span>,
+  }
+  
+  <span class="hljs-keyword">return</span> (
+    <span class="language-xml"><span class="hljs-tag">&lt;&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">script</span>
+        <span class="hljs-attr">type</span>=<span class="hljs-string">"application/ld+json"</span>
+        <span class="hljs-attr">dangerouslySetInnerHTML</span>=<span class="hljs-string">{{</span> <span class="hljs-attr">__html:</span> <span class="hljs-attr">JSON.stringify</span>(<span class="hljs-attr">jsonLd</span>) }}
+      /&gt;</span><span class="language-javascript">
+      &lt;article&gt;
+        <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">h1</span>&gt;</span>{post.title}<span class="hljs-tag">&lt;/<span class="hljs-name">h1</span>&gt;</span></span>
+        <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">p</span>&gt;</span>{post.content}<span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span></span>
+      &lt;/article&gt;
+    &lt;/&gt;</span></span>
+  )
+}
+</code></pre></div></div>
+<h3 id="testing">Testing</h3>
+<div class="language-tsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="hljs-comment">// __tests__/components/Button.test.tsx</span>
+<span class="hljs-keyword">import</span> { render, screen, fireEvent } <span class="hljs-keyword">from</span> <span class="hljs-string">'@testing-library/react'</span>
+<span class="hljs-keyword">import</span> <span class="hljs-title class_">Button</span> <span class="hljs-keyword">from</span> <span class="hljs-string">'../components/Button'</span>
+
+<span class="hljs-title function_">describe</span>(<span class="hljs-string">'Button'</span>, <span class="hljs-function">() =&gt;</span> {
+  <span class="hljs-title function_">it</span>(<span class="hljs-string">'renders button with text'</span>, <span class="hljs-function">() =&gt;</span> {
+    <span class="hljs-title function_">render</span>(<span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">Button</span>&gt;</span>Click me<span class="hljs-tag">&lt;/<span class="hljs-name">Button</span>&gt;</span></span>)
+    <span class="hljs-title function_">expect</span>(screen.<span class="hljs-title function_">getByText</span>(<span class="hljs-string">'Click me'</span>)).<span class="hljs-title function_">toBeInTheDocument</span>()
+  })
+  
+  <span class="hljs-title function_">it</span>(<span class="hljs-string">'calls onClick handler when clicked'</span>, <span class="hljs-function">() =&gt;</span> {
+    <span class="hljs-keyword">const</span> handleClick = jest.<span class="hljs-title function_">fn</span>()
+    <span class="hljs-title function_">render</span>(<span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">Button</span> <span class="hljs-attr">onClick</span>=<span class="hljs-string">{handleClick}</span>&gt;</span>Click me<span class="hljs-tag">&lt;/<span class="hljs-name">Button</span>&gt;</span></span>)
+    
+    fireEvent.<span class="hljs-title function_">click</span>(screen.<span class="hljs-title function_">getByText</span>(<span class="hljs-string">'Click me'</span>))
+    <span class="hljs-title function_">expect</span>(handleClick).<span class="hljs-title function_">toHaveBeenCalledTimes</span>(<span class="hljs-number">1</span>)
+  })
+})
+
+<span class="hljs-comment">// __tests__/pages/api/users.test.ts</span>
+<span class="hljs-keyword">import</span> { createMocks } <span class="hljs-keyword">from</span> <span class="hljs-string">'node-mocks-http'</span>
+<span class="hljs-keyword">import</span> handler <span class="hljs-keyword">from</span> <span class="hljs-string">'../pages/api/users'</span>
+
+<span class="hljs-title function_">describe</span>(<span class="hljs-string">'/api/users'</span>, <span class="hljs-function">() =&gt;</span> {
+  <span class="hljs-title function_">it</span>(<span class="hljs-string">'returns users for GET request'</span>, <span class="hljs-title function_">async</span> () =&gt; {
+    <span class="hljs-keyword">const</span> { req, res } = <span class="hljs-title function_">createMocks</span>({
+      <span class="hljs-attr">method</span>: <span class="hljs-string">'GET'</span>,
+    })
+    
+    <span class="hljs-keyword">await</span> <span class="hljs-title function_">handler</span>(req, res)
+    
+    <span class="hljs-title function_">expect</span>(res.<span class="hljs-title function_">_getStatusCode</span>()).<span class="hljs-title function_">toBe</span>(<span class="hljs-number">200</span>)
+    <span class="hljs-keyword">const</span> data = <span class="hljs-title class_">JSON</span>.<span class="hljs-title function_">parse</span>(res.<span class="hljs-title function_">_getData</span>())
+    <span class="hljs-title function_">expect</span>(data).<span class="hljs-title function_">toHaveProperty</span>(<span class="hljs-string">'users'</span>)
+  })
+})
+</code></pre></div></div>
+<h3 id="security-best-practices">Security Best Practices</h3>
+<div class="language-tsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="hljs-comment">// Content Security Policy</span>
+<span class="hljs-comment">// next.config.js</span>
+<span class="hljs-keyword">const</span> securityHeaders = [
+  {
+    <span class="hljs-attr">key</span>: <span class="hljs-string">'Content-Security-Policy'</span>,
+    <span class="hljs-attr">value</span>: <span class="hljs-string">"default-src 'self'; script-src 'self' 'unsafe-eval'; style-src 'self' 'unsafe-inline';"</span>,
+  },
+  {
+    <span class="hljs-attr">key</span>: <span class="hljs-string">'X-Frame-Options'</span>,
+    <span class="hljs-attr">value</span>: <span class="hljs-string">'DENY'</span>,
+  },
+  {
+    <span class="hljs-attr">key</span>: <span class="hljs-string">'X-Content-Type-Options'</span>,
+    <span class="hljs-attr">value</span>: <span class="hljs-string">'nosniff'</span>,
+  },
+]
+
+<span class="hljs-variable language_">module</span>.<span class="hljs-property">exports</span> = {
+  <span class="hljs-keyword">async</span> <span class="hljs-title function_">headers</span>(<span class="hljs-params"></span>) {
+    <span class="hljs-keyword">return</span> [
+      {
+        <span class="hljs-attr">source</span>: <span class="hljs-string">'/(.*)'</span>,
+        <span class="hljs-attr">headers</span>: securityHeaders,
+      },
+    ]
+  },
+}
+
+<span class="hljs-comment">// Input validation and sanitization</span>
+<span class="hljs-keyword">import</span> { z } <span class="hljs-keyword">from</span> <span class="hljs-string">'zod'</span>
+
+<span class="hljs-keyword">const</span> userSchema = z.<span class="hljs-title function_">object</span>({
+  <span class="hljs-attr">name</span>: z.<span class="hljs-title function_">string</span>().<span class="hljs-title function_">min</span>(<span class="hljs-number">1</span>).<span class="hljs-title function_">max</span>(<span class="hljs-number">50</span>),
+  <span class="hljs-attr">email</span>: z.<span class="hljs-title function_">string</span>().<span class="hljs-title function_">email</span>(),
+  <span class="hljs-attr">age</span>: z.<span class="hljs-title function_">number</span>().<span class="hljs-title function_">min</span>(<span class="hljs-number">18</span>).<span class="hljs-title function_">max</span>(<span class="hljs-number">120</span>),
+})
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">async</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">POST</span>(<span class="hljs-params"><span class="hljs-attr">request</span>: <span class="hljs-title class_">Request</span></span>) {
+  <span class="hljs-keyword">try</span> {
+    <span class="hljs-keyword">const</span> body = <span class="hljs-keyword">await</span> request.<span class="hljs-title function_">json</span>()
+    <span class="hljs-keyword">const</span> validatedData = userSchema.<span class="hljs-title function_">parse</span>(body)
+    
+    <span class="hljs-comment">// Process validated data</span>
+    <span class="hljs-keyword">const</span> user = <span class="hljs-keyword">await</span> <span class="hljs-title function_">createUser</span>(validatedData)
+    
+    <span class="hljs-keyword">return</span> <span class="hljs-title class_">NextResponse</span>.<span class="hljs-title function_">json</span>({ user })
+  } <span class="hljs-keyword">catch</span> (error) {
+    <span class="hljs-keyword">if</span> (error <span class="hljs-keyword">instanceof</span> z.<span class="hljs-property">ZodError</span>) {
+      <span class="hljs-keyword">return</span> <span class="hljs-title class_">NextResponse</span>.<span class="hljs-title function_">json</span>(
+        { <span class="hljs-attr">error</span>: <span class="hljs-string">'Invalid input'</span>, <span class="hljs-attr">details</span>: error.<span class="hljs-property">errors</span> },
+        { <span class="hljs-attr">status</span>: <span class="hljs-number">400</span> }
+      )
+    }
+    
+    <span class="hljs-keyword">return</span> <span class="hljs-title class_">NextResponse</span>.<span class="hljs-title function_">json</span>(
+      { <span class="hljs-attr">error</span>: <span class="hljs-string">'Internal server error'</span> },
+      { <span class="hljs-attr">status</span>: <span class="hljs-number">500</span> }
+    )
+  }
+}
+</code></pre></div></div>
+<hr>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<h3 id="common-issues-and-solutions">Common Issues and Solutions</h3>
+<h4 id="hydration-errors">Hydration Errors</h4>
+<div class="language-tsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="hljs-comment">// Problem: Hydration mismatch</span>
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">MyComponent</span>(<span class="hljs-params"></span>) {
+  <span class="hljs-keyword">const</span> [mounted, setMounted] = <span class="hljs-title function_">useState</span>(<span class="hljs-literal">false</span>)
+  
+  <span class="hljs-title function_">useEffect</span>(<span class="hljs-function">() =&gt;</span> {
+    <span class="hljs-title function_">setMounted</span>(<span class="hljs-literal">true</span>)
+  }, [])
+  
+  <span class="hljs-keyword">if</span> (!mounted) {
+    <span class="hljs-keyword">return</span> <span class="hljs-literal">null</span> <span class="hljs-comment">// or loading skeleton</span>
+  }
+  
+  <span class="hljs-keyword">return</span> <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>{new Date().toLocaleDateString()}<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span>
+}
+
+<span class="hljs-comment">// Alternative: Use dynamic import with ssr: false</span>
+<span class="hljs-keyword">const</span> <span class="hljs-title class_">DynamicComponent</span> = <span class="hljs-title function_">dynamic</span>(<span class="hljs-function">() =&gt;</span> <span class="hljs-keyword">import</span>(<span class="hljs-string">'./MyComponent'</span>), {
+  <span class="hljs-attr">ssr</span>: <span class="hljs-literal">false</span>,
+})
+</code></pre></div></div>
+<h4 id="cors-issues">CORS Issues</h4>
+<div class="language-tsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="hljs-comment">// pages/api/cors-example.ts</span>
+<span class="hljs-keyword">import</span> { <span class="hljs-title class_">NextApiRequest</span>, <span class="hljs-title class_">NextApiResponse</span> } <span class="hljs-keyword">from</span> <span class="hljs-string">'next'</span>
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">handler</span>(<span class="hljs-params"><span class="hljs-attr">req</span>: <span class="hljs-title class_">NextApiRequest</span>, <span class="hljs-attr">res</span>: <span class="hljs-title class_">NextApiResponse</span></span>) {
+  <span class="hljs-comment">// Set CORS headers</span>
+  res.<span class="hljs-title function_">setHeader</span>(<span class="hljs-string">'Access-Control-Allow-Origin'</span>, <span class="hljs-string">'*'</span>)
+  res.<span class="hljs-title function_">setHeader</span>(<span class="hljs-string">'Access-Control-Allow-Methods'</span>, <span class="hljs-string">'GET,OPTIONS,PATCH,DELETE,POST,PUT'</span>)
+  res.<span class="hljs-title function_">setHeader</span>(<span class="hljs-string">'Access-Control-Allow-Headers'</span>, <span class="hljs-string">'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'</span>)
+  
+  <span class="hljs-keyword">if</span> (req.<span class="hljs-property">method</span> === <span class="hljs-string">'OPTIONS'</span>) {
+    res.<span class="hljs-title function_">status</span>(<span class="hljs-number">200</span>).<span class="hljs-title function_">end</span>()
+    <span class="hljs-keyword">return</span>
+  }
+  
+  <span class="hljs-comment">// Handle other methods</span>
+  res.<span class="hljs-title function_">status</span>(<span class="hljs-number">200</span>).<span class="hljs-title function_">json</span>({ <span class="hljs-attr">message</span>: <span class="hljs-string">'Hello World'</span> })
+}
+</code></pre></div></div>
+<h4 id="memory-leaks">Memory Leaks</h4>
+<div class="language-tsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="hljs-comment">// Cleanup useEffect</span>
+<span class="hljs-title function_">useEffect</span>(<span class="hljs-function">() =&gt;</span> {
+  <span class="hljs-keyword">const</span> timer = <span class="hljs-built_in">setInterval</span>(<span class="hljs-function">() =&gt;</span> {
+    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">'Timer tick'</span>)
+  }, <span class="hljs-number">1000</span>)
+  
+  <span class="hljs-keyword">return</span> <span class="hljs-function">() =&gt;</span> {
+    <span class="hljs-built_in">clearInterval</span>(timer) <span class="hljs-comment">// Cleanup</span>
+  }
+}, [])
+
+<span class="hljs-comment">// Cleanup event listeners</span>
+<span class="hljs-title function_">useEffect</span>(<span class="hljs-function">() =&gt;</span> {
+  <span class="hljs-keyword">const</span> <span class="hljs-title function_">handleResize</span> = (<span class="hljs-params"></span>) =&gt; {
+    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">'Window resized'</span>)
+  }
+  
+  <span class="hljs-variable language_">window</span>.<span class="hljs-title function_">addEventListener</span>(<span class="hljs-string">'resize'</span>, handleResize)
+  
+  <span class="hljs-keyword">return</span> <span class="hljs-function">() =&gt;</span> {
+    <span class="hljs-variable language_">window</span>.<span class="hljs-title function_">removeEventListener</span>(<span class="hljs-string">'resize'</span>, handleResize)
+  }
+}, [])
+</code></pre></div></div>
+<h4 id="performance-issues">Performance Issues</h4>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="hljs-comment"># Check bundle size</span>
+npm run build
+
+<span class="hljs-comment"># Analyze bundle</span>
+npm install --save-dev webpack-bundle-analyzer
+ANALYZE=<span class="hljs-literal">true</span> npm run build
+
+<span class="hljs-comment"># Check core web vitals</span>
+npm install --save-dev @next/bundle-analyzer
+</code></pre></div></div>
+<h3 id="debugging-tools">Debugging Tools</h3>
+<div class="language-tsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="hljs-comment">// Custom debug component</span>
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">DebugInfo</span>(<span class="hljs-params">{ data }</span>) {
+  <span class="hljs-keyword">if</span> (process.<span class="hljs-property">env</span>.<span class="hljs-property">NODE_ENV</span> !== <span class="hljs-string">'development'</span>) {
+    <span class="hljs-keyword">return</span> <span class="hljs-literal">null</span>
+  }
+  
+  <span class="hljs-keyword">return</span> (
+    <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span> 
+      <span class="hljs-attr">position:</span> '<span class="hljs-attr">fixed</span>', 
+      <span class="hljs-attr">bottom:</span> <span class="hljs-attr">0</span>, 
+      <span class="hljs-attr">right:</span> <span class="hljs-attr">0</span>, 
+      <span class="hljs-attr">background:</span> '<span class="hljs-attr">black</span>', 
+      <span class="hljs-attr">color:</span> '<span class="hljs-attr">white</span>', 
+      <span class="hljs-attr">padding:</span> '<span class="hljs-attr">1rem</span>',
+      <span class="hljs-attr">fontSize:</span> '<span class="hljs-attr">12px</span>',
+      <span class="hljs-attr">maxWidth:</span> '<span class="hljs-attr">300px</span>',
+      <span class="hljs-attr">overflow:</span> '<span class="hljs-attr">auto</span>'
+    }}&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">pre</span>&gt;</span>{JSON.stringify(data, null, 2)}<span class="hljs-tag">&lt;/<span class="hljs-name">pre</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span>
+  )
+}
+
+<span class="hljs-comment">// Usage</span>
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">MyComponent</span>(<span class="hljs-params"></span>) {
+  <span class="hljs-keyword">const</span> [state, setState] = <span class="hljs-title function_">useState</span>({ <span class="hljs-attr">count</span>: <span class="hljs-number">0</span> })
+  
+  <span class="hljs-keyword">return</span> (
+    <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">onClick</span>=<span class="hljs-string">{()</span> =&gt;</span> setState({ count: state.count + 1 })}&gt;
+        Count: {state.count}
+      <span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">DebugInfo</span> <span class="hljs-attr">data</span>=<span class="hljs-string">{state}</span> /&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span>
+  )
+}
+</code></pre></div></div>
+<hr>
+<h2 id="useful-resources">Useful Resources</h2>
+<h3 id="official-documentation">Official Documentation</h3>
+<ul>
+<li><a href="https://nextjs.org/docs" target="_blank" rel="noopener noreferrer">Next.js Documentation</a></li>
+<li><a href="https://react.dev" target="_blank" rel="noopener noreferrer">React Documentation</a></li>
+<li><a href="https://www.typescriptlang.org/docs" target="_blank" rel="noopener noreferrer">TypeScript Documentation</a></li>
+</ul>
+<h3 id="community-resources">Community Resources</h3>
+<ul>
+<li><a href="https://github.com/vercel/next.js/tree/canary/examples" target="_blank" rel="noopener noreferrer">Next.js Examples</a></li>
+<li><a href="https://github.com/unicodeveloper/awesome-nextjs" target="_blank" rel="noopener noreferrer">Awesome Next.js</a></li>
+<li><a href="https://discord.gg/nextjs" target="_blank" rel="noopener noreferrer">Next.js Discord</a></li>
+</ul>
+<h3 id="tools-and-libraries">Tools and Libraries</h3>
+<ul>
+<li><a href="https://tailwindcss.com" target="_blank" rel="noopener noreferrer">Tailwind CSS</a></li>
+<li><a href="https://next-auth.js.org" target="_blank" rel="noopener noreferrer">NextAuth.js</a></li>
+<li><a href="https://prisma.io" target="_blank" rel="noopener noreferrer">Prisma</a></li>
+<li><a href="https://vercel.com" target="_blank" rel="noopener noreferrer">Vercel</a></li>
+<li><a href="https://swr.vercel.app" target="_blank" rel="noopener noreferrer">SWR</a></li>
+<li><a href="https://react-hook-form.com" target="_blank" rel="noopener noreferrer">React Hook Form</a></li>
+</ul>
+<p>This cheat sheet covers the essential concepts and patterns you’ll need for Next.js development, from basic setup to advanced features. Keep it handy as a reference while building your applications!</p>

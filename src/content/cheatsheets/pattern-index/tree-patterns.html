@@ -1,0 +1,284 @@
+                <div class="topic-head">
+                    <span class="topic-num">22</span>
+                    <h2>Advanced Tree Patterns</h2>
+                </div>
+                <p class="topic-intro">Efficient algorithms on tree structures: LCA, rerooting, and tree diameter.</p>
+                <h3 class="block-label">Recognition</h3>
+                <div class="table-scroll"><table class="sig-table">
+                    <thead>
+                        <tr>
+                            <th>When you see…</th>
+                            <th>Pattern</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="sig">Lowest common ancestor (LCA) queries, many of them</td>
+                            <td class="pat"><span class="pat-tag">Binary lifting or sparse table</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Subtree / path queries on a tree</td>
+                            <td class="pat"><span class="pat-tag">DFS + Euler tour + segment tree</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Rerooting (DP on all nodes as root)</td>
+                            <td class="pat"><span class="pat-tag">DFS down + DFS up pass</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Heavy-light decomposition</td>
+                            <td class="pat"><span class="pat-tag">Path decomposition + segment trees on chains</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Tree centroid / center</td>
+                            <td class="pat"><span class="pat-tag">Find the node with min max subtree size</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Find diameter of a tree</td>
+                            <td class="pat"><span class="pat-tag">DFS twice: farthest from any node, then farthest from
+                                    that</span></td>
+                        </tr>
+                    </tbody>
+                </table></div>
+
+                <h3 class="block-label">Example algorithms</h3>
+                <div class="examples-grid">
+                    <div class="example">
+                        <h4>LCA — Binary Lifting</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-type">const</span> <span class="hljs-type">int</span> LOG = <span class="hljs-number">20</span>;
+
+vector&lt;<span class="hljs-type">int</span>&gt; adj[<span class="hljs-number">100005</span>];
+<span class="hljs-type">int</span> up[<span class="hljs-number">100005</span>][LOG];
+<span class="hljs-type">int</span> depth[<span class="hljs-number">100005</span>];
+
+<span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">dfs</span><span class="hljs-params">(<span class="hljs-type">int</span> u, <span class="hljs-type">int</span> p)</span> </span>{
+    up[u][<span class="hljs-number">0</span>] = p;
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">1</span>; i &lt; LOG; i++) {
+        up[u][i] = up[up[u][i<span class="hljs-number">-1</span>]][i<span class="hljs-number">-1</span>];
+    }
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> v : adj[u]) {
+        <span class="hljs-keyword">if</span> (v != p) {
+            depth[v] = depth[u] + <span class="hljs-number">1</span>;
+            <span class="hljs-built_in">dfs</span>(v, u);
+        }
+    }
+}
+
+<span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">lca</span><span class="hljs-params">(<span class="hljs-type">int</span> u, <span class="hljs-type">int</span> v)</span> </span>{
+    <span class="hljs-keyword">if</span> (depth[u] &lt; depth[v]) <span class="hljs-built_in">swap</span>(u, v);
+
+    <span class="hljs-type">int</span> diff = depth[u] - depth[v];
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; LOG; i++) {
+        <span class="hljs-keyword">if</span> ((diff &gt;&gt; i) &amp; <span class="hljs-number">1</span>) u = up[u][i];
+    }
+
+    <span class="hljs-keyword">if</span> (u == v) <span class="hljs-keyword">return</span> u;
+
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = LOG - <span class="hljs-number">1</span>; i &gt;= <span class="hljs-number">0</span>; i--) {
+        <span class="hljs-keyword">if</span> (up[u][i] != up[v][i]) {
+            u = up[u][i];
+            v = up[v][i];
+        }
+    }
+    <span class="hljs-keyword">return</span> up[u][<span class="hljs-number">0</span>];
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Tree Diameter</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp">vector&lt;<span class="hljs-type">int</span>&gt; adj[<span class="hljs-number">100005</span>];
+pair&lt;<span class="hljs-type">int</span>, <span class="hljs-type">int</span>&gt; farthest;
+
+<span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">dfs</span><span class="hljs-params">(<span class="hljs-type">int</span> u, <span class="hljs-type">int</span> p, <span class="hljs-type">int</span> dist)</span> </span>{
+    <span class="hljs-keyword">if</span> (dist &gt; farthest.second) {
+        farthest = {u, dist};
+    }
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> v : adj[u]) {
+        <span class="hljs-keyword">if</span> (v != p) <span class="hljs-built_in">dfs</span>(v, u, dist + <span class="hljs-number">1</span>);
+    }
+}
+
+<span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">treeDiameter</span><span class="hljs-params">(<span class="hljs-type">int</span> n)</span> </span>{
+    farthest = {<span class="hljs-number">0</span>, <span class="hljs-number">0</span>};
+    <span class="hljs-built_in">dfs</span>(<span class="hljs-number">0</span>, <span class="hljs-number">-1</span>, <span class="hljs-number">0</span>);
+
+    <span class="hljs-type">int</span> first_end = farthest.first;
+
+    farthest = {<span class="hljs-number">0</span>, <span class="hljs-number">0</span>};
+    <span class="hljs-built_in">dfs</span>(first_end, <span class="hljs-number">-1</span>, <span class="hljs-number">0</span>);
+
+    <span class="hljs-keyword">return</span> farthest.second;
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Rerooting DP — Sum of Distances in Tree</h4>
+                        <p class="ex-note">The classic two-pass rerooting technique: compute subtree sums once, then
+                            adjust in O(1) per edge as the root moves.</p>
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp">vector&lt;<span class="hljs-type">int</span>&gt; adj[<span class="hljs-number">100005</span>];
+<span class="hljs-type">long</span> <span class="hljs-type">long</span> subtreeSum[<span class="hljs-number">100005</span>];
+<span class="hljs-type">int</span> subtreeCount[<span class="hljs-number">100005</span>];
+<span class="hljs-type">long</span> <span class="hljs-type">long</span> ans[<span class="hljs-number">100005</span>];
+<span class="hljs-type">int</span> n;
+
+<span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">dfs1</span><span class="hljs-params">(<span class="hljs-type">int</span> u, <span class="hljs-type">int</span> p)</span> </span>{
+    subtreeSum[u] = <span class="hljs-number">0</span>;
+    subtreeCount[u] = <span class="hljs-number">1</span>;
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> v : adj[u]) {
+        <span class="hljs-keyword">if</span> (v != p) {
+            <span class="hljs-built_in">dfs1</span>(v, u);
+            subtreeSum[u] += subtreeSum[v] + subtreeCount[v];
+            subtreeCount[u] += subtreeCount[v];
+        }
+    }
+}
+
+<span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">dfs2</span><span class="hljs-params">(<span class="hljs-type">int</span> u, <span class="hljs-type">int</span> p)</span> </span>{
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> v : adj[u]) {
+        <span class="hljs-keyword">if</span> (v != p) {
+            <span class="hljs-comment">// moving the root from u to v: v's subtree gets 1 closer,</span>
+            <span class="hljs-comment">// every other node gets 1 further away</span>
+            ans[v] = ans[u] - subtreeCount[v] + (n - subtreeCount[v]);
+            <span class="hljs-built_in">dfs2</span>(v, u);
+        }
+    }
+}
+
+<span class="hljs-function"><span class="hljs-type">long</span> <span class="hljs-type">long</span> <span class="hljs-title">sumOfDistances</span><span class="hljs-params">(<span class="hljs-type">int</span> nodes)</span> </span>{
+    n = nodes;
+    <span class="hljs-built_in">dfs1</span>(<span class="hljs-number">0</span>, <span class="hljs-number">-1</span>);
+    ans[<span class="hljs-number">0</span>] = subtreeSum[<span class="hljs-number">0</span>];
+    <span class="hljs-built_in">dfs2</span>(<span class="hljs-number">0</span>, <span class="hljs-number">-1</span>);
+    <span class="hljs-keyword">return</span> ans[<span class="hljs-number">0</span>];
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Euler Tour + Fenwick, subtree sum with point updates</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-type">const</span> <span class="hljs-type">int</span> N = <span class="hljs-number">100005</span>;
+vector&lt;<span class="hljs-type">int</span>&gt; adj[N];
+<span class="hljs-type">int</span> tin[N], tout[N], timerE = <span class="hljs-number">0</span>, val[N];
+<span class="hljs-type">long</span> <span class="hljs-type">long</span> bit[N];
+
+<span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">eulerDfs</span><span class="hljs-params">(<span class="hljs-type">int</span> u, <span class="hljs-type">int</span> p)</span> </span>{
+    tin[u] = ++timerE;
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> v : adj[u]) <span class="hljs-keyword">if</span> (v != p) <span class="hljs-built_in">eulerDfs</span>(v, u);
+    tout[u] = timerE;                                  <span class="hljs-comment">// subtree(u) = positions [tin[u], tout[u]]</span>
+}
+<span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">bitAdd</span><span class="hljs-params">(<span class="hljs-type">int</span> i, <span class="hljs-type">long</span> <span class="hljs-type">long</span> d)</span> </span>{ <span class="hljs-keyword">for</span> (; i &lt; N; i += i &amp; -i) bit[i] += d; }
+<span class="hljs-function"><span class="hljs-type">long</span> <span class="hljs-type">long</span> <span class="hljs-title">bitSum</span><span class="hljs-params">(<span class="hljs-type">int</span> i)</span> </span>{ <span class="hljs-type">long</span> <span class="hljs-type">long</span> s = <span class="hljs-number">0</span>; <span class="hljs-keyword">for</span> (; i &gt; <span class="hljs-number">0</span>; i -= i &amp; -i) s += bit[i]; <span class="hljs-keyword">return</span> s; }
+
+<span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">setValue</span><span class="hljs-params">(<span class="hljs-type">int</span> u, <span class="hljs-type">int</span> newVal)</span> </span>{ <span class="hljs-built_in">bitAdd</span>(tin[u], newVal - val[u]); val[u] = newVal; }
+<span class="hljs-function"><span class="hljs-type">long</span> <span class="hljs-type">long</span> <span class="hljs-title">subtreeSum</span><span class="hljs-params">(<span class="hljs-type">int</span> u)</span> </span>{ <span class="hljs-keyword">return</span> <span class="hljs-built_in">bitSum</span>(tout[u]) - <span class="hljs-built_in">bitSum</span>(tin[u] - <span class="hljs-number">1</span>); }
+<span class="hljs-comment">// init: eulerDfs(root, 0); for every u: bitAdd(tin[u], val[u]);</span></code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Tree Centroid</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp">vector&lt;<span class="hljs-type">int</span>&gt; adj[<span class="hljs-number">100005</span>];
+<span class="hljs-type">int</span> sz[<span class="hljs-number">100005</span>];
+<span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">calcSize</span><span class="hljs-params">(<span class="hljs-type">int</span> u, <span class="hljs-type">int</span> p)</span> </span>{
+    sz[u] = <span class="hljs-number">1</span>;
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> v : adj[u]) <span class="hljs-keyword">if</span> (v != p) { <span class="hljs-built_in">calcSize</span>(v, u); sz[u] += sz[v]; }
+}
+<span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">findCentroid</span><span class="hljs-params">(<span class="hljs-type">int</span> u, <span class="hljs-type">int</span> p, <span class="hljs-type">int</span> n)</span> </span>{
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> v : adj[u]) <span class="hljs-keyword">if</span> (v != p &amp;&amp; sz[v] &gt; n / <span class="hljs-number">2</span>) <span class="hljs-keyword">return</span> <span class="hljs-built_in">findCentroid</span>(v, u, n);
+    <span class="hljs-keyword">return</span> u;
+}
+<span class="hljs-comment">// calcSize(0, -1); int c = findCentroid(0, -1, n);</span></code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Sparse Table (O(1) range-min; Euler tour + this = O(1) LCA)</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-keyword">struct</span> <span class="hljs-title class_">SparseTable</span> {
+    vector&lt;vector&lt;<span class="hljs-type">int</span>&gt;&gt; t; vector&lt;<span class="hljs-type">int</span>&gt; lg;
+    <span class="hljs-built_in">SparseTable</span>(vector&lt;<span class="hljs-type">int</span>&gt;&amp; a) {
+        <span class="hljs-type">int</span> n = a.<span class="hljs-built_in">size</span>();
+        lg.<span class="hljs-built_in">assign</span>(n + <span class="hljs-number">1</span>, <span class="hljs-number">0</span>);
+        <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">2</span>; i &lt;= n; i++) lg[i] = lg[i / <span class="hljs-number">2</span>] + <span class="hljs-number">1</span>;
+        t.<span class="hljs-built_in">assign</span>(lg[n] + <span class="hljs-number">1</span>, <span class="hljs-built_in">vector</span>&lt;<span class="hljs-type">int</span>&gt;(n));
+        t[<span class="hljs-number">0</span>] = a;
+        <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> k = <span class="hljs-number">1</span>; k &lt;= lg[n]; k++)
+            <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i + (<span class="hljs-number">1</span> &lt;&lt; k) &lt;= n; i++)
+                t[k][i] = <span class="hljs-built_in">min</span>(t[k - <span class="hljs-number">1</span>][i], t[k - <span class="hljs-number">1</span>][i + (<span class="hljs-number">1</span> &lt;&lt; (k - <span class="hljs-number">1</span>))]);
+    }
+    <span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">query</span><span class="hljs-params">(<span class="hljs-type">int</span> l, <span class="hljs-type">int</span> r)</span> </span>{                         <span class="hljs-comment">// min on [l, r]</span>
+        <span class="hljs-type">int</span> k = lg[r - l + <span class="hljs-number">1</span>];
+        <span class="hljs-keyword">return</span> <span class="hljs-built_in">min</span>(t[k][l], t[k][r - (<span class="hljs-number">1</span> &lt;&lt; k) + <span class="hljs-number">1</span>]);
+    }
+};</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Heavy-Light Decomposition, path sum with point updates (Fenwick on chains)</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-type">const</span> <span class="hljs-type">int</span> NH = <span class="hljs-number">100005</span>;
+vector&lt;<span class="hljs-type">int</span>&gt; adjH[NH];
+<span class="hljs-type">int</span> parH[NH], depH[NH], heavy[NH], head[NH], posH[NH], szH[NH], curPos = <span class="hljs-number">0</span>;
+<span class="hljs-type">long</span> <span class="hljs-type">long</span> bitH[NH];
+
+<span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">bitUpd</span><span class="hljs-params">(<span class="hljs-type">int</span> i, <span class="hljs-type">long</span> <span class="hljs-type">long</span> d)</span> </span>{ <span class="hljs-keyword">for</span> (; i &lt; NH; i += i &amp; -i) bitH[i] += d; }
+<span class="hljs-function"><span class="hljs-type">long</span> <span class="hljs-type">long</span> <span class="hljs-title">bitQry</span><span class="hljs-params">(<span class="hljs-type">int</span> i)</span> </span>{ <span class="hljs-type">long</span> <span class="hljs-type">long</span> s = <span class="hljs-number">0</span>; <span class="hljs-keyword">for</span> (; i &gt; <span class="hljs-number">0</span>; i -= i &amp; -i) s += bitH[i]; <span class="hljs-keyword">return</span> s; }
+
+<span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">dfsSize</span><span class="hljs-params">(<span class="hljs-type">int</span> u, <span class="hljs-type">int</span> p)</span> </span>{
+    parH[u] = p; szH[u] = <span class="hljs-number">1</span>; heavy[u] = <span class="hljs-number">-1</span>;
+    <span class="hljs-type">int</span> maxSub = <span class="hljs-number">0</span>;
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> v : adjH[u]) {
+        <span class="hljs-keyword">if</span> (v == p) <span class="hljs-keyword">continue</span>;
+        depH[v] = depH[u] + <span class="hljs-number">1</span>;
+        <span class="hljs-type">int</span> s = <span class="hljs-built_in">dfsSize</span>(v, u);
+        szH[u] += s;
+        <span class="hljs-keyword">if</span> (s &gt; maxSub) { maxSub = s; heavy[u] = v; }
+    }
+    <span class="hljs-keyword">return</span> szH[u];
+}
+<span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">decompose</span><span class="hljs-params">(<span class="hljs-type">int</span> u, <span class="hljs-type">int</span> h)</span> </span>{
+    head[u] = h;
+    posH[u] = ++curPos;
+    <span class="hljs-keyword">if</span> (heavy[u] != <span class="hljs-number">-1</span>) <span class="hljs-built_in">decompose</span>(heavy[u], h);                     <span class="hljs-comment">// heavy child continues the chain</span>
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> v : adjH[u])
+        <span class="hljs-keyword">if</span> (v != parH[u] &amp;&amp; v != heavy[u]) <span class="hljs-built_in">decompose</span>(v, v);         <span class="hljs-comment">// light child starts a new chain</span>
+}
+<span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">pointUpdate</span><span class="hljs-params">(<span class="hljs-type">int</span> u, <span class="hljs-type">long</span> <span class="hljs-type">long</span> delta)</span> </span>{ <span class="hljs-built_in">bitUpd</span>(posH[u], delta); }
+<span class="hljs-function"><span class="hljs-type">long</span> <span class="hljs-type">long</span> <span class="hljs-title">pathSum</span><span class="hljs-params">(<span class="hljs-type">int</span> a, <span class="hljs-type">int</span> b)</span> </span>{
+    <span class="hljs-type">long</span> <span class="hljs-type">long</span> res = <span class="hljs-number">0</span>;
+    <span class="hljs-keyword">while</span> (head[a] != head[b]) {
+        <span class="hljs-keyword">if</span> (depH[head[a]] &lt; depH[head[b]]) <span class="hljs-built_in">swap</span>(a, b);
+        res += <span class="hljs-built_in">bitQry</span>(posH[a]) - <span class="hljs-built_in">bitQry</span>(posH[head[a]] - <span class="hljs-number">1</span>);
+        a = parH[head[a]];
+    }
+    <span class="hljs-keyword">if</span> (depH[a] &gt; depH[b]) <span class="hljs-built_in">swap</span>(a, b);
+    res += <span class="hljs-built_in">bitQry</span>(posH[b]) - <span class="hljs-built_in">bitQry</span>(posH[a] - <span class="hljs-number">1</span>);
+    <span class="hljs-keyword">return</span> res;
+}
+<span class="hljs-comment">// setup: depH[0] = 0; dfsSize(0, -1); decompose(0, 0); then pointUpdate(u, value[u]) for every u.</span>
+<span class="hljs-comment">// For path max/min, replace the Fenwick with a segment tree.</span></code></pre>
+                        </div>
+                    </div>
+                </div>

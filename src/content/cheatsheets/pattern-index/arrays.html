@@ -1,0 +1,475 @@
+                <div class="topic-head">
+                    <span class="topic-num">02</span>
+                    <h2>Arrays</h2>
+                </div>
+                <p class="topic-intro">Ordered easy → medium → hard, since later patterns often build on
+                    earlier ones.</p>
+                <h3 class="block-label">Easy</h3>
+                <div class="table-scroll"><table class="sig-table">
+                    <thead>
+                        <tr>
+                            <th>When you see…</th>
+                            <th>Pattern</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="sig">Find the max/min sum contiguous subarray</td>
+                            <td class="pat"><span class="pat-tag">Kadane's Algorithm</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Move zeros / remove duplicates in-place</td>
+                            <td class="pat"><span class="pat-tag">Two-pointer (read/write pointer)</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Rotate array by k positions</td>
+                            <td class="pat"><span class="pat-tag">Reversal trick (reverse whole, then parts)</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Union / intersection of two sorted arrays</td>
+                            <td class="pat"><span class="pat-tag">Two-pointer merge</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Leaders in array / next greater on the right</td>
+                            <td class="pat"><span class="pat-tag">Right-to-left scan, track running max</span></td>
+                        </tr>
+                    </tbody>
+                </table></div>
+                <h3 class="block-label">Medium</h3>
+                <div class="table-scroll"><table class="sig-table">
+                    <thead>
+                        <tr>
+                            <th>When you see…</th>
+                            <th>Pattern</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="sig">Rearrange positives and negatives alternately</td>
+                            <td class="pat"><span class="pat-tag">Two-pointer with placeholder swap</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Next permutation</td>
+                            <td class="pat"><span class="pat-tag">Find pivot from right, swap, reverse suffix</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Subarray sum equals K</td>
+                            <td class="pat"><span class="pat-tag">Prefix sum + HashMap</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Majority element (appears &gt; n/2 times)</td>
+                            <td class="pat"><span class="pat-tag">Boyer–Moore Voting</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Majority element (appears &gt; n/3 times)</td>
+                            <td class="pat"><span class="pat-tag">Extended Boyer–Moore (2 candidates)</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">3Sum / 4Sum</td>
+                            <td class="pat"><span class="pat-tag">Sort + two-pointer, fix k−2 elements</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Merge overlapping intervals</td>
+                            <td class="pat"><span class="pat-tag">Sort by start, sweep &amp; merge</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Merge two sorted arrays in-place</td>
+                            <td class="pat"><span class="pat-tag">Gap method, or two-pointer from the back</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Count inversions</td>
+                            <td class="pat"><span class="pat-tag">Merge sort modification</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Max product subarray</td>
+                            <td class="pat"><span class="pat-tag">Track running max <em>and</em> min (negatives
+                                    flip)</span></td>
+                        </tr>
+                    </tbody>
+                </table></div>
+                <h3 class="block-label">Hard</h3>
+                <div class="table-scroll"><table class="sig-table">
+                    <thead>
+                        <tr>
+                            <th>When you see…</th>
+                            <th>Pattern</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="sig">Median of two sorted arrays</td>
+                            <td class="pat"><span class="pat-tag">Binary search on the smaller array's partition</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Trapping rain water</td>
+                            <td class="pat"><span class="pat-tag">Two-pointer with leftMax/rightMax</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Largest rectangle in histogram / binary matrix</td>
+                            <td class="pat"><span class="pat-tag">Monotonic stack</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Count subarrays with XOR = K</td>
+                            <td class="pat"><span class="pat-tag">Prefix XOR + HashMap</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Smallest window containing all elements</td>
+                            <td class="pat"><span class="pat-tag">Sliding window + HashMap</span></td>
+                        </tr>
+                    </tbody>
+                </table></div>
+
+                <h3 class="block-label">Example algorithms</h3>
+                <div class="examples-grid">
+                    <div class="example">
+                        <h4>Kadane's Algorithm — max subarray sum</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">maxSubArray</span><span class="hljs-params">(vector&lt;<span class="hljs-type">int</span>&gt;&amp; a)</span> </span>{
+    <span class="hljs-type">int</span> best = a[<span class="hljs-number">0</span>], cur = a[<span class="hljs-number">0</span>];
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">1</span>; i &lt; (<span class="hljs-type">int</span>)a.<span class="hljs-built_in">size</span>(); i++) {
+        cur = <span class="hljs-built_in">max</span>(a[i], cur + a[i]);
+        best = <span class="hljs-built_in">max</span>(best, cur);
+    }
+    <span class="hljs-keyword">return</span> best;
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Moore's Algorithm — majority element</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">majority</span><span class="hljs-params">(vector&lt;<span class="hljs-type">int</span>&gt;&amp; nums)</span> </span>{
+    <span class="hljs-type">int</span> n = nums.<span class="hljs-built_in">size</span>();
+    <span class="hljs-comment">// Moore's Algorithm</span>
+    <span class="hljs-type">int</span> count = <span class="hljs-number">0</span>, el = INT_MIN;
+    <span class="hljs-keyword">for</span>(<span class="hljs-type">int</span> nm: nums){
+      <span class="hljs-keyword">if</span>(count == <span class="hljs-number">0</span>) count = <span class="hljs-number">1</span>, el = nm;
+      <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span>(nm == el) count++;
+      <span class="hljs-keyword">else</span> count--;
+    }
+    count = <span class="hljs-number">0</span>;
+    <span class="hljs-keyword">for</span>(<span class="hljs-type">int</span> nm: nums){
+      <span class="hljs-keyword">if</span>(nm == el) count++;
+    }
+    <span class="hljs-keyword">return</span> (count &gt; n/<span class="hljs-number">2</span>) ? el: <span class="hljs-number">-1</span>;
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Next Permutation</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">nextPermutation</span><span class="hljs-params">(vector&lt;<span class="hljs-type">int</span>&gt;&amp; a)</span> </span>{
+    <span class="hljs-type">int</span> n = a.<span class="hljs-built_in">size</span>(), i = n - <span class="hljs-number">2</span>;
+    <span class="hljs-keyword">while</span> (i &gt;= <span class="hljs-number">0</span> &amp;&amp; a[i] &gt;= a[i + <span class="hljs-number">1</span>]) i--;
+    <span class="hljs-keyword">if</span> (i &gt;= <span class="hljs-number">0</span>) {
+        <span class="hljs-type">int</span> j = n - <span class="hljs-number">1</span>;
+        <span class="hljs-keyword">while</span> (a[j] &lt;= a[i]) j--;
+        <span class="hljs-built_in">swap</span>(a[i], a[j]);
+    }
+    <span class="hljs-built_in">reverse</span>(a.<span class="hljs-built_in">begin</span>() + i + <span class="hljs-number">1</span>, a.<span class="hljs-built_in">end</span>());
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>3Sum — all unique triplets summing to 0</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp">vector&lt;vector&lt;<span class="hljs-type">int</span>&gt;&gt; <span class="hljs-built_in">threeSum</span>(vector&lt;<span class="hljs-type">int</span>&gt; a) {
+    <span class="hljs-built_in">sort</span>(a.<span class="hljs-built_in">begin</span>(), a.<span class="hljs-built_in">end</span>());
+    vector&lt;vector&lt;<span class="hljs-type">int</span>&gt;&gt; res;
+    <span class="hljs-type">int</span> n = a.<span class="hljs-built_in">size</span>();
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; n - <span class="hljs-number">2</span>; i++) {
+        <span class="hljs-keyword">if</span> (i &gt; <span class="hljs-number">0</span> &amp;&amp; a[i] == a[i - <span class="hljs-number">1</span>]) <span class="hljs-keyword">continue</span>;
+        <span class="hljs-type">int</span> lo = i + <span class="hljs-number">1</span>, hi = n - <span class="hljs-number">1</span>;
+        <span class="hljs-keyword">while</span> (lo &lt; hi) {
+            <span class="hljs-type">int</span> sum = a[i] + a[lo] + a[hi];
+            <span class="hljs-keyword">if</span> (sum &lt; <span class="hljs-number">0</span>) lo++;
+            <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (sum &gt; <span class="hljs-number">0</span>) hi--;
+            <span class="hljs-keyword">else</span> {
+                res.<span class="hljs-built_in">push_back</span>({a[i], a[lo], a[hi]});
+                lo++; hi--;
+                <span class="hljs-keyword">while</span> (lo &lt; hi &amp;&amp; a[lo] == a[lo - <span class="hljs-number">1</span>]) lo++;
+                <span class="hljs-keyword">while</span> (lo &lt; hi &amp;&amp; a[hi] == a[hi + <span class="hljs-number">1</span>]) hi--;
+            }
+        }
+    }
+    <span class="hljs-keyword">return</span> res;
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Trapping Rain Water — two pointer</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">trap</span><span class="hljs-params">(vector&lt;<span class="hljs-type">int</span>&gt;&amp; h)</span> </span>{
+    <span class="hljs-type">int</span> lo = <span class="hljs-number">0</span>, hi = h.<span class="hljs-built_in">size</span>() - <span class="hljs-number">1</span>;
+    <span class="hljs-type">int</span> leftMax = <span class="hljs-number">0</span>, rightMax = <span class="hljs-number">0</span>, water = <span class="hljs-number">0</span>;
+    <span class="hljs-keyword">while</span> (lo &lt; hi) {
+        <span class="hljs-keyword">if</span> (h[lo] &lt;= h[hi]) {
+            leftMax = <span class="hljs-built_in">max</span>(leftMax, h[lo]);
+            water += leftMax - h[lo];
+            lo++;
+        } <span class="hljs-keyword">else</span> {
+            rightMax = <span class="hljs-built_in">max</span>(rightMax, h[hi]);
+            water += rightMax - h[hi];
+            hi--;
+        }
+    }
+    <span class="hljs-keyword">return</span> water;
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Union / Intersection of two sorted arrays</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function">vector&lt;<span class="hljs-type">int</span>&gt; <span class="hljs-title">sortedUnion</span><span class="hljs-params">(vector&lt;<span class="hljs-type">int</span>&gt;&amp; a, vector&lt;<span class="hljs-type">int</span>&gt;&amp; b)</span> </span>{
+    vector&lt;<span class="hljs-type">int</span>&gt; res; <span class="hljs-type">int</span> i = <span class="hljs-number">0</span>, j = <span class="hljs-number">0</span>;
+    <span class="hljs-keyword">while</span> (i &lt; (<span class="hljs-type">int</span>)a.<span class="hljs-built_in">size</span>() || j &lt; (<span class="hljs-type">int</span>)b.<span class="hljs-built_in">size</span>()) {
+        <span class="hljs-type">int</span> x;
+        <span class="hljs-keyword">if</span> (j == (<span class="hljs-type">int</span>)b.<span class="hljs-built_in">size</span>() || (i &lt; (<span class="hljs-type">int</span>)a.<span class="hljs-built_in">size</span>() &amp;&amp; a[i] &lt;= b[j])) x = a[i++];
+        <span class="hljs-keyword">else</span> x = b[j++];
+        <span class="hljs-keyword">if</span> (res.<span class="hljs-built_in">empty</span>() || res.<span class="hljs-built_in">back</span>() != x) res.<span class="hljs-built_in">push_back</span>(x);
+    }
+    <span class="hljs-keyword">return</span> res;
+}
+<span class="hljs-function">vector&lt;<span class="hljs-type">int</span>&gt; <span class="hljs-title">sortedIntersection</span><span class="hljs-params">(vector&lt;<span class="hljs-type">int</span>&gt;&amp; a, vector&lt;<span class="hljs-type">int</span>&gt;&amp; b)</span> </span>{
+    vector&lt;<span class="hljs-type">int</span>&gt; res; <span class="hljs-type">int</span> i = <span class="hljs-number">0</span>, j = <span class="hljs-number">0</span>;
+    <span class="hljs-keyword">while</span> (i &lt; (<span class="hljs-type">int</span>)a.<span class="hljs-built_in">size</span>() &amp;&amp; j &lt; (<span class="hljs-type">int</span>)b.<span class="hljs-built_in">size</span>()) {
+        <span class="hljs-keyword">if</span> (a[i] &lt; b[j]) i++;
+        <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (a[i] &gt; b[j]) j++;
+        <span class="hljs-keyword">else</span> { <span class="hljs-keyword">if</span> (res.<span class="hljs-built_in">empty</span>() || res.<span class="hljs-built_in">back</span>() != a[i]) res.<span class="hljs-built_in">push_back</span>(a[i]); i++; j++; }
+    }
+    <span class="hljs-keyword">return</span> res;
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Move Zeroes and Remove Duplicates (read/write pointer)</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">moveZeroes</span><span class="hljs-params">(vector&lt;<span class="hljs-type">int</span>&gt;&amp; a)</span> </span>{
+    <span class="hljs-type">int</span> w = <span class="hljs-number">0</span>;
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> r = <span class="hljs-number">0</span>; r &lt; (<span class="hljs-type">int</span>)a.<span class="hljs-built_in">size</span>(); r++)
+        <span class="hljs-keyword">if</span> (a[r] != <span class="hljs-number">0</span>) <span class="hljs-built_in">swap</span>(a[w++], a[r]);
+}
+<span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">removeDuplicates</span><span class="hljs-params">(vector&lt;<span class="hljs-type">int</span>&gt;&amp; a)</span> </span>{        <span class="hljs-comment">// sorted array</span>
+    <span class="hljs-keyword">if</span> (a.<span class="hljs-built_in">empty</span>()) <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;
+    <span class="hljs-type">int</span> w = <span class="hljs-number">1</span>;
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> r = <span class="hljs-number">1</span>; r &lt; (<span class="hljs-type">int</span>)a.<span class="hljs-built_in">size</span>(); r++)
+        <span class="hljs-keyword">if</span> (a[r] != a[w - <span class="hljs-number">1</span>]) a[w++] = a[r];
+    <span class="hljs-keyword">return</span> w;
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Rotate array by k, reversal trick</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">rotateRight</span><span class="hljs-params">(vector&lt;<span class="hljs-type">int</span>&gt;&amp; a, <span class="hljs-type">int</span> k)</span> </span>{
+    <span class="hljs-type">int</span> n = a.<span class="hljs-built_in">size</span>(); <span class="hljs-keyword">if</span> (!n) <span class="hljs-keyword">return</span>;
+    k %= n;
+    <span class="hljs-built_in">reverse</span>(a.<span class="hljs-built_in">begin</span>(), a.<span class="hljs-built_in">end</span>());
+    <span class="hljs-built_in">reverse</span>(a.<span class="hljs-built_in">begin</span>(), a.<span class="hljs-built_in">begin</span>() + k);
+    <span class="hljs-built_in">reverse</span>(a.<span class="hljs-built_in">begin</span>() + k, a.<span class="hljs-built_in">end</span>());
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Leaders in an array</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function">vector&lt;<span class="hljs-type">int</span>&gt; <span class="hljs-title">leaders</span><span class="hljs-params">(vector&lt;<span class="hljs-type">int</span>&gt;&amp; a)</span> </span>{
+    vector&lt;<span class="hljs-type">int</span>&gt; res; <span class="hljs-type">int</span> mx = INT_MIN;
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = (<span class="hljs-type">int</span>)a.<span class="hljs-built_in">size</span>() - <span class="hljs-number">1</span>; i &gt;= <span class="hljs-number">0</span>; i--)
+        <span class="hljs-keyword">if</span> (a[i] &gt;= mx) { res.<span class="hljs-built_in">push_back</span>(a[i]); mx = a[i]; }
+    <span class="hljs-built_in">reverse</span>(res.<span class="hljs-built_in">begin</span>(), res.<span class="hljs-built_in">end</span>());
+    <span class="hljs-keyword">return</span> res;
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Rearrange by sign (equal positives and negatives)</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function">vector&lt;<span class="hljs-type">int</span>&gt; <span class="hljs-title">rearrangeBySign</span><span class="hljs-params">(vector&lt;<span class="hljs-type">int</span>&gt;&amp; a)</span> </span>{
+    <span class="hljs-function">vector&lt;<span class="hljs-type">int</span>&gt; <span class="hljs-title">res</span><span class="hljs-params">(a.size())</span></span>;
+    <span class="hljs-type">int</span> pos = <span class="hljs-number">0</span>, neg = <span class="hljs-number">1</span>;
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> x : a) {
+        <span class="hljs-keyword">if</span> (x &gt; <span class="hljs-number">0</span>) { res[pos] = x; pos += <span class="hljs-number">2</span>; }
+        <span class="hljs-keyword">else</span>       { res[neg] = x; neg += <span class="hljs-number">2</span>; }
+    }
+    <span class="hljs-keyword">return</span> res;
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Subarray Sum Equals K, prefix sum + HashMap</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">subarraySum</span><span class="hljs-params">(vector&lt;<span class="hljs-type">int</span>&gt;&amp; a, <span class="hljs-type">int</span> k)</span> </span>{
+    unordered_map&lt;<span class="hljs-type">long</span> <span class="hljs-type">long</span>, <span class="hljs-type">int</span>&gt; freq;
+    freq[<span class="hljs-number">0</span>] = <span class="hljs-number">1</span>;
+    <span class="hljs-type">long</span> <span class="hljs-type">long</span> prefix = <span class="hljs-number">0</span>; <span class="hljs-type">int</span> count = <span class="hljs-number">0</span>;
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> x : a) {
+        prefix += x;
+        <span class="hljs-keyword">if</span> (freq.<span class="hljs-built_in">count</span>(prefix - k)) count += freq[prefix - k];
+        freq[prefix]++;
+    }
+    <span class="hljs-keyword">return</span> count;
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Majority Element II (&gt; n/3), extended Boyer–Moore</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function">vector&lt;<span class="hljs-type">int</span>&gt; <span class="hljs-title">majorityElementII</span><span class="hljs-params">(vector&lt;<span class="hljs-type">int</span>&gt;&amp; a)</span> </span>{
+    <span class="hljs-type">int</span> c1 = <span class="hljs-number">0</span>, c2 = <span class="hljs-number">0</span>, e1 = INT_MIN, e2 = INT_MIN;
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> x : a) {
+        <span class="hljs-keyword">if</span> (c1 == <span class="hljs-number">0</span> &amp;&amp; x != e2) { c1 = <span class="hljs-number">1</span>; e1 = x; }
+        <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (c2 == <span class="hljs-number">0</span> &amp;&amp; x != e1) { c2 = <span class="hljs-number">1</span>; e2 = x; }
+        <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (x == e1) c1++;
+        <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (x == e2) c2++;
+        <span class="hljs-keyword">else</span> { c1--; c2--; }
+    }
+    c1 = c2 = <span class="hljs-number">0</span>;
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> x : a) { <span class="hljs-keyword">if</span> (x == e1) c1++; <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (x == e2) c2++; }
+    vector&lt;<span class="hljs-type">int</span>&gt; res; <span class="hljs-type">int</span> n = a.<span class="hljs-built_in">size</span>();
+    <span class="hljs-keyword">if</span> (c1 &gt; n / <span class="hljs-number">3</span>) res.<span class="hljs-built_in">push_back</span>(e1);
+    <span class="hljs-keyword">if</span> (c2 &gt; n / <span class="hljs-number">3</span>) res.<span class="hljs-built_in">push_back</span>(e2);
+    <span class="hljs-keyword">return</span> res;
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Merge Overlapping Intervals</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp">vector&lt;vector&lt;<span class="hljs-type">int</span>&gt;&gt; <span class="hljs-built_in">mergeIntervals</span>(vector&lt;vector&lt;<span class="hljs-type">int</span>&gt;&gt;&amp; v) {
+    <span class="hljs-built_in">sort</span>(v.<span class="hljs-built_in">begin</span>(), v.<span class="hljs-built_in">end</span>());
+    vector&lt;vector&lt;<span class="hljs-type">int</span>&gt;&gt; res;
+    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">auto</span>&amp; cur : v) {
+        <span class="hljs-keyword">if</span> (res.<span class="hljs-built_in">empty</span>() || res.<span class="hljs-built_in">back</span>()[<span class="hljs-number">1</span>] &lt; cur[<span class="hljs-number">0</span>]) res.<span class="hljs-built_in">push_back</span>(cur);
+        <span class="hljs-keyword">else</span> res.<span class="hljs-built_in">back</span>()[<span class="hljs-number">1</span>] = <span class="hljs-built_in">max</span>(res.<span class="hljs-built_in">back</span>()[<span class="hljs-number">1</span>], cur[<span class="hljs-number">1</span>]);
+    }
+    <span class="hljs-keyword">return</span> res;
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Merge two sorted arrays in-place, gap method</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">mergeInPlace</span><span class="hljs-params">(vector&lt;<span class="hljs-type">int</span>&gt;&amp; a, vector&lt;<span class="hljs-type">int</span>&gt;&amp; b)</span> </span>{
+    <span class="hljs-type">int</span> n = a.<span class="hljs-built_in">size</span>(), m = b.<span class="hljs-built_in">size</span>();
+    <span class="hljs-type">int</span> gap = (n + m + <span class="hljs-number">1</span>) / <span class="hljs-number">2</span>;
+    <span class="hljs-keyword">while</span> (gap &gt; <span class="hljs-number">0</span>) {
+        <span class="hljs-type">int</span> i = <span class="hljs-number">0</span>, j = gap;
+        <span class="hljs-keyword">while</span> (j &lt; n + m) {
+            <span class="hljs-type">int</span>&amp; x = i &lt; n ? a[i] : b[i - n];
+            <span class="hljs-type">int</span>&amp; y = j &lt; n ? a[j] : b[j - n];
+            <span class="hljs-keyword">if</span> (x &gt; y) <span class="hljs-built_in">swap</span>(x, y);
+            i++; j++;
+        }
+        <span class="hljs-keyword">if</span> (gap == <span class="hljs-number">1</span>) <span class="hljs-keyword">break</span>;
+        gap = (gap + <span class="hljs-number">1</span>) / <span class="hljs-number">2</span>;
+    }
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Count Inversions, merge sort modification</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function"><span class="hljs-type">long</span> <span class="hljs-type">long</span> <span class="hljs-title">mergeCount</span><span class="hljs-params">(vector&lt;<span class="hljs-type">int</span>&gt;&amp; a, <span class="hljs-type">int</span> lo, <span class="hljs-type">int</span> mid, <span class="hljs-type">int</span> hi)</span> </span>{
+    vector&lt;<span class="hljs-type">int</span>&gt; tmp; <span class="hljs-type">long</span> <span class="hljs-type">long</span> inv = <span class="hljs-number">0</span>;
+    <span class="hljs-type">int</span> i = lo, j = mid + <span class="hljs-number">1</span>;
+    <span class="hljs-keyword">while</span> (i &lt;= mid &amp;&amp; j &lt;= hi) {
+        <span class="hljs-keyword">if</span> (a[i] &lt;= a[j]) tmp.<span class="hljs-built_in">push_back</span>(a[i++]);
+        <span class="hljs-keyword">else</span> { tmp.<span class="hljs-built_in">push_back</span>(a[j++]); inv += mid - i + <span class="hljs-number">1</span>; }
+    }
+    <span class="hljs-keyword">while</span> (i &lt;= mid) tmp.<span class="hljs-built_in">push_back</span>(a[i++]);
+    <span class="hljs-keyword">while</span> (j &lt;= hi)  tmp.<span class="hljs-built_in">push_back</span>(a[j++]);
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> k = lo; k &lt;= hi; k++) a[k] = tmp[k - lo];
+    <span class="hljs-keyword">return</span> inv;
+}
+<span class="hljs-function"><span class="hljs-type">long</span> <span class="hljs-type">long</span> <span class="hljs-title">countInversions</span><span class="hljs-params">(vector&lt;<span class="hljs-type">int</span>&gt;&amp; a, <span class="hljs-type">int</span> lo, <span class="hljs-type">int</span> hi)</span> </span>{
+    <span class="hljs-keyword">if</span> (lo &gt;= hi) <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;
+    <span class="hljs-type">int</span> mid = lo + (hi - lo) / <span class="hljs-number">2</span>;
+    <span class="hljs-keyword">return</span> <span class="hljs-built_in">countInversions</span>(a, lo, mid) + <span class="hljs-built_in">countInversions</span>(a, mid + <span class="hljs-number">1</span>, hi) + <span class="hljs-built_in">mergeCount</span>(a, lo, mid, hi);
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Maximum Product Subarray</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">maxProduct</span><span class="hljs-params">(vector&lt;<span class="hljs-type">int</span>&gt;&amp; a)</span> </span>{
+    <span class="hljs-type">int</span> mx = a[<span class="hljs-number">0</span>], mn = a[<span class="hljs-number">0</span>], best = a[<span class="hljs-number">0</span>];
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">1</span>; i &lt; (<span class="hljs-type">int</span>)a.<span class="hljs-built_in">size</span>(); i++) {
+        <span class="hljs-keyword">if</span> (a[i] &lt; <span class="hljs-number">0</span>) <span class="hljs-built_in">swap</span>(mx, mn);
+        mx = <span class="hljs-built_in">max</span>(a[i], mx * a[i]);
+        mn = <span class="hljs-built_in">min</span>(a[i], mn * a[i]);
+        best = <span class="hljs-built_in">max</span>(best, mx);
+    }
+    <span class="hljs-keyword">return</span> best;
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Count subarrays with XOR = K</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">subarraysWithXorK</span><span class="hljs-params">(vector&lt;<span class="hljs-type">int</span>&gt;&amp; a, <span class="hljs-type">int</span> k)</span> </span>{
+    unordered_map&lt;<span class="hljs-type">int</span>, <span class="hljs-type">int</span>&gt; freq;
+    freq[<span class="hljs-number">0</span>] = <span class="hljs-number">1</span>;
+    <span class="hljs-type">int</span> xr = <span class="hljs-number">0</span>, count = <span class="hljs-number">0</span>;
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> x : a) {
+        xr ^= x;
+        count += freq[xr ^ k];
+        freq[xr]++;
+    }
+    <span class="hljs-keyword">return</span> count;
+}</code></pre>
+                        </div>
+                    </div>
+                </div>

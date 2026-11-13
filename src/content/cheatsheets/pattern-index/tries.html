@@ -1,0 +1,240 @@
+                <div class="topic-head">
+                    <span class="topic-num">16</span>
+                    <h2>Tries</h2>
+                </div>
+
+                <h3 class="block-label">Recognition</h3>
+                <div class="table-scroll"><table class="sig-table">
+                    <thead>
+                        <tr>
+                            <th>When you see…</th>
+                            <th>Pattern</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="sig">Implement a trie: insert / search / startsWith</td>
+                            <td class="pat"><span class="pat-tag">Node with children[26] (or a map) + isEndOfWord
+                                    flag</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Longest word built entirely from other words in the dict</td>
+                            <td class="pat"><span class="pat-tag">Trie + DFS, track valid words</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Word search II — multiple words in a grid</td>
+                            <td class="pat"><span class="pat-tag">Build a trie of the words + DFS/backtracking on the
+                                    grid</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Maximum XOR of two numbers</td>
+                            <td class="pat"><span class="pat-tag">Binary trie (32-bit), greedy bit by bit</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Autocomplete / prefix matching</td>
+                            <td class="pat"><span class="pat-tag">Trie + DFS collecting words under a node</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Replace words with their shortest dictionary root</td>
+                            <td class="pat"><span class="pat-tag">Insert dictionary into a trie, search each word for
+                                    its shortest valid prefix</span></td>
+                        </tr>
+                    </tbody>
+                </table></div>
+
+                <h3 class="block-label">Example algorithms</h3>
+                <div class="examples-grid">
+                    <div class="example">
+                        <h4>Trie — insert, search, startsWith</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-keyword">struct</span> <span class="hljs-title class_">TrieNode</span> {
+    TrieNode* children[<span class="hljs-number">26</span>] = {};
+    <span class="hljs-type">bool</span> isEnd = <span class="hljs-literal">false</span>;
+};
+
+<span class="hljs-keyword">class</span> <span class="hljs-title class_">Trie</span> {
+    TrieNode* root = <span class="hljs-keyword">new</span> <span class="hljs-built_in">TrieNode</span>();
+<span class="hljs-keyword">public</span>:
+    <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">insert</span><span class="hljs-params">(<span class="hljs-type">const</span> string&amp; word)</span> </span>{
+        TrieNode* node = root;
+        <span class="hljs-keyword">for</span> (<span class="hljs-type">char</span> c : word) {
+            <span class="hljs-type">int</span> i = c - <span class="hljs-string">'a'</span>;
+            <span class="hljs-keyword">if</span> (!node-&gt;children[i]) node-&gt;children[i] = <span class="hljs-keyword">new</span> <span class="hljs-built_in">TrieNode</span>();
+            node = node-&gt;children[i];
+        }
+        node-&gt;isEnd = <span class="hljs-literal">true</span>;
+    }
+
+    <span class="hljs-function"><span class="hljs-type">bool</span> <span class="hljs-title">search</span><span class="hljs-params">(<span class="hljs-type">const</span> string&amp; word)</span> </span>{
+        TrieNode* node = <span class="hljs-built_in">find</span>(word);
+        <span class="hljs-keyword">return</span> node &amp;&amp; node-&gt;isEnd;
+    }
+
+    <span class="hljs-function"><span class="hljs-type">bool</span> <span class="hljs-title">startsWith</span><span class="hljs-params">(<span class="hljs-type">const</span> string&amp; prefix)</span> </span>{
+        <span class="hljs-keyword">return</span> <span class="hljs-built_in">find</span>(prefix) != <span class="hljs-literal">nullptr</span>;
+    }
+
+<span class="hljs-keyword">private</span>:
+    <span class="hljs-function">TrieNode* <span class="hljs-title">find</span><span class="hljs-params">(<span class="hljs-type">const</span> string&amp; s)</span> </span>{
+        TrieNode* node = root;
+        <span class="hljs-keyword">for</span> (<span class="hljs-type">char</span> c : s) {
+            <span class="hljs-type">int</span> i = c - <span class="hljs-string">'a'</span>;
+            <span class="hljs-keyword">if</span> (!node-&gt;children[i]) <span class="hljs-keyword">return</span> <span class="hljs-literal">nullptr</span>;
+            node = node-&gt;children[i];
+        }
+        <span class="hljs-keyword">return</span> node;
+    }
+};</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Maximum XOR of Two Numbers (binary trie)</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-keyword">struct</span> <span class="hljs-title class_">BitTrie</span> {
+    <span class="hljs-keyword">struct</span> <span class="hljs-title class_">Node</span> { Node* ch[<span class="hljs-number">2</span>] = {<span class="hljs-literal">nullptr</span>, <span class="hljs-literal">nullptr</span>}; };
+    Node* root = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Node</span>();
+    <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">insert</span><span class="hljs-params">(<span class="hljs-type">int</span> x)</span> </span>{
+        Node* cur = root;
+        <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> b = <span class="hljs-number">30</span>; b &gt;= <span class="hljs-number">0</span>; b--) {
+            <span class="hljs-type">int</span> bit = (x &gt;&gt; b) &amp; <span class="hljs-number">1</span>;
+            <span class="hljs-keyword">if</span> (!cur-&gt;ch[bit]) cur-&gt;ch[bit] = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Node</span>();
+            cur = cur-&gt;ch[bit];
+        }
+    }
+    <span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">maxXorWith</span><span class="hljs-params">(<span class="hljs-type">int</span> x)</span> </span>{
+        Node* cur = root; <span class="hljs-type">int</span> res = <span class="hljs-number">0</span>;
+        <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> b = <span class="hljs-number">30</span>; b &gt;= <span class="hljs-number">0</span>; b--) {
+            <span class="hljs-type">int</span> bit = (x &gt;&gt; b) &amp; <span class="hljs-number">1</span>;
+            <span class="hljs-keyword">if</span> (cur-&gt;ch[bit ^ <span class="hljs-number">1</span>]) { res |= (<span class="hljs-number">1</span> &lt;&lt; b); cur = cur-&gt;ch[bit ^ <span class="hljs-number">1</span>]; }
+            <span class="hljs-keyword">else</span> cur = cur-&gt;ch[bit];
+        }
+        <span class="hljs-keyword">return</span> res;
+    }
+};
+<span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">findMaximumXOR</span><span class="hljs-params">(vector&lt;<span class="hljs-type">int</span>&gt;&amp; a)</span> </span>{
+    BitTrie t; <span class="hljs-type">int</span> best = <span class="hljs-number">0</span>;
+    t.<span class="hljs-built_in">insert</span>(a[<span class="hljs-number">0</span>]);
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">1</span>; i &lt; (<span class="hljs-type">int</span>)a.<span class="hljs-built_in">size</span>(); i++) { best = <span class="hljs-built_in">max</span>(best, t.<span class="hljs-built_in">maxXorWith</span>(a[i])); t.<span class="hljs-built_in">insert</span>(a[i]); }
+    <span class="hljs-keyword">return</span> best;
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Word Search II (trie + grid DFS)</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-keyword">struct</span> <span class="hljs-title class_">WNode</span> { WNode* next[<span class="hljs-number">26</span>] = {}; string word; };
+
+<span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">wordDfs2</span><span class="hljs-params">(vector&lt;vector&lt;<span class="hljs-type">char</span>&gt;&gt;&amp; b, <span class="hljs-type">int</span> i, <span class="hljs-type">int</span> j, WNode* node, vector&lt;string&gt;&amp; res)</span> </span>{
+    <span class="hljs-type">char</span> c = b[i][j];
+    <span class="hljs-keyword">if</span> (c == <span class="hljs-string">'#'</span> || !node-&gt;next[c - <span class="hljs-string">'a'</span>]) <span class="hljs-keyword">return</span>;
+    node = node-&gt;next[c - <span class="hljs-string">'a'</span>];
+    <span class="hljs-keyword">if</span> (!node-&gt;word.<span class="hljs-built_in">empty</span>()) { res.<span class="hljs-built_in">push_back</span>(node-&gt;word); node-&gt;word.<span class="hljs-built_in">clear</span>(); }   <span class="hljs-comment">// avoid duplicates</span>
+    b[i][j] = <span class="hljs-string">'#'</span>;
+    <span class="hljs-keyword">if</span> (i &gt; <span class="hljs-number">0</span>) <span class="hljs-built_in">wordDfs2</span>(b, i - <span class="hljs-number">1</span>, j, node, res);
+    <span class="hljs-keyword">if</span> (j &gt; <span class="hljs-number">0</span>) <span class="hljs-built_in">wordDfs2</span>(b, i, j - <span class="hljs-number">1</span>, node, res);
+    <span class="hljs-keyword">if</span> (i + <span class="hljs-number">1</span> &lt; (<span class="hljs-type">int</span>)b.<span class="hljs-built_in">size</span>())    <span class="hljs-built_in">wordDfs2</span>(b, i + <span class="hljs-number">1</span>, j, node, res);
+    <span class="hljs-keyword">if</span> (j + <span class="hljs-number">1</span> &lt; (<span class="hljs-type">int</span>)b[<span class="hljs-number">0</span>].<span class="hljs-built_in">size</span>()) <span class="hljs-built_in">wordDfs2</span>(b, i, j + <span class="hljs-number">1</span>, node, res);
+    b[i][j] = c;
+}
+<span class="hljs-function">vector&lt;string&gt; <span class="hljs-title">findWords</span><span class="hljs-params">(vector&lt;vector&lt;<span class="hljs-type">char</span>&gt;&gt;&amp; b, vector&lt;string&gt;&amp; words)</span> </span>{
+    WNode* root = <span class="hljs-keyword">new</span> <span class="hljs-built_in">WNode</span>();
+    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">auto</span>&amp; w : words) {
+        WNode* cur = root;
+        <span class="hljs-keyword">for</span> (<span class="hljs-type">char</span> c : w) {
+            <span class="hljs-keyword">if</span> (!cur-&gt;next[c - <span class="hljs-string">'a'</span>]) cur-&gt;next[c - <span class="hljs-string">'a'</span>] = <span class="hljs-keyword">new</span> <span class="hljs-built_in">WNode</span>();
+            cur = cur-&gt;next[c - <span class="hljs-string">'a'</span>];
+        }
+        cur-&gt;word = w;
+    }
+    vector&lt;string&gt; res;
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; (<span class="hljs-type">int</span>)b.<span class="hljs-built_in">size</span>(); i++)
+        <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> j = <span class="hljs-number">0</span>; j &lt; (<span class="hljs-type">int</span>)b[<span class="hljs-number">0</span>].<span class="hljs-built_in">size</span>(); j++) <span class="hljs-built_in">wordDfs2</span>(b, i, j, root, res);
+    <span class="hljs-keyword">return</span> res;
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Autocomplete (uses TrieNode from the trie example)</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">collect</span><span class="hljs-params">(TrieNode* node, string&amp; cur, vector&lt;string&gt;&amp; out)</span> </span>{
+    <span class="hljs-keyword">if</span> (node-&gt;isEnd) out.<span class="hljs-built_in">push_back</span>(cur);
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">26</span>; i++)
+        <span class="hljs-keyword">if</span> (node-&gt;children[i]) {
+            cur.<span class="hljs-built_in">push_back</span>(<span class="hljs-string">'a'</span> + i);
+            <span class="hljs-built_in">collect</span>(node-&gt;children[i], cur, out);
+            cur.<span class="hljs-built_in">pop_back</span>();
+        }
+}
+<span class="hljs-function">vector&lt;string&gt; <span class="hljs-title">autocomplete</span><span class="hljs-params">(TrieNode* root, <span class="hljs-type">const</span> string&amp; prefix)</span> </span>{
+    TrieNode* node = root;
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">char</span> c : prefix) { node = node-&gt;children[c - <span class="hljs-string">'a'</span>]; <span class="hljs-keyword">if</span> (!node) <span class="hljs-keyword">return</span> {}; }
+    vector&lt;string&gt; out; string cur = prefix;
+    <span class="hljs-built_in">collect</span>(node, cur, out);
+    <span class="hljs-keyword">return</span> out;
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Replace Words with Shortest Dictionary Root</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function">string <span class="hljs-title">replaceWords</span><span class="hljs-params">(vector&lt;string&gt;&amp; dict, string sentence)</span> </span>{
+    TrieNode* root = <span class="hljs-keyword">new</span> <span class="hljs-built_in">TrieNode</span>();
+    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">auto</span>&amp; d : dict) {
+        TrieNode* cur = root;
+        <span class="hljs-keyword">for</span> (<span class="hljs-type">char</span> c : d) {
+            <span class="hljs-keyword">if</span> (!cur-&gt;children[c - <span class="hljs-string">'a'</span>]) cur-&gt;children[c - <span class="hljs-string">'a'</span>] = <span class="hljs-keyword">new</span> <span class="hljs-built_in">TrieNode</span>();
+            cur = cur-&gt;children[c - <span class="hljs-string">'a'</span>];
+        }
+        cur-&gt;isEnd = <span class="hljs-literal">true</span>;
+    }
+    <span class="hljs-function">stringstream <span class="hljs-title">ss</span><span class="hljs-params">(sentence)</span></span>; string w, res;
+    <span class="hljs-keyword">while</span> (ss &gt;&gt; w) {
+        TrieNode* cur = root; string prefix; <span class="hljs-type">bool</span> found = <span class="hljs-literal">false</span>;
+        <span class="hljs-keyword">for</span> (<span class="hljs-type">char</span> c : w) {
+            <span class="hljs-keyword">if</span> (!cur-&gt;children[c - <span class="hljs-string">'a'</span>]) <span class="hljs-keyword">break</span>;
+            cur = cur-&gt;children[c - <span class="hljs-string">'a'</span>];
+            prefix += c;
+            <span class="hljs-keyword">if</span> (cur-&gt;isEnd) { found = <span class="hljs-literal">true</span>; <span class="hljs-keyword">break</span>; }
+        }
+        <span class="hljs-keyword">if</span> (!res.<span class="hljs-built_in">empty</span>()) res += <span class="hljs-string">' '</span>;
+        res += found ? prefix : w;
+    }
+    <span class="hljs-keyword">return</span> res;
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Longest Word Built from Other Words (sorted-prefix version, same idea as trie + DFS)</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function">string <span class="hljs-title">longestWord</span><span class="hljs-params">(vector&lt;string&gt;&amp; words)</span> </span>{
+    <span class="hljs-built_in">sort</span>(words.<span class="hljs-built_in">begin</span>(), words.<span class="hljs-built_in">end</span>());
+    unordered_set&lt;string&gt; built = {<span class="hljs-string">""</span>};
+    string best;
+    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">auto</span>&amp; w : words)
+        <span class="hljs-keyword">if</span> (built.<span class="hljs-built_in">count</span>(w.<span class="hljs-built_in">substr</span>(<span class="hljs-number">0</span>, w.<span class="hljs-built_in">size</span>() - <span class="hljs-number">1</span>))) {
+            built.<span class="hljs-built_in">insert</span>(w);
+            <span class="hljs-keyword">if</span> (w.<span class="hljs-built_in">size</span>() &gt; best.<span class="hljs-built_in">size</span>()) best = w;
+        }
+    <span class="hljs-keyword">return</span> best;
+}</code></pre>
+                        </div>
+                    </div>
+            </div>

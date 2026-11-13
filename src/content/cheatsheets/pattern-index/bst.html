@@ -1,0 +1,254 @@
+                <div class="topic-head">
+                    <span class="topic-num">13</span>
+                    <h2>Binary Search Trees</h2>
+                </div>
+
+                <h3 class="block-label">Recognition</h3>
+                <div class="table-scroll"><table class="sig-table">
+                    <thead>
+                        <tr>
+                            <th>When you see…</th>
+                            <th>Pattern</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="sig">Search / insert / delete in a BST</td>
+                            <td class="pat"><span class="pat-tag">Use the BST property to go left/right —
+                                    O(h)</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Validate a BST</td>
+                            <td class="pat"><span class="pat-tag">Inorder must be strictly increasing, or a min/max
+                                    bound recursion</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Kth smallest / largest in a BST</td>
+                            <td class="pat"><span class="pat-tag">Inorder traversal (Morris for O(1) space)</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">LCA in a BST</td>
+                            <td class="pat"><span class="pat-tag">Compare values with root — go left/right/stop
+                                    based on range</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Convert a sorted array to a balanced BST</td>
+                            <td class="pat"><span class="pat-tag">Recursive: pick the middle element as root</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">BST iterator with O(1) amortized next()</td>
+                            <td class="pat"><span class="pat-tag">Controlled inorder traversal with an explicit
+                                    stack</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Two Sum in a BST</td>
+                            <td class="pat"><span class="pat-tag">Inorder → two-pointer, or a forward + backward
+                                    BST iterator</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Recover a BST (two nodes swapped)</td>
+                            <td class="pat"><span class="pat-tag">Inorder traversal, track the two violating
+                                    nodes</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Floor / ceiling in a BST</td>
+                            <td class="pat"><span class="pat-tag">O(h) traversal tracking the closest ≤ / ≥</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table></div>
+
+                <h3 class="block-label">Example algorithms</h3>
+                <div class="examples-grid">
+                    <div class="example">
+                        <h4>Validate a Binary Search Tree</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function"><span class="hljs-type">bool</span> <span class="hljs-title">valid</span><span class="hljs-params">(TreeNode* node, <span class="hljs-type">long</span> low, <span class="hljs-type">long</span> high)</span> </span>{
+    <span class="hljs-keyword">if</span> (!node) <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;
+    <span class="hljs-keyword">if</span> (node-&gt;val &lt;= low || node-&gt;val &gt;= high) <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;
+    <span class="hljs-keyword">return</span> <span class="hljs-built_in">valid</span>(node-&gt;left, low, node-&gt;val) &amp;&amp;
+           <span class="hljs-built_in">valid</span>(node-&gt;right, node-&gt;val, high);
+}
+
+<span class="hljs-function"><span class="hljs-type">bool</span> <span class="hljs-title">isValidBST</span><span class="hljs-params">(TreeNode* root)</span> </span>{
+    <span class="hljs-keyword">return</span> <span class="hljs-built_in">valid</span>(root, LONG_MIN, LONG_MAX);
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Insert into a BST</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function">TreeNode* <span class="hljs-title">insertIntoBST</span><span class="hljs-params">(TreeNode* root, <span class="hljs-type">int</span> val)</span> </span>{
+    <span class="hljs-keyword">if</span> (!root) <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> TreeNode{val, <span class="hljs-literal">nullptr</span>, <span class="hljs-literal">nullptr</span>};
+    <span class="hljs-keyword">if</span> (val &lt; root-&gt;val) root-&gt;left  = <span class="hljs-built_in">insertIntoBST</span>(root-&gt;left, val);
+    <span class="hljs-keyword">else</span>                 root-&gt;right = <span class="hljs-built_in">insertIntoBST</span>(root-&gt;right, val);
+    <span class="hljs-keyword">return</span> root;
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Kth Smallest Element in a BST</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">kthSmallest</span><span class="hljs-params">(TreeNode* root, <span class="hljs-type">int</span> k)</span> </span>{
+    stack&lt;TreeNode*&gt; st;
+    TreeNode* cur = root;
+    <span class="hljs-keyword">while</span> (<span class="hljs-literal">true</span>) {
+        <span class="hljs-keyword">while</span> (cur) { st.<span class="hljs-built_in">push</span>(cur); cur = cur-&gt;left; }
+        cur = st.<span class="hljs-built_in">top</span>(); st.<span class="hljs-built_in">pop</span>();
+        <span class="hljs-keyword">if</span> (--k == <span class="hljs-number">0</span>) <span class="hljs-keyword">return</span> cur-&gt;val;
+        cur = cur-&gt;right;
+    }
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Search and Delete in a BST</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function">TreeNode* <span class="hljs-title">searchBST</span><span class="hljs-params">(TreeNode* root, <span class="hljs-type">int</span> val)</span> </span>{
+    <span class="hljs-keyword">while</span> (root &amp;&amp; root-&gt;val != val) root = val &lt; root-&gt;val ? root-&gt;left : root-&gt;right;
+    <span class="hljs-keyword">return</span> root;
+}
+<span class="hljs-function">TreeNode* <span class="hljs-title">deleteNode</span><span class="hljs-params">(TreeNode* root, <span class="hljs-type">int</span> key)</span> </span>{
+    <span class="hljs-keyword">if</span> (!root) <span class="hljs-keyword">return</span> <span class="hljs-literal">nullptr</span>;
+    <span class="hljs-keyword">if</span> (key &lt; root-&gt;val) root-&gt;left = <span class="hljs-built_in">deleteNode</span>(root-&gt;left, key);
+    <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (key &gt; root-&gt;val) root-&gt;right = <span class="hljs-built_in">deleteNode</span>(root-&gt;right, key);
+    <span class="hljs-keyword">else</span> {
+        <span class="hljs-keyword">if</span> (!root-&gt;left)  { TreeNode* r = root-&gt;right; <span class="hljs-keyword">delete</span> root; <span class="hljs-keyword">return</span> r; }
+        <span class="hljs-keyword">if</span> (!root-&gt;right) { TreeNode* l = root-&gt;left;  <span class="hljs-keyword">delete</span> root; <span class="hljs-keyword">return</span> l; }
+        TreeNode* succ = root-&gt;right;                    <span class="hljs-comment">// inorder successor</span>
+        <span class="hljs-keyword">while</span> (succ-&gt;left) succ = succ-&gt;left;
+        root-&gt;val = succ-&gt;val;
+        root-&gt;right = <span class="hljs-built_in">deleteNode</span>(root-&gt;right, succ-&gt;val);
+    }
+    <span class="hljs-keyword">return</span> root;
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>LCA in a BST</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function">TreeNode* <span class="hljs-title">lcaBST</span><span class="hljs-params">(TreeNode* root, TreeNode* p, TreeNode* q)</span> </span>{
+    <span class="hljs-keyword">while</span> (root) {
+        <span class="hljs-keyword">if</span> (p-&gt;val &lt; root-&gt;val &amp;&amp; q-&gt;val &lt; root-&gt;val) root = root-&gt;left;
+        <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (p-&gt;val &gt; root-&gt;val &amp;&amp; q-&gt;val &gt; root-&gt;val) root = root-&gt;right;
+        <span class="hljs-keyword">else</span> <span class="hljs-keyword">return</span> root;
+    }
+    <span class="hljs-keyword">return</span> <span class="hljs-literal">nullptr</span>;
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Sorted Array → Balanced BST</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function">TreeNode* <span class="hljs-title">sortedArrayToBST</span><span class="hljs-params">(vector&lt;<span class="hljs-type">int</span>&gt;&amp; a, <span class="hljs-type">int</span> lo, <span class="hljs-type">int</span> hi)</span> </span>{
+    <span class="hljs-keyword">if</span> (lo &gt; hi) <span class="hljs-keyword">return</span> <span class="hljs-literal">nullptr</span>;
+    <span class="hljs-type">int</span> mid = lo + (hi - lo) / <span class="hljs-number">2</span>;
+    TreeNode* root = <span class="hljs-keyword">new</span> <span class="hljs-built_in">TreeNode</span>(a[mid]);
+    root-&gt;left  = <span class="hljs-built_in">sortedArrayToBST</span>(a, lo, mid - <span class="hljs-number">1</span>);
+    root-&gt;right = <span class="hljs-built_in">sortedArrayToBST</span>(a, mid + <span class="hljs-number">1</span>, hi);
+    <span class="hljs-keyword">return</span> root;
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>BST Iterator, O(1) amortized next()</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-keyword">class</span> <span class="hljs-title class_">BSTIterator</span> {
+    stack&lt;TreeNode*&gt; st;
+    <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">pushLeft</span><span class="hljs-params">(TreeNode* n)</span> </span>{ <span class="hljs-keyword">while</span> (n) { st.<span class="hljs-built_in">push</span>(n); n = n-&gt;left; } }
+<span class="hljs-keyword">public</span>:
+    <span class="hljs-built_in">BSTIterator</span>(TreeNode* root) { <span class="hljs-built_in">pushLeft</span>(root); }
+    <span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">next</span><span class="hljs-params">()</span> </span>{ TreeNode* n = st.<span class="hljs-built_in">top</span>(); st.<span class="hljs-built_in">pop</span>(); <span class="hljs-built_in">pushLeft</span>(n-&gt;right); <span class="hljs-keyword">return</span> n-&gt;val; }
+    <span class="hljs-function"><span class="hljs-type">bool</span> <span class="hljs-title">hasNext</span><span class="hljs-params">()</span> </span>{ <span class="hljs-keyword">return</span> !st.<span class="hljs-built_in">empty</span>(); }
+};</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Two Sum in a BST (inorder + two pointers)</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">inorderCollect</span><span class="hljs-params">(TreeNode* n, vector&lt;<span class="hljs-type">int</span>&gt;&amp; v)</span> </span>{
+    <span class="hljs-keyword">if</span> (!n) <span class="hljs-keyword">return</span>;
+    <span class="hljs-built_in">inorderCollect</span>(n-&gt;left, v); v.<span class="hljs-built_in">push_back</span>(n-&gt;val); <span class="hljs-built_in">inorderCollect</span>(n-&gt;right, v);
+}
+<span class="hljs-function"><span class="hljs-type">bool</span> <span class="hljs-title">findTarget</span><span class="hljs-params">(TreeNode* root, <span class="hljs-type">int</span> k)</span> </span>{
+    vector&lt;<span class="hljs-type">int</span>&gt; v; <span class="hljs-built_in">inorderCollect</span>(root, v);
+    <span class="hljs-type">int</span> lo = <span class="hljs-number">0</span>, hi = (<span class="hljs-type">int</span>)v.<span class="hljs-built_in">size</span>() - <span class="hljs-number">1</span>;
+    <span class="hljs-keyword">while</span> (lo &lt; hi) {
+        <span class="hljs-type">int</span> s = v[lo] + v[hi];
+        <span class="hljs-keyword">if</span> (s == k) <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;
+        <span class="hljs-keyword">if</span> (s &lt; k) lo++; <span class="hljs-keyword">else</span> hi--;
+    }
+    <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Recover BST (two nodes swapped)</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp">TreeNode *firstBad = <span class="hljs-literal">nullptr</span>, *secondBad = <span class="hljs-literal">nullptr</span>, *prevN = <span class="hljs-literal">nullptr</span>;
+<span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">recoverDfs</span><span class="hljs-params">(TreeNode* n)</span> </span>{
+    <span class="hljs-keyword">if</span> (!n) <span class="hljs-keyword">return</span>;
+    <span class="hljs-built_in">recoverDfs</span>(n-&gt;left);
+    <span class="hljs-keyword">if</span> (prevN &amp;&amp; prevN-&gt;val &gt; n-&gt;val) { <span class="hljs-keyword">if</span> (!firstBad) firstBad = prevN; secondBad = n; }
+    prevN = n;
+    <span class="hljs-built_in">recoverDfs</span>(n-&gt;right);
+}
+<span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">recoverTree</span><span class="hljs-params">(TreeNode* root)</span> </span>{
+    firstBad = secondBad = prevN = <span class="hljs-literal">nullptr</span>;
+    <span class="hljs-built_in">recoverDfs</span>(root);
+    <span class="hljs-built_in">swap</span>(firstBad-&gt;val, secondBad-&gt;val);
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Floor / Ceil in a BST</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">floorBST</span><span class="hljs-params">(TreeNode* root, <span class="hljs-type">int</span> x)</span> </span>{            <span class="hljs-comment">// largest value &lt;= x, else -1</span>
+    <span class="hljs-type">int</span> ans = <span class="hljs-number">-1</span>;
+    <span class="hljs-keyword">while</span> (root) {
+        <span class="hljs-keyword">if</span> (root-&gt;val == x) <span class="hljs-keyword">return</span> x;
+        <span class="hljs-keyword">if</span> (root-&gt;val &lt; x) { ans = root-&gt;val; root = root-&gt;right; } <span class="hljs-keyword">else</span> root = root-&gt;left;
+    }
+    <span class="hljs-keyword">return</span> ans;
+}
+<span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">ceilBST</span><span class="hljs-params">(TreeNode* root, <span class="hljs-type">int</span> x)</span> </span>{             <span class="hljs-comment">// smallest value &gt;= x, else -1</span>
+    <span class="hljs-type">int</span> ans = <span class="hljs-number">-1</span>;
+    <span class="hljs-keyword">while</span> (root) {
+        <span class="hljs-keyword">if</span> (root-&gt;val == x) <span class="hljs-keyword">return</span> x;
+        <span class="hljs-keyword">if</span> (root-&gt;val &gt; x) { ans = root-&gt;val; root = root-&gt;left; } <span class="hljs-keyword">else</span> root = root-&gt;right;
+    }
+    <span class="hljs-keyword">return</span> ans;
+}</code></pre>
+                        </div>
+                    </div>
+                </div>

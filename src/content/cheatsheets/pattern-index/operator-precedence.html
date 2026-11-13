@@ -1,0 +1,234 @@
+                <div class="topic-head">
+                    <span class="topic-num">00</span>
+                    <h2>C++ Operator Precedence</h2>
+                </div>
+                <p class="topic-intro">Higher precedence = evaluated first. Same precedence = follow associativity
+                    (left-to-right or right-to-left).</p>
+
+                <h3 class="block-label">Operator Precedence Table (Highest to Lowest)</h3>
+                <div class="table-scroll"><table class="sig-table">
+                    <thead>
+                        <tr>
+                            <th>Precedence</th>
+                            <th>Operator</th>
+                            <th>Description</th>
+                            <th>Associativity</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="sig">1</td>
+                            <td class="pat"><span class="pat-tag">() [] . -&gt; :: ++ --</span></td>
+                            <td>Parentheses, Array subscript, Member access, Scope, Post-increment/decrement</td>
+                            <td>Left-to-right</td>
+                        </tr>
+                        <tr>
+                            <td class="sig">2</td>
+                            <td class="pat"><span class="pat-tag">! ~ ++ -- + - * &amp; sizeof</span></td>
+                            <td>Logical NOT, Bitwise NOT, Pre-increment/decrement, Unary +/-, Dereference, Address-of,
+                                sizeof</td>
+                            <td>Right-to-left</td>
+                        </tr>
+                        <tr>
+                            <td class="sig">3</td>
+                            <td class="pat"><span class="pat-tag">* / %</span></td>
+                            <td>Multiplication, Division, Modulo</td>
+                            <td>Left-to-right</td>
+                        </tr>
+                        <tr>
+                            <td class="sig">4</td>
+                            <td class="pat"><span class="pat-tag">+ -</span></td>
+                            <td>Addition, Subtraction</td>
+                            <td>Left-to-right</td>
+                        </tr>
+                        <tr>
+                            <td class="sig">5</td>
+                            <td class="pat"><span class="pat-tag">
+                                    &lt;&lt;&gt;&gt;
+                                </span></td>
+                            <td>Bitwise left shift, right shift</td>
+                            <td>Left-to-right</td>
+                        </tr>
+                        <tr>
+                            <td class="sig">6</td>
+                            <td class="pat"><span class="pat-tag">
+                                    &lt; &lt;=&gt; &gt;=
+                                </span></td>
+                            <td>Relational operators</td>
+                            <td>Left-to-right</td>
+                        </tr>
+                        <tr>
+                            <td class="sig">7</td>
+                            <td class="pat"><span class="pat-tag">== !=</span></td>
+                            <td>Equality operators</td>
+                            <td>Left-to-right</td>
+                        </tr>
+                        <tr>
+                            <td class="sig">8</td>
+                            <td class="pat"><span class="pat-tag">&amp;</span></td>
+                            <td>Bitwise AND</td>
+                            <td>Left-to-right</td>
+                        </tr>
+                        <tr>
+                            <td class="sig">9</td>
+                            <td class="pat"><span class="pat-tag">^</span></td>
+                            <td>Bitwise XOR</td>
+                            <td>Left-to-right</td>
+                        </tr>
+                        <tr>
+                            <td class="sig">10</td>
+                            <td class="pat"><span class="pat-tag">|</span></td>
+                            <td>Bitwise OR</td>
+                            <td>Left-to-right</td>
+                        </tr>
+                        <tr>
+                            <td class="sig">11</td>
+                            <td class="pat"><span class="pat-tag">&amp;&amp;</span></td>
+                            <td>Logical AND</td>
+                            <td>Left-to-right</td>
+                        </tr>
+                        <tr>
+                            <td class="sig">12</td>
+                            <td class="pat"><span class="pat-tag">||</span></td>
+                            <td>Logical OR</td>
+                            <td>Left-to-right</td>
+                        </tr>
+                        <tr>
+                            <td class="sig">13</td>
+                            <td class="pat"><span class="pat-tag">? :</span></td>
+                            <td>Ternary conditional</td>
+                            <td>Right-to-left</td>
+                        </tr>
+                        <tr>
+                            <td class="sig">14</td>
+                            <td class="pat"><span class="pat-tag">= += -= *= /= %= &amp;= ^= |= &lt;&lt;=&gt;&gt;=</span></td>
+                            <td>Assignment operators</td>
+                            <td>Right-to-left</td>
+                        </tr>
+                        <tr>
+                            <td class="sig">15</td>
+                            <td class="pat"><span class="pat-tag">,</span></td>
+                            <td>Comma operator</td>
+                            <td>Left-to-right</td>
+                        </tr>
+                    </tbody>
+                </table></div>
+
+                <h3 class="block-label">Common Mistakes in Precedence</h3>
+                <div class="table-scroll"><table class="sig-table">
+                    <thead>
+                        <tr>
+                            <th>Code</th>
+                            <th>Evaluates As</th>
+                            <th>Correct?</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="sig">a + b * c</td>
+                            <td class="pat">a + (b * c)</td>
+                            <td>✓ YES (* before +)</td>
+                        </tr>
+                        <tr>
+                            <td class="sig">a &amp;&amp; b || c</td>
+                            <td class="pat">(a &amp;&amp; b) || c</td>
+                            <td>✓ YES (&amp;&amp; before ||)</td>
+                        </tr>
+                        <tr>
+                            <td class="sig">a | b &amp; c</td>
+                            <td class="pat">a | (b &amp; c)</td>
+                            <td>✓ YES (&amp; before |)</td>
+                        </tr>
+                        <tr>
+                            <td class="sig">a &lt; b &amp;&amp; c &lt; d</td>
+                            <td class="pat">(a &lt; b) &amp;&amp; (c &lt; d)</td>
+                            <td>✓ YES (&lt; before &amp;&amp;)</td>
+                        </tr>
+                        <tr>
+                            <td class="sig">a = b = c</td>
+                            <td class="pat">a = (b = c)</td>
+                            <td>✓ YES (= is right-to-left)</td>
+                        </tr>
+                        <tr>
+                            <td class="sig">!a &amp;&amp; b</td>
+                            <td class="pat">(!a) &amp;&amp; b</td>
+                            <td>✓ YES (! before &amp;&amp;)</td>
+                        </tr>
+                        <tr>
+                            <td class="sig">a * -b</td>
+                            <td class="pat">a * (-b)</td>
+                            <td>✓ YES (unary - before *)</td>
+                        </tr>
+                        <tr>
+                            <td class="sig">a &gt; b ? c : d + e</td>
+                            <td class="pat">a &gt; b ? c : (d + e)</td>
+                            <td>✓ YES (+ before ?:)</td>
+                        </tr>
+                    </tbody>
+                </table></div>
+
+                <h3 class="block-label">Gotchas &amp; Tips</h3>
+                <div style="margin: 1rem 0; padding: 1rem; border-left: 3px solid #2f81d3; font-size: 13px; line-height: 1.6;">
+                    <strong>Bitwise vs Logical:</strong><br>
+                    &nbsp;&nbsp;• <code>&amp;</code> and <code>|</code> = bitwise (higher precedence)<br>
+                    &nbsp;&nbsp;• <code>&amp;&amp;</code> and <code>||</code> = logical (lower precedence)<br>
+                    &nbsp;&nbsp;• <code>a &amp; b == c</code> → <code>a &amp; (b == c)</code> (NOT what you want!)<br>
+                    &nbsp;&nbsp;• Use: <code>(a &amp; b) == c</code><br><br>
+
+                    <strong>Assignment vs Comparison:</strong><br>
+                    &nbsp;&nbsp;• <code>a = b = c</code> → <code>a = (b = c)</code> ✓ (right-to-left)<br>
+                    &nbsp;&nbsp;• <code>a == b == c</code> → <code>(a == b) == c</code> (different!)<br><br>
+
+                    <strong>Shift vs Comparison:</strong><br>
+                    &nbsp;&nbsp;• <code>a &lt; b &lt;&lt; c</code> → <code>a &lt; (b &lt;&lt; c)</code><br>
+                    &nbsp;&nbsp;• Use: <code>(a &lt; b) &lt;&lt; c<code>a &lt; b &lt;&lt; c</code> →
+                    <code>a &lt; (b &lt;&lt; c)</code><br>
+                    &nbsp;&nbsp;• Use: <code>(a &lt; b) &lt;&lt; c</code> if needed
+
+                    <strong>Always use parentheses when unsure</strong> — it's faster than debugging!
+                </code></div><code>
+
+                <h3 class="block-label">Quick Reference by Context</h3>
+                <div class="table-scroll"><table class="sig-table">
+                    <thead>
+                        <tr>
+                            <th>Context</th>
+                            <th>Order</th>
+                            <th>Example</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="sig">Math expression</td>
+                            <td class="pat">*, / % → + -</td>
+                            <td>a + b * c = a + (b*c)</td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Bitwise expression</td>
+                            <td class="pat">~ → &amp; → ^ → |</td>
+                            <td>a &amp; b | c = (a &amp; b) | c</td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Logical expression</td>
+                            <td class="pat">! → &amp;&amp; → ||</td>
+                            <td>!a &amp;&amp; b || c = ((!a) &amp;&amp; b) || c</td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Mixed math &amp; logic</td>
+                            <td class="pat">Arithmetic → Relational → Logical</td>
+                            <td>a + b &lt; c &amp;&amp; d=((a+b) &lt; c) &amp;&amp; d</td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Assignment chain</td>
+                            <td class="pat">Right-to-left</td>
+                            <td>a = b = c + d = (a = (b = (c+d)))</td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Increment/decrement</td>
+                            <td class="pat">Post (a++) &gt; Pre (++a) in evaluation</td>
+                            <td>Post-fix in suffix position evaluated as-is</td>
+                        </tr>
+                    </tbody>
+                </table></div>
+
+            </code>

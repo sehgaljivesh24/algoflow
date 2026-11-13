@@ -1,0 +1,82 @@
+/*
+ * "Complete DSA Patterns Reference Guide" viewer (imported from thetorangi/DSA-cheat-sheet, MIT, Copyright (c) 2025 K A R M A).
+ * Everything lives under .cs-pg. This file = browser-default resets (the original page relied on UA defaults, AlgoFlow's
+ * global styles change a few) + our additions. The original <style>, scoped, is content/.../original.scoped.css and is
+ * imported AFTER this file by the component, so it wins ties.
+ */
+
+/* ---- page chrome: light page, UA-like defaults ---- */
+html:has(.cs-pg) { color-scheme: light; }
+html:has(.cs-pg)::-webkit-scrollbar { width: auto; height: auto; }
+html:has(.cs-pg)::-webkit-scrollbar-track { background: transparent; }
+html:has(.cs-pg)::-webkit-scrollbar-thumb { background: initial; border-radius: 0; }
+
+.cs-pg { position: relative; box-sizing: border-box; min-height: 100vh; font-size: 16px; text-align: left; }
+.cs-pg *, .cs-pg *::before, .cs-pg *::after { box-sizing: content-box; }
+
+.cs-pg h1 { display: block; font-size: 2em; font-weight: bold; margin: .67em 0; }
+.cs-pg h2 { display: block; font-size: 1.5em; font-weight: bold; margin: .83em 0; }
+.cs-pg h3 { display: block; font-size: 1.17em; font-weight: bold; margin: 1em 0; }
+.cs-pg p { margin: 1em 0; }
+.cs-pg ul { margin: 1em 0; padding: 0 0 0 40px; list-style: disc; }
+.cs-pg a { color: #0000ee; text-decoration: underline; }
+.cs-pg a:hover { text-decoration: underline; }
+.cs-pg table { text-indent: 0; }
+.cs-pg th, .cs-pg td { font-size: 16px; }
+.cs-pg .download-btn { font: 16px Arial, sans-serif; line-height: normal; letter-spacing: normal; text-transform: none; }
+
+/* ---- tables scroll inside their own wrapper (the original table simply overflowed the page on phones) ---- */
+/* 10px padding/negative margin keep the table's drop shadow from being clipped without changing the original spacing */
+.cs-pg-scroll { overflow-x: auto; margin: -10px -10px; padding: 10px; }
+.cs-pg .cs-pg-scroll > table { min-width: 720px; margin: 0; }
+
+/* row highlight on click (the original toggled an inline background-color) */
+.cs-pg tr.cs-pg-picked, .cs-pg tr.cs-pg-picked:hover { background-color: #fff3cd; }
+
+/* ---- the AlgoFlow additions: back link, attribution footer, viz chips ---- */
+.cs-pg a.cs-pg-back {
+  position: absolute; top: 3px; left: 20px; z-index: 5;
+  font: 12px/14px 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #8a93a0; text-decoration: none;
+}
+.cs-pg a.cs-pg-back:hover { color: #667eea; text-decoration: underline; }
+
+.cs-pg .cs-pg-attrib { margin: 14px 0 0; }
+.cs-pg .cs-pg-attrib p { margin: 4px 0; }
+.cs-pg .cs-pg-attrib a { color: #666; }
+
+.cs-pg .cs-pg-linkrow { display: block; margin: 2px 0; }
+.cs-pg .cs-pg-linkrow > a.problem-link { display: inline; margin: 0; }
+.cs-pg a.cs-pg-chip {
+  display: inline-block; margin-left: 6px; vertical-align: 1px; white-space: nowrap; font: 600 11px/1.25 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; letter-spacing: .01em;
+  color: #0f766e; background: #e6fffb; border: 1px solid #99e6dc; border-radius: 999px; padding: 0 7px;
+  text-decoration: none;
+}
+.cs-pg a.cs-pg-chip:hover { background: #0f766e; border-color: #0f766e; color: #fff; text-decoration: none; }
+
+.cs-pg-loading { text-align: center; color: #666; padding: 40px 0; }
+
+/* ---- phones: keep the original look, just less padding ---- */
+@media (max-width: 600px) {
+  .cs-pg { padding: 12px; }
+  .cs-pg .header-info { padding: 14px; }
+  .cs-pg .header-info h1 { font-size: 1.5em; }
+  .cs-pg-scroll { margin: -10px -4px; padding: 10px 4px; }
+  .cs-pg a.cs-pg-back { top: 0; left: 12px; font-size: 11px; line-height: 12px; }
+}
+
+/* ---- print ("Download as PDF" = window.print()) ---- */
+@media print {
+  html:has(.cs-pg) { color-scheme: light; }
+  .cs-pg { min-height: 0; padding: 0; font-size: 10pt; }
+  .cs-pg .no-print, .cs-pg a.cs-pg-back, .cs-pg a.cs-pg-chip { display: none !important; }
+  .cs-pg, .cs-pg * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .cs-pg .cs-pg-scroll { overflow: visible; margin: 0; padding: 0; }
+  .cs-pg .cs-pg-scroll > table { margin: 20px 0; }
+  .cs-pg .cs-pg-scroll > table { min-width: 0; box-shadow: none; page-break-inside: auto; break-inside: auto; }
+  .cs-pg thead { display: table-header-group; }
+  .cs-pg tr { page-break-inside: avoid; break-inside: avoid; }
+  .cs-pg tr.cs-pg-picked, .cs-pg tr.cs-pg-picked:hover { background-color: inherit; }
+  .cs-pg .tips-section { page-break-inside: avoid; break-inside: avoid; }
+  .cs-pg h1, .cs-pg h2, .cs-pg h3 { page-break-after: avoid; break-after: avoid; }
+  .cs-pg .header-info { margin-bottom: 14px; }
+}

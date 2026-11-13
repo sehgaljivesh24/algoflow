@@ -1,0 +1,280 @@
+                <div class="topic-head">
+                    <span class="topic-num">01</span>
+                    <h2>Sorting Techniques</h2>
+                </div>
+                <p class="topic-intro">Recognizing which sort a problem is secretly asking for — often the whole
+                    solution once you see it.</p>
+                <h3 class="block-label">Recognition</h3>
+                <div class="table-scroll"><table class="sig-table">
+                    <thead>
+                        <tr>
+                            <th>When you see…</th>
+                            <th>Pattern</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="sig">Sort in-place, values already in range 1..n or 0..n-1</td>
+                            <td class="pat"><span class="pat-tag">Cyclic Sort</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Count inversions / merge two sorted halves</td>
+                            <td class="pat"><span class="pat-tag">Merge Sort (merge step)</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Kth smallest / largest without a full sort</td>
+                            <td class="pat"><span class="pat-tag">Quickselect (partition-based)</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Array of only 0s, 1s, 2s (3 distinct values)</td>
+                            <td class="pat"><span class="pat-tag">Dutch National Flag (3-way partition)</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Sort by frequency, small integer range</td>
+                            <td class="pat"><span class="pat-tag">Counting Sort / Bucket Sort</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Need guaranteed O(n log n), in-place, stability not required</td>
+                            <td class="pat"><span class="pat-tag">Heap Sort</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Need a stable sort and can afford O(n) extra space</td>
+                            <td class="pat"><span class="pat-tag">Merge Sort</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">General-purpose, fastest average case, in-place</td>
+                            <td class="pat"><span class="pat-tag">Quick Sort</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Fixed-width integers or strings, digit by digit</td>
+                            <td class="pat"><span class="pat-tag">Radix Sort</span></td>
+                        </tr>
+                    </tbody>
+                </table></div>
+                <h3 class="block-label">Complexity at a glance</h3>
+                <div class="table-scroll"><table class="complexity-table">
+                    <thead>
+                        <tr>
+                            <th>Algorithm</th>
+                            <th>Time</th>
+                            <th>Space</th>
+                            <th>Stable</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Bubble</td>
+                            <td>O(n²)</td>
+                            <td>O(1)</td>
+                            <td>Yes</td>
+                        </tr>
+                        <tr>
+                            <td>Selection</td>
+                            <td>O(n²)</td>
+                            <td>O(1)</td>
+                            <td>No</td>
+                        </tr>
+                        <tr>
+                            <td>Insertion</td>
+                            <td>O(n²), O(n) best</td>
+                            <td>O(1)</td>
+                            <td>Yes</td>
+                        </tr>
+                        <tr>
+                            <td>Merge</td>
+                            <td>O(n log n)</td>
+                            <td>O(n)</td>
+                            <td>Yes</td>
+                        </tr>
+                        <tr>
+                            <td>Quick</td>
+                            <td>O(n log n) avg, O(n²) worst</td>
+                            <td>O(log n)</td>
+                            <td>No</td>
+                        </tr>
+                        <tr>
+                            <td>Heap</td>
+                            <td>O(n log n)</td>
+                            <td>O(1)</td>
+                            <td>No</td>
+                        </tr>
+                        <tr>
+                            <td>Counting</td>
+                            <td>O(n+k)</td>
+                            <td>O(k)</td>
+                            <td>Yes</td>
+                        </tr>
+                        <tr>
+                            <td>Radix</td>
+                            <td>O(d(n+k))</td>
+                            <td>O(n+k)</td>
+                            <td>Yes</td>
+                        </tr>
+                        <tr>
+                            <td>Cyclic</td>
+                            <td>O(n)</td>
+                            <td>O(1)</td>
+                            <td>—</td>
+                        </tr>
+                    </tbody>
+                </table></div>
+
+                <h3 class="block-label">Example algorithms</h3>
+                <div class="examples-grid">
+                    <div class="example">
+                        <h4>Quick Sort (Lomuto partition)</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">partition</span><span class="hljs-params">(vector&lt;<span class="hljs-type">int</span>&gt;&amp; a, <span class="hljs-type">int</span> lo, <span class="hljs-type">int</span> hi)</span> </span>{
+    <span class="hljs-type">int</span> pivot = a[hi], i = lo - <span class="hljs-number">1</span>;
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> j = lo; j &lt; hi; j++) {
+        <span class="hljs-keyword">if</span> (a[j] &lt; pivot) <span class="hljs-built_in">swap</span>(a[++i], a[j]);
+    }
+    <span class="hljs-built_in">swap</span>(a[i + <span class="hljs-number">1</span>], a[hi]);
+    <span class="hljs-keyword">return</span> i + <span class="hljs-number">1</span>;
+}
+
+<span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">quickSort</span><span class="hljs-params">(vector&lt;<span class="hljs-type">int</span>&gt;&amp; a, <span class="hljs-type">int</span> lo, <span class="hljs-type">int</span> hi)</span> </span>{
+    <span class="hljs-keyword">if</span> (lo &gt;= hi) <span class="hljs-keyword">return</span>;
+    <span class="hljs-type">int</span> p = <span class="hljs-built_in">partition</span>(a, lo, hi);
+    <span class="hljs-built_in">quickSort</span>(a, lo, p - <span class="hljs-number">1</span>);
+    <span class="hljs-built_in">quickSort</span>(a, p + <span class="hljs-number">1</span>, hi);
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Merge Sort</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">merge</span><span class="hljs-params">(vector&lt;<span class="hljs-type">int</span>&gt;&amp; a, <span class="hljs-type">int</span> lo, <span class="hljs-type">int</span> mid, <span class="hljs-type">int</span> hi)</span> </span>{
+    vector&lt;<span class="hljs-type">int</span>&gt; tmp;
+    <span class="hljs-type">int</span> i = lo, j = mid + <span class="hljs-number">1</span>;
+    <span class="hljs-keyword">while</span> (i &lt;= mid &amp;&amp; j &lt;= hi)
+        tmp.<span class="hljs-built_in">push_back</span>(a[i] &lt;= a[j] ? a[i++] : a[j++]);
+    <span class="hljs-keyword">while</span> (i &lt;= mid) tmp.<span class="hljs-built_in">push_back</span>(a[i++]);
+    <span class="hljs-keyword">while</span> (j &lt;= hi)  tmp.<span class="hljs-built_in">push_back</span>(a[j++]);
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> k = lo; k &lt;= hi; k++) a[k] = tmp[k - lo];
+}
+
+<span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">mergeSort</span><span class="hljs-params">(vector&lt;<span class="hljs-type">int</span>&gt;&amp; a, <span class="hljs-type">int</span> lo, <span class="hljs-type">int</span> hi)</span> </span>{
+    <span class="hljs-keyword">if</span> (lo &gt;= hi) <span class="hljs-keyword">return</span>;
+    <span class="hljs-type">int</span> mid = lo + (hi - lo) / <span class="hljs-number">2</span>;
+    <span class="hljs-built_in">mergeSort</span>(a, lo, mid);
+    <span class="hljs-built_in">mergeSort</span>(a, mid + <span class="hljs-number">1</span>, hi);
+    <span class="hljs-built_in">merge</span>(a, lo, mid, hi);
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Cyclic Sort — find the missing number in [0, n]</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">missingNumber</span><span class="hljs-params">(vector&lt;<span class="hljs-type">int</span>&gt;&amp; a)</span> </span>{
+    <span class="hljs-type">int</span> n = a.<span class="hljs-built_in">size</span>(), i = <span class="hljs-number">0</span>;
+    <span class="hljs-keyword">while</span> (i &lt; n) {
+        <span class="hljs-type">int</span> correct = a[i];
+        <span class="hljs-keyword">if</span> (correct &lt; n &amp;&amp; a[correct] != a[i]) <span class="hljs-built_in">swap</span>(a[i], a[correct]);
+        <span class="hljs-keyword">else</span> i++;
+    }
+    <span class="hljs-keyword">for</span> (i = <span class="hljs-number">0</span>; i &lt; n; i++)
+        <span class="hljs-keyword">if</span> (a[i] != i) <span class="hljs-keyword">return</span> i;
+    <span class="hljs-keyword">return</span> n;
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Dutch National Flag, sort 0/1/2</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">sortColors</span><span class="hljs-params">(vector&lt;<span class="hljs-type">int</span>&gt;&amp; a)</span> </span>{
+    <span class="hljs-type">int</span> lo = <span class="hljs-number">0</span>, mid = <span class="hljs-number">0</span>, hi = a.<span class="hljs-built_in">size</span>() - <span class="hljs-number">1</span>;
+    <span class="hljs-keyword">while</span> (mid &lt;= hi) {
+        <span class="hljs-keyword">if</span> (a[mid] == <span class="hljs-number">0</span>) <span class="hljs-built_in">swap</span>(a[lo++], a[mid++]);
+        <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (a[mid] == <span class="hljs-number">1</span>) mid++;
+        <span class="hljs-keyword">else</span> <span class="hljs-built_in">swap</span>(a[mid], a[hi--]);
+    }
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Quickselect, kth smallest (0-indexed k)</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">quickSelect</span><span class="hljs-params">(vector&lt;<span class="hljs-type">int</span>&gt;&amp; a, <span class="hljs-type">int</span> k)</span> </span>{
+    <span class="hljs-type">int</span> lo = <span class="hljs-number">0</span>, hi = a.<span class="hljs-built_in">size</span>() - <span class="hljs-number">1</span>;
+    <span class="hljs-keyword">while</span> (lo &lt;= hi) {
+        <span class="hljs-built_in">swap</span>(a[lo + <span class="hljs-built_in">rand</span>() % (hi - lo + <span class="hljs-number">1</span>)], a[hi]);
+        <span class="hljs-type">int</span> pivot = a[hi], i = lo;
+        <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> j = lo; j &lt; hi; j++) <span class="hljs-keyword">if</span> (a[j] &lt; pivot) <span class="hljs-built_in">swap</span>(a[i++], a[j]);
+        <span class="hljs-built_in">swap</span>(a[i], a[hi]);
+        <span class="hljs-keyword">if</span> (i == k) <span class="hljs-keyword">return</span> a[i];
+        <span class="hljs-keyword">if</span> (i &lt; k) lo = i + <span class="hljs-number">1</span>; <span class="hljs-keyword">else</span> hi = i - <span class="hljs-number">1</span>;
+    }
+    <span class="hljs-keyword">return</span> <span class="hljs-number">-1</span>;
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Counting Sort (stable)</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function">vector&lt;<span class="hljs-type">int</span>&gt; <span class="hljs-title">countingSort</span><span class="hljs-params">(vector&lt;<span class="hljs-type">int</span>&gt;&amp; a, <span class="hljs-type">int</span> maxVal)</span> </span>{
+    <span class="hljs-function">vector&lt;<span class="hljs-type">int</span>&gt; <span class="hljs-title">cnt</span><span class="hljs-params">(maxVal + <span class="hljs-number">1</span>, <span class="hljs-number">0</span>)</span>, <span class="hljs-title">out</span><span class="hljs-params">(a.size())</span></span>;
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> x : a) cnt[x]++;
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">1</span>; i &lt;= maxVal; i++) cnt[i] += cnt[i - <span class="hljs-number">1</span>];
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = (<span class="hljs-type">int</span>)a.<span class="hljs-built_in">size</span>() - <span class="hljs-number">1</span>; i &gt;= <span class="hljs-number">0</span>; i--) out[--cnt[a[i]]] = a[i];
+    <span class="hljs-keyword">return</span> out;
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Heap Sort</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">heapify</span><span class="hljs-params">(vector&lt;<span class="hljs-type">int</span>&gt;&amp; a, <span class="hljs-type">int</span> n, <span class="hljs-type">int</span> i)</span> </span>{
+    <span class="hljs-type">int</span> big = i, l = <span class="hljs-number">2</span> * i + <span class="hljs-number">1</span>, r = <span class="hljs-number">2</span> * i + <span class="hljs-number">2</span>;
+    <span class="hljs-keyword">if</span> (l &lt; n &amp;&amp; a[l] &gt; a[big]) big = l;
+    <span class="hljs-keyword">if</span> (r &lt; n &amp;&amp; a[r] &gt; a[big]) big = r;
+    <span class="hljs-keyword">if</span> (big != i) { <span class="hljs-built_in">swap</span>(a[i], a[big]); <span class="hljs-built_in">heapify</span>(a, n, big); }
+}
+<span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">heapSort</span><span class="hljs-params">(vector&lt;<span class="hljs-type">int</span>&gt;&amp; a)</span> </span>{
+    <span class="hljs-type">int</span> n = a.<span class="hljs-built_in">size</span>();
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = n / <span class="hljs-number">2</span> - <span class="hljs-number">1</span>; i &gt;= <span class="hljs-number">0</span>; i--) <span class="hljs-built_in">heapify</span>(a, n, i);
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = n - <span class="hljs-number">1</span>; i &gt; <span class="hljs-number">0</span>; i--) { <span class="hljs-built_in">swap</span>(a[<span class="hljs-number">0</span>], a[i]); <span class="hljs-built_in">heapify</span>(a, i, <span class="hljs-number">0</span>); }
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Radix Sort (non-negative ints, LSD)</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">countByDigit</span><span class="hljs-params">(vector&lt;<span class="hljs-type">int</span>&gt;&amp; a, <span class="hljs-type">long</span> <span class="hljs-type">long</span> exp)</span> </span>{
+    <span class="hljs-function">vector&lt;<span class="hljs-type">int</span>&gt; <span class="hljs-title">out</span><span class="hljs-params">(a.size())</span>, <span class="hljs-title">cnt</span><span class="hljs-params">(<span class="hljs-number">10</span>, <span class="hljs-number">0</span>)</span></span>;
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> x : a) cnt[(x / exp) % <span class="hljs-number">10</span>]++;
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">1</span>; i &lt; <span class="hljs-number">10</span>; i++) cnt[i] += cnt[i - <span class="hljs-number">1</span>];
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = (<span class="hljs-type">int</span>)a.<span class="hljs-built_in">size</span>() - <span class="hljs-number">1</span>; i &gt;= <span class="hljs-number">0</span>; i--) out[--cnt[(a[i] / exp) % <span class="hljs-number">10</span>]] = a[i];
+    a = out;
+}
+<span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">radixSort</span><span class="hljs-params">(vector&lt;<span class="hljs-type">int</span>&gt;&amp; a)</span> </span>{
+    <span class="hljs-type">int</span> mx = *<span class="hljs-built_in">max_element</span>(a.<span class="hljs-built_in">begin</span>(), a.<span class="hljs-built_in">end</span>());
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">long</span> <span class="hljs-type">long</span> exp = <span class="hljs-number">1</span>; mx / exp &gt; <span class="hljs-number">0</span>; exp *= <span class="hljs-number">10</span>) <span class="hljs-built_in">countByDigit</span>(a, exp);
+}</code></pre>
+                        </div>
+                    </div>
+                </div>

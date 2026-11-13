@@ -1,0 +1,324 @@
+<h2>🎯 Core Problem-Solving Patterns (1-31)</h2>
+<div class="cs-pg-scroll"><table>
+        <thead>
+            <tr>
+                <th width="5%">No.</th>
+                <th width="20%">Pattern</th>
+                <th width="25%">Description</th>
+                <th width="25%">Key Idea</th>
+                <th width="25%">Example Problems &amp; Links</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="pattern-number">1</td>
+                <td class="pattern-name">Sliding Window</td>
+                <td>Used for problems involving subarrays or substrings.</td>
+                <td class="key-idea">Use a sliding window to optimize time complexity from O(n²) to O(n).</td>
+                <td>
+                    <a href="https://leetcode.com/problems/longest-substring-without-repeating-characters/" class="problem-link">3. Longest Substring Without Repeating Characters</a>
+                    <a href="https://leetcode.com/problems/minimum-size-subarray-sum/" class="problem-link">209. Minimum Size Subarray Sum</a>
+                </td>
+            </tr>
+            <tr>
+                <td class="pattern-number">2</td>
+                <td class="pattern-name">Two Pointers</td>
+                <td>Used for problems involving sorted arrays, linked lists, or string manipulation.</td>
+                <td class="key-idea">Use two pointers moving towards/away from each other.</td>
+                <td>
+                    <a href="https://leetcode.com/problems/two-sum-ii-input-array-is-sorted/" class="problem-link">167. Two Sum II - Input Array Is Sorted</a>
+                    <a href="https://leetcode.com/problems/trapping-rain-water/" class="problem-link">42. Trapping Rain Water</a>
+                </td>
+            </tr>
+            <tr>
+                <td class="pattern-number">3</td>
+                <td class="pattern-name">Fast and Slow Pointers</td>
+                <td>Used for cyclic problems like finding loops in linked lists.</td>
+                <td class="key-idea">Use two pointers moving at different speeds.</td>
+                <td>
+                    <a href="https://leetcode.com/problems/linked-list-cycle/" class="problem-link">141. Linked List Cycle</a>
+                    <a href="https://leetcode.com/problems/middle-of-the-linked-list/" class="problem-link">876. Middle of the Linked List</a>
+                </td>
+            </tr>
+            <tr>
+                <td class="pattern-number">4</td>
+                <td class="pattern-name">Merge Intervals</td>
+                <td>Used for problems involving overlapping intervals.</td>
+                <td class="key-idea">Sort intervals and merge based on conditions.</td>
+                <td>
+                    <a href="https://leetcode.com/problems/merge-intervals/" class="problem-link">56. Merge Intervals</a>
+                    <a href="https://leetcode.com/problems/insert-interval/" class="problem-link">57. Insert Interval</a>
+                </td>
+            </tr>
+            <tr>
+                <td class="pattern-number">5</td>
+                <td class="pattern-name">Cyclic Sort</td>
+                <td>Used for problems involving numbers in a given range (1 to n).</td>
+                <td class="key-idea">Place each number at its correct index.</td>
+                <td>
+                    <a href="https://leetcode.com/problems/missing-number/" class="problem-link">268. Missing Number</a>
+                    <a href="https://leetcode.com/problems/find-all-duplicates-in-an-array/" class="problem-link">442. Find All Duplicates in an Array</a>
+                </td>
+            </tr>
+            <tr>
+                <td class="pattern-number">6</td>
+                <td class="pattern-name">Subsets</td>
+                <td>Used for problems requiring all combinations/sub sets of elements.</td>
+                <td class="key-idea">Use BFS, recursion, or bitmasking.</td>
+                <td>
+                    <a href="https://leetcode.com/problems/subsets/" class="problem-link">78. Subsets</a>
+                    <a href="https://leetcode.com/problems/permutations/" class="problem-link">46. Permutations</a>
+                </td>
+            </tr>
+            <tr>
+                <td class="pattern-number">7</td>
+                <td class="pattern-name">Binary Search</td>
+                <td>Used for searching in sorted arrays or answer-based problems.</td>
+                <td class="key-idea">Divide and conquer; halve the search space.</td>
+                <td>
+                    <a href="https://leetcode.com/problems/search-in-rotated-sorted-array/" class="problem-link">33. Search in Rotated Sorted Array</a>
+                    <a href="https://leetcode.com/problems/binary-search/" class="problem-link">704. Binary Search</a>
+                </td>
+            </tr>
+            <tr>
+                <td class="pattern-number">8</td>
+                <td class="pattern-name">Backtracking</td>
+                <td>Used for constraint-based problems like permutations and combinations.</td>
+                <td class="key-idea">Try all possibilities and backtrack upon failure.</td>
+                <td>
+                    <a href="https://leetcode.com/problems/n-queens/" class="problem-link">51. N-Queens</a>
+                    <a href="https://leetcode.com/problems/word-search/" class="problem-link">79. Word Search</a>
+                </td>
+            </tr>
+            <tr>
+                <td class="pattern-number">9</td>
+                <td class="pattern-name">Breadth-First Search (BFS)</td>
+                <td>Used for shortest path or level-order traversal problems.</td>
+                <td class="key-idea">Explore all neighbors at the current level before moving to the next level.</td>
+                <td>
+                    <a href="https://leetcode.com/problems/binary-tree-level-order-traversal/" class="problem-link">102. Binary Tree Level Order Traversal</a>
+                    <a href="https://leetcode.com/problems/word-ladder/" class="problem-link">127. Word Ladder</a>
+                </td>
+            </tr>
+            <tr>
+                <td class="pattern-number">10</td>
+                <td class="pattern-name">Depth-First Search (DFS)</td>
+                <td>Used for pathfinding, tree/graph traversal and connected components.</td>
+                <td class="key-idea">Recursively or iteratively explore each path fully.</td>
+                <td>
+                    <a href="https://leetcode.com/problems/all-paths-from-source-to-target/" class="problem-link">797. All Paths From Source to Target</a>
+                    <a href="https://leetcode.com/problems/number-of-islands/" class="problem-link">200. Number of Islands</a>
+                </td>
+            </tr>
+            <tr>
+                <td class="pattern-number">11</td>
+                <td class="pattern-name">Topological Sort</td>
+                <td>Used for problems with dependencies in a Directed Acyclic Graph (DAG).</td>
+                <td class="key-idea">Use BFS or DFS to order tasks based on prerequisites.</td>
+                <td>
+                    <a href="https://leetcode.com/problems/course-schedule/" class="problem-link">207. Course Schedule</a>
+                    <a href="https://leetcode.com/problems/course-schedule-ii/" class="problem-link">210. Course Schedule II</a>
+                </td>
+            </tr>
+            <tr>
+                <td class="pattern-number">12</td>
+                <td class="pattern-name">Union-Find (Disjoint Set)</td>
+                <td>Used for connectivity in graphs.</td>
+                <td class="key-idea">Use union and find operations to manage connected components.</td>
+                <td>
+                    <a href="https://leetcode.com/problems/number-of-provinces/" class="problem-link">547. Number of Provinces</a>
+                    <a href="https://leetcode.com/problems/redundant-connection/" class="problem-link">684. Redundant Connection</a>
+                </td>
+            </tr>
+            <tr>
+                <td class="pattern-number">13</td>
+                <td class="pattern-name">Greedy</td>
+                <td>Used for optimization problems (minimizing/maximizing something).</td>
+                <td class="key-idea">Make the locally optimal choice at each step.</td>
+                <td>
+                    <a href="https://leetcode.com/problems/non-overlapping-intervals/" class="problem-link">435. Non-overlapping Intervals</a>
+                    <a href="https://leetcode.com/problems/task-scheduler/" class="problem-link">621. Task Scheduler</a>
+                </td>
+            </tr>
+            <tr>
+                <td class="pattern-number">14</td>
+                <td class="pattern-name">Dynamic Programming (DP)</td>
+                <td>Used for optimization and decision-based problems.</td>
+                <td class="key-idea">Break the problem into overlapping subproblems.</td>
+                <td>
+                    <a href="https://leetcode.com/problems/longest-increasing-subsequence/" class="problem-link">300. Longest Increasing Subsequence</a>
+                    <a href="https://leetcode.com/problems/partition-equal-subset-sum/" class="problem-link">416. Partition Equal Subset Sum</a>
+                </td>
+            </tr>
+            <tr>
+                <td class="pattern-number">15</td>
+                <td class="pattern-name">Bit Manipulation</td>
+                <td>Used for binary-related problems like subsets and XOR queries.</td>
+                <td class="key-idea">Use bitwise operators to solve efficiently.</td>
+                <td>
+                    <a href="https://leetcode.com/problems/single-number/" class="problem-link">136. Single Number</a>
+                    <a href="https://leetcode.com/problems/power-of-two/" class="problem-link">231. Power of Two</a>
+                </td>
+            </tr>
+            <tr>
+                <td class="pattern-number">16</td>
+                <td class="pattern-name">Matrix Traversal</td>
+                <td>Used for problems involving grid traversal.</td>
+                <td class="key-idea">Use BFS, DFS, or dynamic programming.</td>
+                <td>
+                    <a href="https://leetcode.com/problems/unique-paths/" class="problem-link">62. Unique Paths</a>
+                    <a href="https://leetcode.com/problems/rotting-oranges/" class="problem-link">994. Rotting Oranges</a>
+                </td>
+            </tr>
+            <tr>
+                <td class="pattern-number">17</td>
+                <td class="pattern-name">Heap / Priority Queue</td>
+                <td>Used for problems requiring frequent max/min operations.</td>
+                <td class="key-idea">Use heaps for efficient insertion and extraction.</td>
+                <td>
+                    <a href="https://leetcode.com/problems/kth-largest-element-in-an-array/" class="problem-link">215. Kth Largest Element in an Array</a>
+                    <a href="https://leetcode.com/problems/merge-k-sorted-lists/" class="problem-link">23. Merge k Sorted Lists</a>
+                </td>
+            </tr>
+            <tr>
+                <td class="pattern-number">18</td>
+                <td class="pattern-name">Divide and Conquer</td>
+                <td>Used for problems involving partitioning.</td>
+                <td class="key-idea">Divide the problem into smaller subproblems.</td>
+                <td>
+                    <a href="https://leetcode.com/problems/sort-an-array/" class="problem-link">912. Sort an Array</a>
+                    <a href="https://leetcode.com/problems/median-of-two-sorted-arrays/" class="problem-link">4. Median of Two Sorted Arrays</a>
+                </td>
+            </tr>
+            <tr>
+                <td class="pattern-number">19</td>
+                <td class="pattern-name">Prefix Sum</td>
+                <td>Used for problems involving range sums.</td>
+                <td class="key-idea">Precompute cumulative sums to optimize queries.</td>
+                <td>
+                    <a href="https://leetcode.com/problems/subarray-sum-equals-k/" class="problem-link">560. Subarray Sum Equals K</a>
+                    <a href="https://leetcode.com/problems/range-sum-query-immutable/" class="problem-link">303. Range Sum Query - Immutable</a>
+                </td>
+            </tr>
+            <tr>
+                <td class="pattern-number">20</td>
+                <td class="pattern-name">Sliding Window Maximum</td>
+                <td>Used for problems involving maximum/minimum in sliding windows.</td>
+                <td class="key-idea">Use deque to maintain window maximum efficiently.</td>
+                <td>
+                    <a href="https://leetcode.com/problems/sliding-window-maximum/" class="problem-link">239. Sliding Window Maximum</a>
+                    <a href="https://leetcode.com/problems/constrained-subsequence-sum/" class="problem-link">1425. Constrained Subsequence Sum</a>
+                </td>
+            </tr>
+            <tr>
+                <td class="pattern-number">21</td>
+                <td class="pattern-name">Kadane's Algorithm</td>
+                <td>Used for maximum subarray problems.</td>
+                <td class="key-idea">Maintain a running sum and update the max sum.</td>
+                <td>
+                    <a href="https://leetcode.com/problems/maximum-subarray/" class="problem-link">53. Maximum Subarray</a>
+                    <a href="https://leetcode.com/problems/maximum-sum-circular-subarray/" class="problem-link">918. Maximum Sum Circular Subarray</a>
+                </td>
+            </tr>
+            <tr>
+                <td class="pattern-number">22</td>
+                <td class="pattern-name">Trie (Prefix Tree)</td>
+                <td>Used for word-related problems.</td>
+                <td class="key-idea">Use a tree structure for fast prefix lookups.</td>
+                <td>
+                    <a href="https://leetcode.com/problems/implement-trie-prefix-tree/" class="problem-link">208. Implement Trie (Prefix Tree)</a>
+                    <a href="https://leetcode.com/problems/word-search-ii/" class="problem-link">212. Word Search II</a>
+                </td>
+            </tr>
+            <tr>
+                <td class="pattern-number">23</td>
+                <td class="pattern-name">Segment Trees</td>
+                <td>Used for range query problems.</td>
+                <td class="key-idea">Build a tree structure for efficient range queries.</td>
+                <td>
+                    <a href="https://leetcode.com/problems/range-sum-query-mutable/" class="problem-link">307. Range Sum Query - Mutable</a>
+                    <a href="https://leetcode.com/problems/count-of-smaller-numbers-after-self/" class="problem-link">315. Count of Smaller Numbers After Self</a>
+                </td>
+            </tr>
+            <tr>
+                <td class="pattern-number">24</td>
+                <td class="pattern-name">Graph Traversal</td>
+                <td>Used for graph-related problems like shortest paths or connected components.</td>
+                <td class="key-idea">Use DFS, BFS, or Dijkstra's algorithm.</td>
+                <td>
+                    <a href="https://leetcode.com/problems/network-delay-time/" class="problem-link">743. Network Delay Time</a>
+                    <a href="https://leetcode.com/problems/min-cost-to-connect-all-points/" class="problem-link">1584. Min Cost to Connect All Points</a>
+                </td>
+            </tr>
+            <tr>
+                <td class="pattern-number">25</td>
+                <td class="pattern-name">Flood Fill</td>
+                <td>Used for grid-based coloring or connected regions.</td>
+                <td class="key-idea">Use DFS or BFS to visit all connected components.</td>
+                <td>
+                    <a href="https://leetcode.com/problems/flood-fill/" class="problem-link">733. Flood Fill</a>
+                    <a href="https://leetcode.com/problems/number-of-enclaves/" class="problem-link">1020. Number of Enclaves</a>
+                </td>
+            </tr>
+            <tr>
+                <td class="pattern-number">26</td>
+                <td class="pattern-name">Monotonic Stack</td>
+                <td>Used for problems involving nearest larger/smaller elements.</td>
+                <td class="key-idea">Use a stack to maintain a monotonic sequence.</td>
+                <td>
+                    <a href="https://leetcode.com/problems/next-greater-element-i/" class="problem-link">496. Next Greater Element I</a>
+                    <a href="https://leetcode.com/problems/largest-rectangle-in-histogram/" class="problem-link">84. Largest Rectangle in Histogram</a>
+                </td>
+            </tr>
+            <tr>
+                <td class="pattern-number">27</td>
+                <td class="pattern-name">String Matching (KMP, Rabin-Karp)</td>
+                <td>Used for finding substrings in a string.</td>
+                <td class="key-idea">Use efficient string matching algorithms.</td>
+                <td>
+                    <a href="https://leetcode.com/problems/find-the-index-of-the-first-occurrence-in-a-string/" class="problem-link">28. Find the Index of the First Occurrence in a String</a>
+                    <a href="https://leetcode.com/problems/shortest-palindrome/" class="problem-link">214. Shortest Palindrome</a>
+                </td>
+            </tr>
+            <tr>
+                <td class="pattern-number">28</td>
+                <td class="pattern-name">Binary Indexed Tree (Fenwick Tree)</td>
+                <td>Used for dynamic range sum/updates.</td>
+                <td class="key-idea">Use a tree structure to efficiently compute prefix sums.</td>
+                <td>
+                    <a href="https://leetcode.com/problems/range-sum-query-mutable/" class="problem-link">307. Range Sum Query - Mutable</a>
+                    <a href="https://leetcode.com/problems/count-of-smaller-numbers-after-self/" class="problem-link">315. Count of Smaller Numbers After Self</a>
+                </td>
+            </tr>
+            <tr>
+                <td class="pattern-number">29</td>
+                <td class="pattern-name">Reservoir Sampling</td>
+                <td>Used for random sampling.</td>
+                <td class="key-idea">Keep track of k items randomly selected from a stream.</td>
+                <td>
+                    <a href="https://leetcode.com/problems/linked-list-random-node/" class="problem-link">382. Linked List Random Node</a>
+                    <a href="https://leetcode.com/problems/random-pick-index/" class="problem-link">398. Random Pick Index</a>
+                </td>
+            </tr>
+            <tr>
+                <td class="pattern-number">30</td>
+                <td class="pattern-name">LRU Cache</td>
+                <td>Used for caching problems.</td>
+                <td class="key-idea">Use a hashmap and doubly linked list.</td>
+                <td>
+                    <a href="https://leetcode.com/problems/lru-cache/" class="problem-link">146. LRU Cache</a>
+                    <a href="https://leetcode.com/problems/lfu-cache/" class="problem-link">460. LFU Cache</a>
+                </td>
+            </tr>
+            <tr>
+                <td class="pattern-number">31</td>
+                <td class="pattern-name">Fibonacci Sequence</td>
+                <td>Used for DP problems.</td>
+                <td class="key-idea">Compute Fibonacci numbers iteratively or using matrix exponentiation.</td>
+                <td>
+                    <a href="https://leetcode.com/problems/climbing-stairs/" class="problem-link">70. Climbing Stairs</a>
+                    <a href="https://leetcode.com/problems/house-robber/" class="problem-link">198. House Robber</a>
+                </td>
+            </tr>
+        </tbody>
+    </table></div>

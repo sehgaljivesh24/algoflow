@@ -1,0 +1,204 @@
+                <div class="topic-head">
+                    <span class="topic-num">17</span>
+                    <h2>Strings — Advanced</h2>
+                </div>
+                <h3 class="block-label">Recognition</h3>
+                <div class="table-scroll"><table class="sig-table">
+                    <thead>
+                        <tr>
+                            <th>When you see…</th>
+                            <th>Pattern</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="sig">Need guaranteed O(n+m) search, or a reusable prefix-failure function</td>
+                            <td class="pat"><span class="pat-tag">KMP (LPS array)</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Match a pattern anywhere using one linear array of match-lengths</td>
+                            <td class="pat"><span class="pat-tag">Z-algorithm (concat pattern + '#' + text)</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Very large text, want to avoid re-comparing substrings char by char</td>
+                            <td class="pat"><span class="pat-tag">Rabin–Karp rolling hash — use double
+                                    hashing to avoid collisions</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Check whether string B is a rotation of string A</td>
+                            <td class="pat"><span class="pat-tag">Search B inside A+A with KMP or Z</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Need every palindrome's radius in O(n) total, not O(n²)</td>
+                            <td class="pat"><span class="pat-tag">Manacher's algorithm</span></td>
+                        </tr>
+                    </tbody>
+                </table></div>
+
+                <h3 class="block-label">Example algorithms</h3>
+                <div class="examples-grid">
+                    <div class="example">
+                        <h4>KMP — Pattern Matching</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function">vector&lt;<span class="hljs-type">int</span>&gt; <span class="hljs-title">computeLPS</span><span class="hljs-params">(<span class="hljs-type">const</span> string&amp; pattern)</span> </span>{
+    <span class="hljs-type">int</span> n = pattern.<span class="hljs-built_in">size</span>();
+    <span class="hljs-function">vector&lt;<span class="hljs-type">int</span>&gt; <span class="hljs-title">lps</span><span class="hljs-params">(n, <span class="hljs-number">0</span>)</span></span>;
+    <span class="hljs-type">int</span> len = <span class="hljs-number">0</span>, i = <span class="hljs-number">1</span>;
+
+    <span class="hljs-keyword">while</span> (i &lt; n) {
+        <span class="hljs-keyword">if</span> (pattern[i] == pattern[len]) {
+            lps[i] = ++len;
+            i++;
+        } <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (len != <span class="hljs-number">0</span>) {
+            len = lps[len - <span class="hljs-number">1</span>];
+        } <span class="hljs-keyword">else</span> {
+            i++;
+        }
+    }
+    <span class="hljs-keyword">return</span> lps;
+}
+
+<span class="hljs-function">vector&lt;<span class="hljs-type">int</span>&gt; <span class="hljs-title">findPattern</span><span class="hljs-params">(<span class="hljs-type">const</span> string&amp; text, <span class="hljs-type">const</span> string&amp; pattern)</span> </span>{
+    vector&lt;<span class="hljs-type">int</span>&gt; result;
+    vector&lt;<span class="hljs-type">int</span>&gt; lps = <span class="hljs-built_in">computeLPS</span>(pattern);
+    <span class="hljs-type">int</span> j = <span class="hljs-number">0</span>;
+
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; (<span class="hljs-type">int</span>)text.<span class="hljs-built_in">size</span>(); i++) {
+        <span class="hljs-keyword">while</span> (j &gt; <span class="hljs-number">0</span> &amp;&amp; text[i] != pattern[j]) j = lps[j - <span class="hljs-number">1</span>];
+        <span class="hljs-keyword">if</span> (text[i] == pattern[j]) j++;
+        <span class="hljs-keyword">if</span> (j == (<span class="hljs-type">int</span>)pattern.<span class="hljs-built_in">size</span>()) {
+            result.<span class="hljs-built_in">push_back</span>(i - j + <span class="hljs-number">1</span>);
+            j = lps[j - <span class="hljs-number">1</span>];
+        }
+    }
+    <span class="hljs-keyword">return</span> result;
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Z-Algorithm — Pattern Matching</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function">vector&lt;<span class="hljs-type">int</span>&gt; <span class="hljs-title">computeZ</span><span class="hljs-params">(<span class="hljs-type">const</span> string&amp; s)</span> </span>{
+    <span class="hljs-type">int</span> n = s.<span class="hljs-built_in">size</span>();
+    <span class="hljs-function">vector&lt;<span class="hljs-type">int</span>&gt; <span class="hljs-title">z</span><span class="hljs-params">(n, <span class="hljs-number">0</span>)</span></span>;
+    <span class="hljs-type">int</span> l = <span class="hljs-number">0</span>, r = <span class="hljs-number">0</span>;
+
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">1</span>; i &lt; n; i++) {
+        <span class="hljs-keyword">if</span> (i &lt;= r) z[i] = <span class="hljs-built_in">min</span>(r - i + <span class="hljs-number">1</span>, z[i - l]);
+        <span class="hljs-keyword">while</span> (i + z[i] &lt; n &amp;&amp; s[z[i]] == s[i + z[i]]) z[i]++;
+        <span class="hljs-keyword">if</span> (i + z[i] - <span class="hljs-number">1</span> &gt; r) { l = i; r = i + z[i] - <span class="hljs-number">1</span>; }
+    }
+    <span class="hljs-keyword">return</span> z;
+}
+
+<span class="hljs-function">vector&lt;<span class="hljs-type">int</span>&gt; <span class="hljs-title">findPattern</span><span class="hljs-params">(<span class="hljs-type">const</span> string&amp; text, <span class="hljs-type">const</span> string&amp; pattern)</span> </span>{
+    string combined = pattern + <span class="hljs-string">"#"</span> + text;
+    vector&lt;<span class="hljs-type">int</span>&gt; z = <span class="hljs-built_in">computeZ</span>(combined);
+    vector&lt;<span class="hljs-type">int</span>&gt; result;
+    <span class="hljs-type">int</span> patLen = pattern.<span class="hljs-built_in">size</span>();
+
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = patLen + <span class="hljs-number">1</span>; i &lt; (<span class="hljs-type">int</span>)combined.<span class="hljs-built_in">size</span>(); i++) {
+        <span class="hljs-keyword">if</span> (z[i] == patLen) result.<span class="hljs-built_in">push_back</span>(i - patLen - <span class="hljs-number">1</span>);
+    }
+    <span class="hljs-keyword">return</span> result;
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Rabin–Karp — Rolling Hash</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-type">const</span> <span class="hljs-type">long</span> <span class="hljs-type">long</span> MOD = <span class="hljs-number">1e9</span> + <span class="hljs-number">7</span>, BASE = <span class="hljs-number">31</span>;
+
+<span class="hljs-function">vector&lt;<span class="hljs-type">int</span>&gt; <span class="hljs-title">rabinKarp</span><span class="hljs-params">(<span class="hljs-type">const</span> string&amp; text, <span class="hljs-type">const</span> string&amp; pattern)</span> </span>{
+    <span class="hljs-type">int</span> n = text.<span class="hljs-built_in">size</span>(), m = pattern.<span class="hljs-built_in">size</span>();
+    vector&lt;<span class="hljs-type">int</span>&gt; result;
+
+    <span class="hljs-type">long</span> <span class="hljs-type">long</span> patHash = <span class="hljs-number">0</span>, textHash = <span class="hljs-number">0</span>, pow_base = <span class="hljs-number">1</span>;
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; m; i++) {
+        patHash = (patHash * BASE + pattern[i]) % MOD;
+        textHash = (textHash * BASE + text[i]) % MOD;
+        <span class="hljs-keyword">if</span> (i &lt; m - <span class="hljs-number">1</span>) pow_base = (pow_base * BASE) % MOD;
+    }
+
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt;= n - m; i++) {
+        <span class="hljs-keyword">if</span> (patHash == textHash &amp;&amp; text.<span class="hljs-built_in">substr</span>(i, m) == pattern) {
+            result.<span class="hljs-built_in">push_back</span>(i);
+        }
+        <span class="hljs-keyword">if</span> (i &lt; n - m) {
+            textHash = (textHash - (<span class="hljs-type">long</span> <span class="hljs-type">long</span>)text[i] * pow_base % MOD + MOD) % MOD;
+            textHash = (textHash * BASE + text[i + m]) % MOD;
+        }
+    }
+    <span class="hljs-keyword">return</span> result;
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Rotation Check (uses KMP findPattern from above)</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function"><span class="hljs-type">bool</span> <span class="hljs-title">isRotation</span><span class="hljs-params">(<span class="hljs-type">const</span> string&amp; a, <span class="hljs-type">const</span> string&amp; b)</span> </span>{
+    <span class="hljs-keyword">if</span> (a.<span class="hljs-built_in">size</span>() != b.<span class="hljs-built_in">size</span>()) <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;
+    <span class="hljs-keyword">return</span> !<span class="hljs-built_in">findPattern</span>(a + a, b).<span class="hljs-built_in">empty</span>();
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Manacher's Algorithm, longest palindromic substring in O(n)</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function">string <span class="hljs-title">manacher</span><span class="hljs-params">(<span class="hljs-type">const</span> string&amp; s)</span> </span>{
+    string t = <span class="hljs-string">"#"</span>;
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">char</span> c : s) { t += c; t += <span class="hljs-string">'#'</span>; }
+    <span class="hljs-type">int</span> n = t.<span class="hljs-built_in">size</span>(), center = <span class="hljs-number">0</span>, right = <span class="hljs-number">0</span>, bestLen = <span class="hljs-number">0</span>, bestCenter = <span class="hljs-number">0</span>;
+    <span class="hljs-function">vector&lt;<span class="hljs-type">int</span>&gt; <span class="hljs-title">p</span><span class="hljs-params">(n, <span class="hljs-number">0</span>)</span></span>;
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; n; i++) {
+        <span class="hljs-keyword">if</span> (i &lt; right) p[i] = <span class="hljs-built_in">min</span>(right - i, p[<span class="hljs-number">2</span> * center - i]);
+        <span class="hljs-keyword">while</span> (i - p[i] - <span class="hljs-number">1</span> &gt;= <span class="hljs-number">0</span> &amp;&amp; i + p[i] + <span class="hljs-number">1</span> &lt; n &amp;&amp; t[i - p[i] - <span class="hljs-number">1</span>] == t[i + p[i] + <span class="hljs-number">1</span>]) p[i]++;
+        <span class="hljs-keyword">if</span> (i + p[i] &gt; right) { center = i; right = i + p[i]; }
+        <span class="hljs-keyword">if</span> (p[i] &gt; bestLen) { bestLen = p[i]; bestCenter = i; }
+    }
+    <span class="hljs-keyword">return</span> s.<span class="hljs-built_in">substr</span>((bestCenter - bestLen) / <span class="hljs-number">2</span>, bestLen);
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Double Hashing, O(1) substring compare</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-keyword">struct</span> <span class="hljs-title class_">StringHash</span> {
+    <span class="hljs-type">static</span> <span class="hljs-type">const</span> <span class="hljs-type">long</span> <span class="hljs-type">long</span> M1 = <span class="hljs-number">1000000007</span>, M2 = <span class="hljs-number">998244353</span>, B1 = <span class="hljs-number">131</span>, B2 = <span class="hljs-number">137</span>;
+    vector&lt;<span class="hljs-type">long</span> <span class="hljs-type">long</span>&gt; h1, h2, p1, p2;
+    <span class="hljs-built_in">StringHash</span>(<span class="hljs-type">const</span> string&amp; s) : <span class="hljs-built_in">h1</span>(s.<span class="hljs-built_in">size</span>() + <span class="hljs-number">1</span>), <span class="hljs-built_in">h2</span>(s.<span class="hljs-built_in">size</span>() + <span class="hljs-number">1</span>), <span class="hljs-built_in">p1</span>(s.<span class="hljs-built_in">size</span>() + <span class="hljs-number">1</span>), <span class="hljs-built_in">p2</span>(s.<span class="hljs-built_in">size</span>() + <span class="hljs-number">1</span>) {
+        p1[<span class="hljs-number">0</span>] = p2[<span class="hljs-number">0</span>] = <span class="hljs-number">1</span>;
+        <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; (<span class="hljs-type">int</span>)s.<span class="hljs-built_in">size</span>(); i++) {
+            h1[i + <span class="hljs-number">1</span>] = (h1[i] * B1 + s[i]) % M1;
+            h2[i + <span class="hljs-number">1</span>] = (h2[i] * B2 + s[i]) % M2;
+            p1[i + <span class="hljs-number">1</span>] = p1[i] * B1 % M1;
+            p2[i + <span class="hljs-number">1</span>] = p2[i] * B2 % M2;
+        }
+    }
+    <span class="hljs-function">pair&lt;<span class="hljs-type">long</span> <span class="hljs-type">long</span>,<span class="hljs-type">long</span> <span class="hljs-type">long</span>&gt; <span class="hljs-title">get</span><span class="hljs-params">(<span class="hljs-type">int</span> l, <span class="hljs-type">int</span> r)</span> </span>{          <span class="hljs-comment">// hash of s[l..r)</span>
+        <span class="hljs-type">long</span> <span class="hljs-type">long</span> a = (h1[r] - h1[l] * p1[r - l] % M1 + M1) % M1;
+        <span class="hljs-type">long</span> <span class="hljs-type">long</span> b = (h2[r] - h2[l] * p2[r - l] % M2 + M2) % M2;
+        <span class="hljs-keyword">return</span> {a, b};
+    }
+};</code></pre>
+                        </div>
+                    </div>
+                </div>

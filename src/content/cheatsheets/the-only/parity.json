@@ -1,0 +1,564 @@
+{
+  "generated": "2026-11-13",
+  "engine": {
+    "source": "mdast (micromark + GFM)",
+    "output": "cheerio over generated HTML"
+  },
+  "parity": {
+    "programming-prerequisites": {
+      "source": {
+        "headings": 47,
+        "tables": 0,
+        "tableRows": 0,
+        "codeBlocks": 12,
+        "listItems": 227,
+        "links": 1,
+        "images": 0,
+        "blockquotes": 0,
+        "rules": 9,
+        "inlineCode": 39,
+        "htmlNodes": 0
+      },
+      "output": {
+        "headings": 47,
+        "tables": 0,
+        "tableRows": 0,
+        "codeBlocks": 12,
+        "listItems": 227,
+        "links": 1,
+        "images": 0,
+        "blockquotes": 0,
+        "rules": 9,
+        "inlineCode": 39
+      },
+      "deadAnchors": [],
+      "words": 3103
+    },
+    "developer-guide-framework": {
+      "source": {
+        "headings": 181,
+        "tables": 0,
+        "tableRows": 0,
+        "codeBlocks": 93,
+        "listItems": 149,
+        "links": 19,
+        "images": 0,
+        "blockquotes": 0,
+        "rules": 14,
+        "inlineCode": 20,
+        "htmlNodes": 0
+      },
+      "output": {
+        "headings": 181,
+        "tables": 0,
+        "tableRows": 0,
+        "codeBlocks": 93,
+        "listItems": 149,
+        "links": 19,
+        "images": 0,
+        "blockquotes": 0,
+        "rules": 14,
+        "inlineCode": 20
+      },
+      "deadAnchors": [],
+      "words": 1295
+    },
+    "frontend-development": {
+      "source": {
+        "headings": 114,
+        "tables": 0,
+        "tableRows": 0,
+        "codeBlocks": 73,
+        "listItems": 62,
+        "links": 17,
+        "images": 0,
+        "blockquotes": 0,
+        "rules": 16,
+        "inlineCode": 2,
+        "htmlNodes": 0
+      },
+      "output": {
+        "headings": 114,
+        "tables": 0,
+        "tableRows": 0,
+        "codeBlocks": 73,
+        "listItems": 62,
+        "links": 17,
+        "images": 0,
+        "blockquotes": 0,
+        "rules": 16,
+        "inlineCode": 2
+      },
+      "deadAnchors": [],
+      "words": 590
+    },
+    "javascript": {
+      "source": {
+        "headings": 91,
+        "tables": 0,
+        "tableRows": 0,
+        "codeBlocks": 70,
+        "listItems": 20,
+        "links": 19,
+        "images": 0,
+        "blockquotes": 0,
+        "rules": 17,
+        "inlineCode": 0,
+        "htmlNodes": 0
+      },
+      "output": {
+        "headings": 91,
+        "tables": 0,
+        "tableRows": 0,
+        "codeBlocks": 70,
+        "listItems": 20,
+        "links": 19,
+        "images": 0,
+        "blockquotes": 0,
+        "rules": 17,
+        "inlineCode": 0
+      },
+      "deadAnchors": [
+        "#modules"
+      ],
+      "words": 292
+    },
+    "typescript": {
+      "source": {
+        "headings": 119,
+        "tables": 0,
+        "tableRows": 0,
+        "codeBlocks": 93,
+        "listItems": 27,
+        "links": 23,
+        "images": 0,
+        "blockquotes": 0,
+        "rules": 22,
+        "inlineCode": 0,
+        "htmlNodes": 0
+      },
+      "output": {
+        "headings": 119,
+        "tables": 0,
+        "tableRows": 0,
+        "codeBlocks": 93,
+        "listItems": 27,
+        "links": 23,
+        "images": 0,
+        "blockquotes": 0,
+        "rules": 22,
+        "inlineCode": 0
+      },
+      "deadAnchors": [],
+      "words": 450
+    },
+    "reactjs": {
+      "source": {
+        "headings": 90,
+        "tables": 0,
+        "tableRows": 0,
+        "codeBlocks": 58,
+        "listItems": 59,
+        "links": 21,
+        "images": 0,
+        "blockquotes": 0,
+        "rules": 20,
+        "inlineCode": 23,
+        "htmlNodes": 0
+      },
+      "output": {
+        "headings": 90,
+        "tables": 0,
+        "tableRows": 0,
+        "codeBlocks": 58,
+        "listItems": 59,
+        "links": 21,
+        "images": 0,
+        "blockquotes": 0,
+        "rules": 20,
+        "inlineCode": 23
+      },
+      "deadAnchors": [],
+      "words": 648
+    },
+    "nextjs": {
+      "source": {
+        "headings": 95,
+        "tables": 0,
+        "tableRows": 0,
+        "codeBlocks": 66,
+        "listItems": 26,
+        "links": 27,
+        "images": 0,
+        "blockquotes": 0,
+        "rules": 15,
+        "inlineCode": 0,
+        "htmlNodes": 0
+      },
+      "output": {
+        "headings": 95,
+        "tables": 0,
+        "tableRows": 0,
+        "codeBlocks": 66,
+        "listItems": 26,
+        "links": 27,
+        "images": 0,
+        "blockquotes": 0,
+        "rules": 15,
+        "inlineCode": 0
+      },
+      "deadAnchors": [],
+      "words": 317
+    },
+    "tailwindcss": {
+      "source": {
+        "headings": 119,
+        "tables": 0,
+        "tableRows": 0,
+        "codeBlocks": 89,
+        "listItems": 25,
+        "links": 15,
+        "images": 0,
+        "blockquotes": 0,
+        "rules": 14,
+        "inlineCode": 5,
+        "htmlNodes": 0
+      },
+      "output": {
+        "headings": 119,
+        "tables": 0,
+        "tableRows": 0,
+        "codeBlocks": 89,
+        "listItems": 25,
+        "links": 15,
+        "images": 0,
+        "blockquotes": 0,
+        "rules": 14,
+        "inlineCode": 5
+      },
+      "deadAnchors": [],
+      "words": 403
+    },
+    "backend-development": {
+      "source": {
+        "headings": 64,
+        "tables": 0,
+        "tableRows": 0,
+        "codeBlocks": 46,
+        "listItems": 17,
+        "links": 12,
+        "images": 0,
+        "blockquotes": 0,
+        "rules": 13,
+        "inlineCode": 0,
+        "htmlNodes": 0
+      },
+      "output": {
+        "headings": 64,
+        "tables": 0,
+        "tableRows": 0,
+        "codeBlocks": 46,
+        "listItems": 17,
+        "links": 12,
+        "images": 0,
+        "blockquotes": 0,
+        "rules": 13,
+        "inlineCode": 0
+      },
+      "deadAnchors": [],
+      "words": 304
+    },
+    "api-development": {
+      "source": {
+        "headings": 40,
+        "tables": 0,
+        "tableRows": 0,
+        "codeBlocks": 28,
+        "listItems": 10,
+        "links": 11,
+        "images": 0,
+        "blockquotes": 0,
+        "rules": 10,
+        "inlineCode": 0,
+        "htmlNodes": 0
+      },
+      "output": {
+        "headings": 40,
+        "tables": 0,
+        "tableRows": 0,
+        "codeBlocks": 28,
+        "listItems": 10,
+        "links": 11,
+        "images": 0,
+        "blockquotes": 0,
+        "rules": 10,
+        "inlineCode": 0
+      },
+      "deadAnchors": [],
+      "words": 188
+    },
+    "data-structure-algorithms": {
+      "source": {
+        "headings": 66,
+        "tables": 0,
+        "tableRows": 0,
+        "codeBlocks": 58,
+        "listItems": 30,
+        "links": 18,
+        "images": 0,
+        "blockquotes": 0,
+        "rules": 16,
+        "inlineCode": 16,
+        "htmlNodes": 0
+      },
+      "output": {
+        "headings": 66,
+        "tables": 0,
+        "tableRows": 0,
+        "codeBlocks": 58,
+        "listItems": 30,
+        "links": 18,
+        "images": 0,
+        "blockquotes": 0,
+        "rules": 16,
+        "inlineCode": 16
+      },
+      "deadAnchors": [
+        "#common-patterns"
+      ],
+      "words": 305
+    },
+    "basic-dsa-questions": {
+      "source": {
+        "headings": 79,
+        "tables": 0,
+        "tableRows": 0,
+        "codeBlocks": 70,
+        "listItems": 0,
+        "links": 1,
+        "images": 0,
+        "blockquotes": 0,
+        "rules": 6,
+        "inlineCode": 1,
+        "htmlNodes": 0
+      },
+      "output": {
+        "headings": 79,
+        "tables": 0,
+        "tableRows": 0,
+        "codeBlocks": 70,
+        "listItems": 0,
+        "links": 1,
+        "images": 0,
+        "blockquotes": 0,
+        "rules": 6,
+        "inlineCode": 1
+      },
+      "deadAnchors": [],
+      "words": 3493
+    },
+    "dsa-patterns": {
+      "source": {
+        "headings": 191,
+        "tables": 0,
+        "tableRows": 0,
+        "codeBlocks": 107,
+        "listItems": 262,
+        "links": 26,
+        "images": 0,
+        "blockquotes": 0,
+        "rules": 17,
+        "inlineCode": 0,
+        "htmlNodes": 0
+      },
+      "output": {
+        "headings": 191,
+        "tables": 0,
+        "tableRows": 0,
+        "codeBlocks": 107,
+        "listItems": 262,
+        "links": 26,
+        "images": 0,
+        "blockquotes": 0,
+        "rules": 17,
+        "inlineCode": 0
+      },
+      "deadAnchors": [],
+      "words": 2305
+    },
+    "dbms-interview-questions": {
+      "source": {
+        "headings": 49,
+        "tables": 8,
+        "tableRows": 38,
+        "codeBlocks": 42,
+        "listItems": 107,
+        "links": 1,
+        "images": 0,
+        "blockquotes": 0,
+        "rules": 45,
+        "inlineCode": 0,
+        "htmlNodes": 0
+      },
+      "output": {
+        "headings": 49,
+        "tables": 8,
+        "tableRows": 38,
+        "codeBlocks": 42,
+        "listItems": 107,
+        "links": 1,
+        "images": 0,
+        "blockquotes": 0,
+        "rules": 45,
+        "inlineCode": 0
+      },
+      "deadAnchors": [],
+      "words": 1619
+    },
+    "sql-postgresql-cheatsheet": {
+      "source": {
+        "headings": 134,
+        "tables": 0,
+        "tableRows": 0,
+        "codeBlocks": 104,
+        "listItems": 40,
+        "links": 26,
+        "images": 0,
+        "blockquotes": 0,
+        "rules": 29,
+        "inlineCode": 0,
+        "htmlNodes": 0
+      },
+      "output": {
+        "headings": 134,
+        "tables": 0,
+        "tableRows": 0,
+        "codeBlocks": 104,
+        "listItems": 40,
+        "links": 26,
+        "images": 0,
+        "blockquotes": 0,
+        "rules": 29,
+        "inlineCode": 0
+      },
+      "deadAnchors": [],
+      "words": 727
+    },
+    "system-design": {
+      "source": {
+        "headings": 145,
+        "tables": 0,
+        "tableRows": 0,
+        "codeBlocks": 70,
+        "listItems": 207,
+        "links": 14,
+        "images": 0,
+        "blockquotes": 0,
+        "rules": 20,
+        "inlineCode": 0,
+        "htmlNodes": 0
+      },
+      "output": {
+        "headings": 145,
+        "tables": 0,
+        "tableRows": 0,
+        "codeBlocks": 70,
+        "listItems": 207,
+        "links": 14,
+        "images": 0,
+        "blockquotes": 0,
+        "rules": 20,
+        "inlineCode": 0
+      },
+      "deadAnchors": [],
+      "words": 2182
+    },
+    "git-github-cheatsheet": {
+      "source": {
+        "headings": 90,
+        "tables": 0,
+        "tableRows": 0,
+        "codeBlocks": 61,
+        "listItems": 38,
+        "links": 21,
+        "images": 0,
+        "blockquotes": 0,
+        "rules": 21,
+        "inlineCode": 2,
+        "htmlNodes": 0
+      },
+      "output": {
+        "headings": 90,
+        "tables": 0,
+        "tableRows": 0,
+        "codeBlocks": 61,
+        "listItems": 38,
+        "links": 21,
+        "images": 0,
+        "blockquotes": 0,
+        "rules": 21,
+        "inlineCode": 2
+      },
+      "deadAnchors": [],
+      "words": 601
+    },
+    "aptitude-guide": {
+      "source": {
+        "headings": 45,
+        "tables": 0,
+        "tableRows": 0,
+        "codeBlocks": 4,
+        "listItems": 223,
+        "links": 8,
+        "images": 0,
+        "blockquotes": 0,
+        "rules": 11,
+        "inlineCode": 0,
+        "htmlNodes": 0
+      },
+      "output": {
+        "headings": 45,
+        "tables": 0,
+        "tableRows": 0,
+        "codeBlocks": 4,
+        "listItems": 223,
+        "links": 8,
+        "images": 0,
+        "blockquotes": 0,
+        "rules": 11,
+        "inlineCode": 0
+      },
+      "deadAnchors": [],
+      "words": 2141
+    },
+    "landing": {
+      "source": {
+        "headings": 16,
+        "tables": 0,
+        "tableRows": 0,
+        "codeBlocks": 0,
+        "listItems": 59,
+        "links": 42,
+        "images": 1,
+        "blockquotes": 0,
+        "rules": 1,
+        "inlineCode": 2,
+        "htmlNodes": 7
+      },
+      "output": {
+        "headings": 16,
+        "tables": 0,
+        "tableRows": 0,
+        "codeBlocks": 0,
+        "listItems": 59,
+        "links": 42,
+        "images": 1,
+        "blockquotes": 0,
+        "rules": 1,
+        "inlineCode": 2
+      },
+      "deadAnchors": [],
+      "guideLinks": 18
+    }
+  }
+}

@@ -1,0 +1,289 @@
+                <div class="topic-head">
+                    <span class="topic-num">06</span>
+                    <h2>Recursion — Pattern-wise</h2>
+                </div>
+
+                <h3 class="block-label">Recognition</h3>
+                <div class="table-scroll"><table class="sig-table">
+                    <thead>
+                        <tr>
+                            <th>When you see…</th>
+                            <th>Pattern</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="sig">Generate all subsets / subsequences</td>
+                            <td class="pat"><span class="pat-tag">Include/exclude recursion (pick / not-pick)</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Subsets with duplicates, unique only</td>
+                            <td class="pat"><span class="pat-tag">Sort first, skip adjacent duplicates at the same
+                                    recursion level</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Combination Sum (reuse allowed)</td>
+                            <td class="pat"><span class="pat-tag">Pick/not-pick, stay at the same index when
+                                    picking</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Combination Sum II (no reuse, has duplicates)</td>
+                            <td class="pat"><span class="pat-tag">Sort, skip
+                                    <code>i &gt; start &amp;&amp; a[i]==a[i-1]</code></span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Permutations</td>
+                            <td class="pat"><span class="pat-tag">Swap-based recursion, or a visited[] array with
+                                    backtracking</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Permutations with duplicates</td>
+                            <td class="pat"><span class="pat-tag">Sort + visited[] + skip same-adjacent unless the
+                                    previous was used</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Palindrome partitioning</td>
+                            <td class="pat"><span class="pat-tag">Backtrack: try every prefix, recurse on the rest if
+                                    it's a palindrome</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">N-Queens / Sudoku solver</td>
+                            <td class="pat"><span class="pat-tag">Backtracking with a placement-validity check</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Word search in a grid</td>
+                            <td class="pat"><span class="pat-tag">DFS backtracking with visited marking/unmarking</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Kth permutation sequence</td>
+                            <td class="pat"><span class="pat-tag">Factorial number system — no need to generate
+                                    all</span></td>
+                        </tr>
+                    </tbody>
+                </table></div>
+
+                <h3 class="block-label">Example algorithms</h3>
+                <div class="examples-grid">
+                    <div class="example">
+                        <h4>Subsets — pick / not-pick</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">solve</span><span class="hljs-params">(vector&lt;<span class="hljs-type">int</span>&gt;&amp; nums, <span class="hljs-type">int</span> i, vector&lt;<span class="hljs-type">int</span>&gt;&amp; cur, vector&lt;vector&lt;<span class="hljs-type">int</span>&gt;&gt;&amp; res)</span> </span>{
+    <span class="hljs-keyword">if</span> (i == (<span class="hljs-type">int</span>)nums.<span class="hljs-built_in">size</span>()) { res.<span class="hljs-built_in">push_back</span>(cur); <span class="hljs-keyword">return</span>; }
+    <span class="hljs-built_in">solve</span>(nums, i + <span class="hljs-number">1</span>, cur, res);
+    cur.<span class="hljs-built_in">push_back</span>(nums[i]);
+    <span class="hljs-built_in">solve</span>(nums, i + <span class="hljs-number">1</span>, cur, res);
+    cur.<span class="hljs-built_in">pop_back</span>();
+}
+
+vector&lt;vector&lt;<span class="hljs-type">int</span>&gt;&gt; <span class="hljs-built_in">subsets</span>(vector&lt;<span class="hljs-type">int</span>&gt;&amp; nums) {
+    vector&lt;vector&lt;<span class="hljs-type">int</span>&gt;&gt; res;
+    vector&lt;<span class="hljs-type">int</span>&gt; cur;
+    <span class="hljs-built_in">solve</span>(nums, <span class="hljs-number">0</span>, cur, res);
+    <span class="hljs-keyword">return</span> res;
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>N-Queens — backtracking</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function"><span class="hljs-type">bool</span> <span class="hljs-title">isSafe</span><span class="hljs-params">(vector&lt;string&gt;&amp; board, <span class="hljs-type">int</span> row, <span class="hljs-type">int</span> col, <span class="hljs-type">int</span> n)</span> </span>{
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; row; i++)
+        <span class="hljs-keyword">if</span> (board[i][col] == <span class="hljs-string">'Q'</span>) <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = row, j = col; i &gt;= <span class="hljs-number">0</span> &amp;&amp; j &gt;= <span class="hljs-number">0</span>; i--, j--)
+        <span class="hljs-keyword">if</span> (board[i][j] == <span class="hljs-string">'Q'</span>) <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = row, j = col; i &gt;= <span class="hljs-number">0</span> &amp;&amp; j &lt; n; i--, j++)
+        <span class="hljs-keyword">if</span> (board[i][j] == <span class="hljs-string">'Q'</span>) <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;
+    <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;
+}
+
+<span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">solve</span><span class="hljs-params">(<span class="hljs-type">int</span> row, <span class="hljs-type">int</span> n, vector&lt;string&gt;&amp; board, vector&lt;vector&lt;string&gt;&gt;&amp; res)</span> </span>{
+    <span class="hljs-keyword">if</span> (row == n) { res.<span class="hljs-built_in">push_back</span>(board); <span class="hljs-keyword">return</span>; }
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> col = <span class="hljs-number">0</span>; col &lt; n; col++) {
+        <span class="hljs-keyword">if</span> (<span class="hljs-built_in">isSafe</span>(board, row, col, n)) {
+            board[row][col] = <span class="hljs-string">'Q'</span>;
+            <span class="hljs-built_in">solve</span>(row + <span class="hljs-number">1</span>, n, board, res);
+            board[row][col] = <span class="hljs-string">'.'</span>;
+        }
+    }
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Subsets II (duplicates)</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">genSubsets</span><span class="hljs-params">(vector&lt;<span class="hljs-type">int</span>&gt;&amp; a, <span class="hljs-type">int</span> start, vector&lt;<span class="hljs-type">int</span>&gt;&amp; cur, vector&lt;vector&lt;<span class="hljs-type">int</span>&gt;&gt;&amp; res)</span> </span>{
+    res.<span class="hljs-built_in">push_back</span>(cur);
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = start; i &lt; (<span class="hljs-type">int</span>)a.<span class="hljs-built_in">size</span>(); i++) {
+        <span class="hljs-keyword">if</span> (i &gt; start &amp;&amp; a[i] == a[i - <span class="hljs-number">1</span>]) <span class="hljs-keyword">continue</span>;
+        cur.<span class="hljs-built_in">push_back</span>(a[i]);
+        <span class="hljs-built_in">genSubsets</span>(a, i + <span class="hljs-number">1</span>, cur, res);
+        cur.<span class="hljs-built_in">pop_back</span>();
+    }
+}
+vector&lt;vector&lt;<span class="hljs-type">int</span>&gt;&gt; <span class="hljs-built_in">subsetsWithDup</span>(vector&lt;<span class="hljs-type">int</span>&gt;&amp; a) {
+    <span class="hljs-built_in">sort</span>(a.<span class="hljs-built_in">begin</span>(), a.<span class="hljs-built_in">end</span>());
+    vector&lt;vector&lt;<span class="hljs-type">int</span>&gt;&gt; res; vector&lt;<span class="hljs-type">int</span>&gt; cur;
+    <span class="hljs-built_in">genSubsets</span>(a, <span class="hljs-number">0</span>, cur, res);
+    <span class="hljs-keyword">return</span> res;
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Combination Sum (reuse allowed)</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">combo</span><span class="hljs-params">(vector&lt;<span class="hljs-type">int</span>&gt;&amp; a, <span class="hljs-type">int</span> i, <span class="hljs-type">int</span> target, vector&lt;<span class="hljs-type">int</span>&gt;&amp; cur, vector&lt;vector&lt;<span class="hljs-type">int</span>&gt;&gt;&amp; res)</span> </span>{
+    <span class="hljs-keyword">if</span> (target == <span class="hljs-number">0</span>) { res.<span class="hljs-built_in">push_back</span>(cur); <span class="hljs-keyword">return</span>; }
+    <span class="hljs-keyword">if</span> (i == (<span class="hljs-type">int</span>)a.<span class="hljs-built_in">size</span>() || target &lt; <span class="hljs-number">0</span>) <span class="hljs-keyword">return</span>;
+    cur.<span class="hljs-built_in">push_back</span>(a[i]);
+    <span class="hljs-built_in">combo</span>(a, i, target - a[i], cur, res);      <span class="hljs-comment">// pick, stay at i</span>
+    cur.<span class="hljs-built_in">pop_back</span>();
+    <span class="hljs-built_in">combo</span>(a, i + <span class="hljs-number">1</span>, target, cur, res);         <span class="hljs-comment">// not pick</span>
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Combination Sum II (no reuse, duplicates), sort first</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">combo2</span><span class="hljs-params">(vector&lt;<span class="hljs-type">int</span>&gt;&amp; a, <span class="hljs-type">int</span> start, <span class="hljs-type">int</span> target, vector&lt;<span class="hljs-type">int</span>&gt;&amp; cur, vector&lt;vector&lt;<span class="hljs-type">int</span>&gt;&gt;&amp; res)</span> </span>{
+    <span class="hljs-keyword">if</span> (target == <span class="hljs-number">0</span>) { res.<span class="hljs-built_in">push_back</span>(cur); <span class="hljs-keyword">return</span>; }
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = start; i &lt; (<span class="hljs-type">int</span>)a.<span class="hljs-built_in">size</span>(); i++) {
+        <span class="hljs-keyword">if</span> (i &gt; start &amp;&amp; a[i] == a[i - <span class="hljs-number">1</span>]) <span class="hljs-keyword">continue</span>;
+        <span class="hljs-keyword">if</span> (a[i] &gt; target) <span class="hljs-keyword">break</span>;
+        cur.<span class="hljs-built_in">push_back</span>(a[i]);
+        <span class="hljs-built_in">combo2</span>(a, i + <span class="hljs-number">1</span>, target - a[i], cur, res);
+        cur.<span class="hljs-built_in">pop_back</span>();
+    }
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Permutations, visited[] (II version: sort + the extra skip line)</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">permute</span><span class="hljs-params">(vector&lt;<span class="hljs-type">int</span>&gt;&amp; a, vector&lt;<span class="hljs-type">bool</span>&gt;&amp; used, vector&lt;<span class="hljs-type">int</span>&gt;&amp; cur, vector&lt;vector&lt;<span class="hljs-type">int</span>&gt;&gt;&amp; res)</span> </span>{
+    <span class="hljs-keyword">if</span> (cur.<span class="hljs-built_in">size</span>() == a.<span class="hljs-built_in">size</span>()) { res.<span class="hljs-built_in">push_back</span>(cur); <span class="hljs-keyword">return</span>; }
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; (<span class="hljs-type">int</span>)a.<span class="hljs-built_in">size</span>(); i++) {
+        <span class="hljs-keyword">if</span> (used[i]) <span class="hljs-keyword">continue</span>;
+        <span class="hljs-comment">// Permutations II (a sorted): if (i &gt; 0 &amp;&amp; a[i] == a[i-1] &amp;&amp; !used[i-1]) continue;</span>
+        used[i] = <span class="hljs-literal">true</span>; cur.<span class="hljs-built_in">push_back</span>(a[i]);
+        <span class="hljs-built_in">permute</span>(a, used, cur, res);
+        cur.<span class="hljs-built_in">pop_back</span>(); used[i] = <span class="hljs-literal">false</span>;
+    }
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Palindrome Partitioning</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function"><span class="hljs-type">bool</span> <span class="hljs-title">isPal</span><span class="hljs-params">(<span class="hljs-type">const</span> string&amp; s, <span class="hljs-type">int</span> l, <span class="hljs-type">int</span> r)</span> </span>{ <span class="hljs-keyword">while</span> (l &lt; r) <span class="hljs-keyword">if</span> (s[l++] != s[r--]) <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>; <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>; }
+
+<span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">palPartition</span><span class="hljs-params">(<span class="hljs-type">const</span> string&amp; s, <span class="hljs-type">int</span> start, vector&lt;string&gt;&amp; cur, vector&lt;vector&lt;string&gt;&gt;&amp; res)</span> </span>{
+    <span class="hljs-keyword">if</span> (start == (<span class="hljs-type">int</span>)s.<span class="hljs-built_in">size</span>()) { res.<span class="hljs-built_in">push_back</span>(cur); <span class="hljs-keyword">return</span>; }
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> end = start; end &lt; (<span class="hljs-type">int</span>)s.<span class="hljs-built_in">size</span>(); end++) {
+        <span class="hljs-keyword">if</span> (!<span class="hljs-built_in">isPal</span>(s, start, end)) <span class="hljs-keyword">continue</span>;
+        cur.<span class="hljs-built_in">push_back</span>(s.<span class="hljs-built_in">substr</span>(start, end - start + <span class="hljs-number">1</span>));
+        <span class="hljs-built_in">palPartition</span>(s, end + <span class="hljs-number">1</span>, cur, res);
+        cur.<span class="hljs-built_in">pop_back</span>();
+    }
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Word Search in a Grid</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function"><span class="hljs-type">bool</span> <span class="hljs-title">wordDfs</span><span class="hljs-params">(vector&lt;vector&lt;<span class="hljs-type">char</span>&gt;&gt;&amp; b, <span class="hljs-type">const</span> string&amp; w, <span class="hljs-type">int</span> i, <span class="hljs-type">int</span> j, <span class="hljs-type">int</span> k)</span> </span>{
+    <span class="hljs-keyword">if</span> (k == (<span class="hljs-type">int</span>)w.<span class="hljs-built_in">size</span>()) <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;
+    <span class="hljs-keyword">if</span> (i &lt; <span class="hljs-number">0</span> || j &lt; <span class="hljs-number">0</span> || i &gt;= (<span class="hljs-type">int</span>)b.<span class="hljs-built_in">size</span>() || j &gt;= (<span class="hljs-type">int</span>)b[<span class="hljs-number">0</span>].<span class="hljs-built_in">size</span>() || b[i][j] != w[k]) <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;
+    <span class="hljs-type">char</span> tmp = b[i][j];
+    b[i][j] = <span class="hljs-string">'#'</span>;
+    <span class="hljs-type">bool</span> found = <span class="hljs-built_in">wordDfs</span>(b, w, i + <span class="hljs-number">1</span>, j, k + <span class="hljs-number">1</span>) || <span class="hljs-built_in">wordDfs</span>(b, w, i - <span class="hljs-number">1</span>, j, k + <span class="hljs-number">1</span>)
+              || <span class="hljs-built_in">wordDfs</span>(b, w, i, j + <span class="hljs-number">1</span>, k + <span class="hljs-number">1</span>) || <span class="hljs-built_in">wordDfs</span>(b, w, i, j - <span class="hljs-number">1</span>, k + <span class="hljs-number">1</span>);
+    b[i][j] = tmp;
+    <span class="hljs-keyword">return</span> found;
+}
+<span class="hljs-function"><span class="hljs-type">bool</span> <span class="hljs-title">exist</span><span class="hljs-params">(vector&lt;vector&lt;<span class="hljs-type">char</span>&gt;&gt;&amp; b, string w)</span> </span>{
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; (<span class="hljs-type">int</span>)b.<span class="hljs-built_in">size</span>(); i++)
+        <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> j = <span class="hljs-number">0</span>; j &lt; (<span class="hljs-type">int</span>)b[<span class="hljs-number">0</span>].<span class="hljs-built_in">size</span>(); j++)
+            <span class="hljs-keyword">if</span> (<span class="hljs-built_in">wordDfs</span>(b, w, i, j, <span class="hljs-number">0</span>)) <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;
+    <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Sudoku Solver</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function"><span class="hljs-type">bool</span> <span class="hljs-title">canPlace</span><span class="hljs-params">(vector&lt;vector&lt;<span class="hljs-type">char</span>&gt;&gt;&amp; b, <span class="hljs-type">int</span> r, <span class="hljs-type">int</span> c, <span class="hljs-type">char</span> ch)</span> </span>{
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">9</span>; i++) {
+        <span class="hljs-keyword">if</span> (b[r][i] == ch || b[i][c] == ch) <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;
+        <span class="hljs-keyword">if</span> (b[<span class="hljs-number">3</span> * (r / <span class="hljs-number">3</span>) + i / <span class="hljs-number">3</span>][<span class="hljs-number">3</span> * (c / <span class="hljs-number">3</span>) + i % <span class="hljs-number">3</span>] == ch) <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;
+    }
+    <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;
+}
+<span class="hljs-function"><span class="hljs-type">bool</span> <span class="hljs-title">solveSudoku</span><span class="hljs-params">(vector&lt;vector&lt;<span class="hljs-type">char</span>&gt;&gt;&amp; b)</span> </span>{
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> r = <span class="hljs-number">0</span>; r &lt; <span class="hljs-number">9</span>; r++)
+        <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> c = <span class="hljs-number">0</span>; c &lt; <span class="hljs-number">9</span>; c++) {
+            <span class="hljs-keyword">if</span> (b[r][c] != <span class="hljs-string">'.'</span>) <span class="hljs-keyword">continue</span>;
+            <span class="hljs-keyword">for</span> (<span class="hljs-type">char</span> ch = <span class="hljs-string">'1'</span>; ch &lt;= <span class="hljs-string">'9'</span>; ch++) {
+                <span class="hljs-keyword">if</span> (!<span class="hljs-built_in">canPlace</span>(b, r, c, ch)) <span class="hljs-keyword">continue</span>;
+                b[r][c] = ch;
+                <span class="hljs-keyword">if</span> (<span class="hljs-built_in">solveSudoku</span>(b)) <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;
+                b[r][c] = <span class="hljs-string">'.'</span>;
+            }
+            <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;
+        }
+    <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Kth Permutation Sequence (factorial number system)</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function">string <span class="hljs-title">getPermutation</span><span class="hljs-params">(<span class="hljs-type">int</span> n, <span class="hljs-type">int</span> k)</span> </span>{
+    <span class="hljs-function">vector&lt;<span class="hljs-type">int</span>&gt; <span class="hljs-title">fact</span><span class="hljs-params">(n, <span class="hljs-number">1</span>)</span></span>;
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">1</span>; i &lt; n; i++) fact[i] = fact[i - <span class="hljs-number">1</span>] * i;
+    string digits, res;
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">1</span>; i &lt;= n; i++) digits += <span class="hljs-built_in">char</span>(<span class="hljs-string">'0'</span> + i);
+    k--;
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = n - <span class="hljs-number">1</span>; i &gt;= <span class="hljs-number">0</span>; i--) {
+        <span class="hljs-type">int</span> idx = k / fact[i];
+        res += digits[idx];
+        digits.<span class="hljs-built_in">erase</span>(digits.<span class="hljs-built_in">begin</span>() + idx);
+        k %= fact[i];
+    }
+    <span class="hljs-keyword">return</span> res;
+}</code></pre>
+                        </div>
+                    </div>
+                </div>

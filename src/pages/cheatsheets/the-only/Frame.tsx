@@ -1,0 +1,145 @@
+import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import '../../../styles-cs-the-only.css';
+import { REPO_URL, ROUTE, SITE_URL, flatGuides, type OnlyMeta } from './content.ts';
+
+const SITE_TITLE = 'The Only Cheatsheets';
+const SITE_TAGLINE = 'Comprehensive collection of your cheatsheets';
+
+/** Floating menu with all guides by category; the current one is highlighted. */
+function GuideMenu({ meta, current }: { meta: OnlyMeta | null; current?: string }) {
+  const [open, setOpen] = useState(false);
+  const boxRef = useRef<HTMLDivElement>(null);
+  const { pathname } = useLocation();
+
+  useEffect(() => setOpen(false), [pathname]);
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setOpen(false);
+    const onDown = (e: MouseEvent) => {
+      if (boxRef.current && !boxRef.current.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener('keydown', onKey);
+    document.addEventListener('mousedown', onDown);
+    return () => {
+      document.removeEventListener('keydown', onKey);
+      document.removeEventListener('mousedown', onDown);
+    };
+  }, [open]);
+  useEffect(() => {
+    if (open) boxRef.current?.querySelector<HTMLElement>('[aria-current="page"]')?.scrollIntoView({ block: 'center' });
+  }, [open]);
+
+  if (!meta) return null;
+  return (
+    <div ref={boxRef}>
+      {open && (
+        <nav className="cs-guides" id="cs-to-guides" aria-label="All cheatsheets">
+          <h2>Cheatsheets</h2>
+          <Link className="cs-home" to={ROUTE} aria-current={current === undefined ? 'page' : undefined}>
+            All cheatsheets (home)
+          </Link>
+          {meta.categories.map((c) => (
+            <section key={c.title}>
+              <h3>{c.title}</h3>
+              <ul>
+                {c.guides.map((g) => (
+                  <li key={g.slug}>
+                    <Link to={`${ROUTE}/${g.slug}`} aria-current={g.slug === current ? 'page' : undefined}>
+                      {g.title}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          ))}
+        </nav>
+      )}
+      <button type="button" className="cs-fab" aria-expanded={open} aria-controls="cs-to-guides" onClick={() => setOpen((o) => !o)}>
+        {open ? 'Close' : 'Guides'}
+      </button>
+    </div>
+  );
+}
+
+export function Pager({ meta, slug }: { meta: OnlyMeta; slug: string }) {
+  const list = flatGuides(meta);
+  const i = list.findIndex((g) => g.slug === slug);
+  if (i < 0) return null;
+  const prev = list[i - 1];
+  const next = list[i + 1];
+  return (
+    <nav className="cs-pager" aria-label="Previous and next guide">
+      {prev ? (
+        <Link className="prev" to={`${ROUTE}/${prev.slug}`}>
+          <small>&larr; Previous</small>
+          {prev.title}
+        </Link>
+      ) : (
+        <span />
+      )}
+      {next && (
+        <Link className="next" to={`${ROUTE}/${next.slug}`}>
+          <small>Next &rarr;</small>
+          {next.title}
+        </Link>
+      )}
+    </nav>
+  );
+}
+
+/** The Architect-theme page frame: blue header, content column, sidebar, attribution footer. */
+export function Frame({ meta, current, children }: { meta: OnlyMeta | null; current?: string; children: ReactNode }) {
+  return (
+    <div className="cs-to">
+      <header>
+        <Link className="cs-back" to="/cheatsheets" title="Back to AlgoFlow cheatsheets">
+          &larr; AlgoFlow
+        </Link>
+        <div className="inner">
+          <Link to={ROUTE}>
+            <h1>{SITE_TITLE}</h1>
+          </Link>
+          <h2>{SITE_TAGLINE}</h2>
+          <a href={REPO_URL} className="button" target="_blank" rel="noopener noreferrer">
+            <small>View project on</small> GitHub
+          </a>
+        </div>
+      </header>
+
+      <div className="cs-wrap">
+        <div className="inner clearfix">
+          <section className="cs-main">{children}</section>
+          <aside className="cs-side">
+            <a href={`${REPO_URL}/zipball/main`} className="button" target="_blank" rel="noopener noreferrer">
+              <small>Download</small>
+              .zip file
+            </a>
+            <a href={`${REPO_URL}/tarball/main`} className="button" target="_blank" rel="noopener noreferrer">
+              <small>Download</small>
+              .tar.gz file
+            </a>
+            <p className="repo-owner">
+              <a href={REPO_URL} target="_blank" rel="noopener noreferrer">the-only-cheatsheets</a> is maintained by{' '}
+              <a href="https://github.com/malharchauhan7" target="_blank" rel="noopener noreferrer">malharchauhan7</a>.
+            </p>
+            <p>
+              Imported into AlgoFlow from the <a href={SITE_URL} target="_blank" rel="noopener noreferrer">original site</a>, which
+              is generated by <a href="https://pages.github.com" target="_blank" rel="noopener noreferrer">GitHub Pages</a>.
+            </p>
+          </aside>
+        </div>
+        <div className="inner">
+          <footer className="cs-foot">
+            <p>
+              Content &copy; Malhar &mdash; MIT License &mdash; Source:{' '}
+              <a href={SITE_URL} target="_blank" rel="noopener noreferrer">{SITE_URL.replace(/^https:\/\//, '')}</a> &middot;{' '}
+              <Link to="/cheatsheets/credits">Credits</Link> &middot; <Link to="/cheatsheets">&larr; AlgoFlow cheatsheets</Link>
+            </p>
+          </footer>
+        </div>
+      </div>
+      <GuideMenu meta={meta} current={current} />
+    </div>
+  );
+}

@@ -1,0 +1,54 @@
+DSA Pattern Index import - parity report
+source: https://roxoi.github.io/dsa-cheatsheet/  (sha256 c18b97d1854a3e1e...)  retrieved 2026-11-13
+
+metric                source   imported
+sections                  24         24
+h2                        24         24
+h3                        73         73
+h4                       267        267
+p                         40         40
+tables                    43         43
+tr                       378        378
+th                        92         92
+td                       732        732
+pre                      267        267
+br                        13         13
+em                         7          7
+strong                     4          4
+sup                        3          3
+codeInline                20         20
+links                      1          1
+nav links                 24         24
+copy buttons             267        267
+sections text equal       24         24
+
+highlighted code blocks: 267  (hljs spans: 8714)
+sanitiser removed: scripts=0 inline handlers=267 bad urls=0 media=0 style attrs=0
+tables wrapped in .table-scroll: 43
+fonts: 24 woff2 files, 313 KiB;  content: 24 fragments, 648 KiB
+
+section             num  tables  rows  code  est.height
+operator-precedence  00       3    29     0       2216
+sorting              01       2    18     8       3941
+arrays               02       3    20    17       7606
+binary-search        03       6    30    25      10765
+strings              04       1    13    14       6088
+linked-list          05       3    18    16       9040
+recursion            06       1    10    10       4626
+bit-manipulation     07       1     8     9       2796
+stacks-queues        08       3    20    15       7130
+sliding-window       09       1    13    12       5039
+heaps                10       1     9     8       3783
+greedy               11       2    13    12       5372
+binary-trees         12       2    16    13       6369
+bst                  13       1     9    10       3975
+graphs               14       2    24    17       9365
+dp                   15       3    19    35      17249
+tries                16       1     6     6       4233
+strings-advanced     17       1     5     6       3584
+segment-trees        18       1     5     6       4389
+math-theory          19       1     8     9       4301
+advanced-dp          20       1     5     7       3992
+advanced-union-find  21       1     5     5       3376
+tree-patterns        22       1     6     7       5146
+master-index          ∞       1    26     0       1502

@@ -1,0 +1,100 @@
+import type { CellState, ProblemDef, Step } from '../engine/types.ts';
+import { arrow, chainKeys, emitter, listScene, parseInts, show } from './listheapKit.ts';
+
+interface In { vals: number[] }
+
+function build({ vals }: In): Step[] {
+  const n = vals.length;
+  const next = vals.map((_, i) => (i + 1 < n ? i + 1 : null));
+  let curr: number | null = 0;
+  let removed = 0;
+  let hot: Record<number, CellState> = {};
+  const steps: Step[] = [];
+  const emit = emitter(steps, () => ({
+    scene: listScene(vals, next, [{ id: 'curr', label: 'curr', at: curr, tone: 'blue' }], hot, chainKeys(next, 0)),
+    vars: { curr: show(curr, vals), 'curr.next': curr === null ? 'null' : show(next[curr], vals), removed },
+  }));
+
+  emit('Start', 'curr = head. The list is sorted, so equal values sit side by side.',
+    'Because the list is sorted, a duplicate can only be the very next node. One pass is enough.', 'info', [1], [1], 0);
+
+  while (curr !== null && next[curr] !== null) {
+    const nx: number = next[curr] as number;
+    hot = { [curr]: 'compare', [nx]: 'compare' };
+    emit(`Compare ${vals[curr]} and ${vals[nx]}`, `Is curr.val (${vals[curr]}) equal to curr.next.val (${vals[nx]})?`,
+      'Only neighbours need to be compared, thanks to the sorted order.', 'info', [2, 3], [2, 3], 1);
+    if (vals[curr] === vals[nx]) {
+      hot = { [curr]: 'compare', [nx]: 'error' };
+      emit('Duplicate found', `Both nodes hold ${vals[curr]}, so the second one must go.`, 'We keep the first copy and unlink the later one.', 'warn', [3], [3], 2);
+      next[curr] = next[nx];
+      removed++;
+      hot = { [curr]: 'swap' };
+      emit('Unlink the duplicate', `curr.next now skips over the extra ${vals[nx]}. curr stays put in case more copies follow.`,
+        'Do not advance after deleting: the new neighbour could be another duplicate.', 'success', [4], [4], 2);
+    } else {
+      hot = { [curr]: 'found' };
+      emit('Different values — advance', `${vals[curr]} ≠ ${vals[nx]}, so ${vals[curr]} is final. Move curr to ${vals[nx]}.`,
+        'Only advance when the next node is different.', 'info', [6], [6], 3);
+      curr = nx;
+    }
+  }
+
+  const out = chainKeys(next, 0).map((k) => vals[k]);
+  hot = {};
+  curr = null;
+  emit('Done', `curr reached the last node. The list now reads ${arrow(out)}.`, `${removed} duplicate node${removed === 1 ? '' : 's'} removed, every value appears once.`, 'success', [9], [7], 3,
+    { title: arrow(out), text: `${removed} duplicate${removed === 1 ? '' : 's'} removed` });
+  return steps;
+}
+
+export const removeDuplicatesSortedList: ProblemDef<In> = {
+  slug: '83-remove-duplicates-from-sorted-list',
+  id: '83', title: 'Remove Duplicates from Sorted List', difficulty: 'Easy', category: 'Linked List', tag: 'traversal',
+  statement: 'You are given the head of a sorted singly linked list. Delete nodes so that every value appears exactly once, and return the list (still sorted).',
+  constraints: '0 ≤ n ≤ 300, list sorted ascending (animation input: 1–10 nodes, values −99..99)',
+  examples: [
+    { label: '1 → 1 → 2', input: { vals: [1, 1, 2] }, output: '1 → 2' },
+    { label: '1 → 1 → 2 → 3 → 3', input: { vals: [1, 1, 2, 3, 3] }, output: '1 → 2 → 3' },
+    { label: '4 → 4 → 4 → 4', input: { vals: [4, 4, 4, 4] }, output: '4' },
+  ],
+  inputPlaceholder: 'sorted values, e.g. 1 1 2 3 3',
+  parseInput: (raw) => ({ vals: parseInts(raw, { max: 10, hint: '1 1 2 3 3', sorted: true }) }),
+  buildSteps: build, viz: 'cells',
+  legend: [{ label: 'Comparing', state: 'compare' }, { label: 'Duplicate', state: 'error' }, { label: 'Pointer re-linked', state: 'swap' }, { label: 'Final value', state: 'found' }],
+  varLabels: ['curr', 'curr.next', 'removed'],
+  approach: {
+    title: 'Compare neighbours, skip equal ones',
+    text: 'In a sorted list equal values are adjacent. Walk with curr: if curr.next has the same value, bypass it (curr.next = curr.next.next) and stay; otherwise move forward.',
+  },
+  java: [
+    'public ListNode deleteDuplicates(ListNode head) {',
+    '    ListNode curr = head;',
+    '    while (curr != null && curr.next != null) {',
+    '        if (curr.val == curr.next.val) {',
+    '            curr.next = curr.next.next;',
+    '        } else {',
+    '            curr = curr.next;',
+    '        }',
+    '    }',
+    '    return head;',
+    '}',
+  ],
+  python: [
+    'def delete_duplicates(head):',
+    '    curr = head',
+    '    while curr and curr.next:',
+    '        if curr.val == curr.next.val:',
+    '            curr.next = curr.next.next',
+    '        else:',
+    '            curr = curr.next',
+    '    return head',
+  ],
+  algorithm: [
+    'Start curr at the head',
+    'While curr and curr.next exist, compare their values',
+    'Equal: unlink curr.next and keep curr where it is',
+    'Different: advance curr; at the end return head',
+  ],
+  complexity: [{ label: 'Time', value: 'O(n)' }, { label: 'Space', value: 'O(1)' }],
+  why: 'Sortedness guarantees all copies of a value form one contiguous run, so after comparing curr with its neighbour there is never a reason to look further. Deleting does not move curr, so a run of any length is collapsed one node at a time. The head never changes because the first copy is always kept.',
+};

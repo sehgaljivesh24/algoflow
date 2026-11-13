@@ -1,0 +1,228 @@
+                <div class="topic-head">
+                    <span class="topic-num">20</span>
+                    <h2>Advanced DP</h2>
+                </div>
+                <p class="topic-intro">Beyond standard recurrence: digit DP, tree DP, and state compression.</p>
+                <h3 class="block-label">Recognition</h3>
+                <div class="table-scroll"><table class="sig-table">
+                    <thead>
+                        <tr>
+                            <th>When you see…</th>
+                            <th>Pattern</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="sig">Count numbers up to N with a digit property</td>
+                            <td class="pat"><span class="pat-tag">Digit DP (pos, tight, leading_zero)</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Tree DP: count/maximize on a tree structure</td>
+                            <td class="pat"><span class="pat-tag">DFS returning DP values from children</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">State compression (small bitmask states)</td>
+                            <td class="pat"><span class="pat-tag">DP[mask] where mask encodes a subset</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Min/max matching / pairing</td>
+                            <td class="pat"><span class="pat-tag">Profile DP or bitmask DP</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Game theory / minimax</td>
+                            <td class="pat"><span class="pat-tag">DP[state] = can the current player win?</span></td>
+                        </tr>
+                    </tbody>
+                </table></div>
+
+                <h3 class="block-label">Example algorithms</h3>
+                <div class="examples-grid">
+                    <div class="example">
+                        <h4>Digit DP — Count Numbers with Property</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp">string num;
+<span class="hljs-type">int</span> memo[<span class="hljs-number">20</span>][<span class="hljs-number">2</span>][<span class="hljs-number">200</span>];
+
+<span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">solve</span><span class="hljs-params">(<span class="hljs-type">int</span> pos, <span class="hljs-type">int</span> tight, <span class="hljs-type">int</span> sum)</span> </span>{
+    <span class="hljs-keyword">if</span> (sum &lt; <span class="hljs-number">0</span>) <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;
+    <span class="hljs-keyword">if</span> (pos == (<span class="hljs-type">int</span>)num.<span class="hljs-built_in">size</span>()) <span class="hljs-keyword">return</span> sum == <span class="hljs-number">0</span> ? <span class="hljs-number">1</span> : <span class="hljs-number">0</span>;
+
+    <span class="hljs-keyword">if</span> (memo[pos][tight][sum] != <span class="hljs-number">-1</span>)
+        <span class="hljs-keyword">return</span> memo[pos][tight][sum];
+
+    <span class="hljs-type">int</span> limit = tight ? (num[pos] - <span class="hljs-string">'0'</span>) : <span class="hljs-number">9</span>;
+    <span class="hljs-type">int</span> result = <span class="hljs-number">0</span>;
+
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> digit = <span class="hljs-number">0</span>; digit &lt;= limit; digit++) {
+        <span class="hljs-type">int</span> new_tight = tight &amp;&amp; (digit == limit);
+        result += <span class="hljs-built_in">solve</span>(pos + <span class="hljs-number">1</span>, new_tight, sum - digit);
+    }
+
+    <span class="hljs-keyword">return</span> memo[pos][tight][sum] = result;
+}
+
+<span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">countDigitSum</span><span class="hljs-params">(<span class="hljs-type">int</span> n, <span class="hljs-type">int</span> target_sum)</span> </span>{
+    num = <span class="hljs-built_in">to_string</span>(n);
+    <span class="hljs-built_in">memset</span>(memo, <span class="hljs-number">-1</span>, <span class="hljs-built_in">sizeof</span>(memo));
+    <span class="hljs-keyword">return</span> <span class="hljs-built_in">solve</span>(<span class="hljs-number">0</span>, <span class="hljs-number">1</span>, target_sum);
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Tree DP — Max Path Sum</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-keyword">struct</span> <span class="hljs-title class_">TreeNode</span> {
+    <span class="hljs-type">int</span> val;
+    TreeNode *left, *right;
+};
+
+<span class="hljs-type">int</span> maxPathSum;
+
+<span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">dfs</span><span class="hljs-params">(TreeNode* node)</span> </span>{
+    <span class="hljs-keyword">if</span> (!node) <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;
+
+    <span class="hljs-type">int</span> left_sum = <span class="hljs-built_in">max</span>(<span class="hljs-number">0</span>, <span class="hljs-built_in">dfs</span>(node-&gt;left));
+    <span class="hljs-type">int</span> right_sum = <span class="hljs-built_in">max</span>(<span class="hljs-number">0</span>, <span class="hljs-built_in">dfs</span>(node-&gt;right));
+
+    maxPathSum = <span class="hljs-built_in">max</span>(maxPathSum, node-&gt;val + left_sum + right_sum);
+
+    <span class="hljs-keyword">return</span> node-&gt;val + <span class="hljs-built_in">max</span>(left_sum, right_sum);
+}
+
+<span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">maxPathSumTree</span><span class="hljs-params">(TreeNode* root)</span> </span>{
+    maxPathSum = INT_MIN;
+    <span class="hljs-built_in">dfs</span>(root);
+    <span class="hljs-keyword">return</span> maxPathSum;
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Bitmask DP — Traveling Salesman (TSP)</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-type">int</span> n;
+vector&lt;vector&lt;<span class="hljs-type">int</span>&gt;&gt; dist;
+<span class="hljs-type">int</span> dp[<span class="hljs-number">1</span> &lt;&lt; <span class="hljs-number">16</span>][<span class="hljs-number">16</span>];
+
+<span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">tsp</span><span class="hljs-params">(<span class="hljs-type">int</span> mask, <span class="hljs-type">int</span> last)</span> </span>{
+    <span class="hljs-keyword">if</span> (mask == (<span class="hljs-number">1</span> &lt;&lt; n) - <span class="hljs-number">1</span>) <span class="hljs-keyword">return</span> dist[last][<span class="hljs-number">0</span>];
+
+    <span class="hljs-keyword">if</span> (dp[mask][last] != <span class="hljs-number">-1</span>) <span class="hljs-keyword">return</span> dp[mask][last];
+
+    <span class="hljs-type">int</span> ans = INT_MAX;
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> city = <span class="hljs-number">0</span>; city &lt; n; city++) {
+        <span class="hljs-keyword">if</span> (!(mask &amp; (<span class="hljs-number">1</span> &lt;&lt; city))) {
+            <span class="hljs-type">int</span> new_mask = mask | (<span class="hljs-number">1</span> &lt;&lt; city);
+            ans = <span class="hljs-built_in">min</span>(ans, dist[last][city] + <span class="hljs-built_in">tsp</span>(new_mask, city));
+        }
+    }
+
+    <span class="hljs-keyword">return</span> dp[mask][last] = ans;
+}
+
+<span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">solveTSP</span><span class="hljs-params">(vector&lt;vector&lt;<span class="hljs-type">int</span>&gt;&gt;&amp; distance)</span> </span>{
+    dist = distance;
+    n = dist.<span class="hljs-built_in">size</span>();
+    <span class="hljs-built_in">memset</span>(dp, <span class="hljs-number">-1</span>, <span class="hljs-built_in">sizeof</span>(dp));
+    <span class="hljs-keyword">return</span> <span class="hljs-built_in">tsp</span>(<span class="hljs-number">1</span>, <span class="hljs-number">0</span>);
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Bitmask DP, Assignment Problem (N ≤ 20)</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">assignmentDP</span><span class="hljs-params">(vector&lt;vector&lt;<span class="hljs-type">int</span>&gt;&gt;&amp; cost)</span> </span>{
+    <span class="hljs-type">int</span> n = cost.<span class="hljs-built_in">size</span>();
+    <span class="hljs-function">vector&lt;<span class="hljs-type">int</span>&gt; <span class="hljs-title">dp</span><span class="hljs-params">(<span class="hljs-number">1</span> &lt;&lt; n, INT_MAX)</span></span>;
+    dp[<span class="hljs-number">0</span>] = <span class="hljs-number">0</span>;
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> mask = <span class="hljs-number">0</span>; mask &lt; (<span class="hljs-number">1</span> &lt;&lt; n); mask++) {
+        <span class="hljs-keyword">if</span> (dp[mask] == INT_MAX) <span class="hljs-keyword">continue</span>;
+        <span class="hljs-type">int</span> worker = __builtin_popcount(mask);               <span class="hljs-comment">// next worker to assign</span>
+        <span class="hljs-keyword">if</span> (worker &gt;= n) <span class="hljs-keyword">continue</span>;
+        <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> job = <span class="hljs-number">0</span>; job &lt; n; job++) {
+            <span class="hljs-keyword">if</span> (mask &amp; (<span class="hljs-number">1</span> &lt;&lt; job)) <span class="hljs-keyword">continue</span>;
+            <span class="hljs-type">int</span> nm = mask | (<span class="hljs-number">1</span> &lt;&lt; job);
+            dp[nm] = <span class="hljs-built_in">min</span>(dp[nm], dp[mask] + cost[worker][job]);
+        }
+    }
+    <span class="hljs-keyword">return</span> dp[(<span class="hljs-number">1</span> &lt;&lt; n) - <span class="hljs-number">1</span>];
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Game Theory, Stone Game (interval minimax)</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function"><span class="hljs-type">bool</span> <span class="hljs-title">stoneGame</span><span class="hljs-params">(vector&lt;<span class="hljs-type">int</span>&gt;&amp; piles)</span> </span>{
+    <span class="hljs-type">int</span> n = piles.<span class="hljs-built_in">size</span>();
+    vector&lt;vector&lt;<span class="hljs-type">int</span>&gt;&gt; <span class="hljs-built_in">dp</span>(n, <span class="hljs-built_in">vector</span>&lt;<span class="hljs-type">int</span>&gt;(n, <span class="hljs-number">0</span>));        <span class="hljs-comment">// dp[i][j] = (my score - opponent score) on piles[i..j]</span>
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; n; i++) dp[i][i] = piles[i];
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> len = <span class="hljs-number">2</span>; len &lt;= n; len++)
+        <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i + len - <span class="hljs-number">1</span> &lt; n; i++) {
+            <span class="hljs-type">int</span> j = i + len - <span class="hljs-number">1</span>;
+            dp[i][j] = <span class="hljs-built_in">max</span>(piles[i] - dp[i + <span class="hljs-number">1</span>][j], piles[j] - dp[i][j - <span class="hljs-number">1</span>]);
+        }
+    <span class="hljs-keyword">return</span> dp[<span class="hljs-number">0</span>][n - <span class="hljs-number">1</span>] &gt; <span class="hljs-number">0</span>;
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Tree DP, House Robber III (max independent set)</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function">pair&lt;<span class="hljs-type">int</span>,<span class="hljs-type">int</span>&gt; <span class="hljs-title">robDfs</span><span class="hljs-params">(TreeNode* n)</span> </span>{                      <span class="hljs-comment">// {rob this node, skip this node}</span>
+    <span class="hljs-keyword">if</span> (!n) <span class="hljs-keyword">return</span> {<span class="hljs-number">0</span>, <span class="hljs-number">0</span>};
+    <span class="hljs-keyword">auto</span> [lRob, lSkip] = <span class="hljs-built_in">robDfs</span>(n-&gt;left);
+    <span class="hljs-keyword">auto</span> [rRob, rSkip] = <span class="hljs-built_in">robDfs</span>(n-&gt;right);
+    <span class="hljs-keyword">return</span> {n-&gt;val + lSkip + rSkip, <span class="hljs-built_in">max</span>(lRob, lSkip) + <span class="hljs-built_in">max</span>(rRob, rSkip)};
+}
+<span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">robTree</span><span class="hljs-params">(TreeNode* root)</span> </span>{ <span class="hljs-keyword">auto</span> [a, b] = <span class="hljs-built_in">robDfs</span>(root); <span class="hljs-keyword">return</span> <span class="hljs-built_in">max</span>(a, b); }</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Digit DP with leading_zero flag (count numbers in [1, N] with no two adjacent equal digits)
+                        </h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp">string numD;
+<span class="hljs-type">long</span> <span class="hljs-type">long</span> memoD[<span class="hljs-number">20</span>][<span class="hljs-number">11</span>][<span class="hljs-number">2</span>][<span class="hljs-number">2</span>];                  <span class="hljs-comment">// pos, prev digit (10 = none), tight, started</span>
+
+<span class="hljs-function"><span class="hljs-type">long</span> <span class="hljs-type">long</span> <span class="hljs-title">digitSolve</span><span class="hljs-params">(<span class="hljs-type">int</span> pos, <span class="hljs-type">int</span> prev, <span class="hljs-type">bool</span> tight, <span class="hljs-type">bool</span> started)</span> </span>{
+    <span class="hljs-keyword">if</span> (pos == (<span class="hljs-type">int</span>)numD.<span class="hljs-built_in">size</span>()) <span class="hljs-keyword">return</span> started ? <span class="hljs-number">1</span> : <span class="hljs-number">0</span>;
+    <span class="hljs-type">long</span> <span class="hljs-type">long</span>&amp; res = memoD[pos][prev][tight][started];
+    <span class="hljs-keyword">if</span> (res != <span class="hljs-number">-1</span>) <span class="hljs-keyword">return</span> res;
+    res = <span class="hljs-number">0</span>;
+    <span class="hljs-type">int</span> limit = tight ? numD[pos] - <span class="hljs-string">'0'</span> : <span class="hljs-number">9</span>;
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> d = <span class="hljs-number">0</span>; d &lt;= limit; d++) {
+        <span class="hljs-type">bool</span> nt = tight &amp;&amp; (d == limit);
+        <span class="hljs-keyword">if</span> (!started &amp;&amp; d == <span class="hljs-number">0</span>) res += <span class="hljs-built_in">digitSolve</span>(pos + <span class="hljs-number">1</span>, <span class="hljs-number">10</span>, nt, <span class="hljs-literal">false</span>);   <span class="hljs-comment">// still in leading zeros</span>
+        <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (started &amp;&amp; d == prev) <span class="hljs-keyword">continue</span>;                               <span class="hljs-comment">// adjacent equal digits not allowed</span>
+        <span class="hljs-keyword">else</span> res += <span class="hljs-built_in">digitSolve</span>(pos + <span class="hljs-number">1</span>, d, nt, <span class="hljs-literal">true</span>);
+    }
+    <span class="hljs-keyword">return</span> res;
+}
+<span class="hljs-function"><span class="hljs-type">long</span> <span class="hljs-type">long</span> <span class="hljs-title">countNoAdjacentEqual</span><span class="hljs-params">(<span class="hljs-type">long</span> <span class="hljs-type">long</span> N)</span> </span>{
+    numD = <span class="hljs-built_in">to_string</span>(N);
+    <span class="hljs-built_in">memset</span>(memoD, <span class="hljs-number">-1</span>, <span class="hljs-built_in">sizeof</span>(memoD));
+    <span class="hljs-keyword">return</span> <span class="hljs-built_in">digitSolve</span>(<span class="hljs-number">0</span>, <span class="hljs-number">10</span>, <span class="hljs-literal">true</span>, <span class="hljs-literal">false</span>);
+}</code></pre>
+                        </div>
+                    </div>
+                </div>

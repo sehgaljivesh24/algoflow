@@ -1,0 +1,231 @@
+{
+  "id": "patterns-guide",
+  "title": "Complete DSA Patterns Reference Guide",
+  "description": "50 essential algorithmic patterns for coding interviews and competitive programming, each with a description, key idea and LeetCode example links, plus a complexity quick-reference, a pattern selection guide and a study plan.",
+  "sourceUrl": "https://thetorangi.github.io/DSA-cheat-sheet/",
+  "repoUrl": "https://github.com/thetorangi/DSA-cheat-sheet",
+  "license": "MIT",
+  "copyright": "Copyright (c) 2025 K A R M A ☯️",
+  "retrieved": "2026-11-13",
+  "route": "/cheatsheets/patterns-guide",
+  "groups": [
+    {
+      "title": "Core Problem-Solving Patterns (1-31)",
+      "patterns": [
+        {
+          "no": 1,
+          "name": "Sliding Window"
+        },
+        {
+          "no": 2,
+          "name": "Two Pointers"
+        },
+        {
+          "no": 3,
+          "name": "Fast and Slow Pointers"
+        },
+        {
+          "no": 4,
+          "name": "Merge Intervals"
+        },
+        {
+          "no": 5,
+          "name": "Cyclic Sort"
+        },
+        {
+          "no": 6,
+          "name": "Subsets"
+        },
+        {
+          "no": 7,
+          "name": "Binary Search"
+        },
+        {
+          "no": 8,
+          "name": "Backtracking"
+        },
+        {
+          "no": 9,
+          "name": "Breadth-First Search (BFS)"
+        },
+        {
+          "no": 10,
+          "name": "Depth-First Search (DFS)"
+        },
+        {
+          "no": 11,
+          "name": "Topological Sort"
+        },
+        {
+          "no": 12,
+          "name": "Union-Find (Disjoint Set)"
+        },
+        {
+          "no": 13,
+          "name": "Greedy"
+        },
+        {
+          "no": 14,
+          "name": "Dynamic Programming (DP)"
+        },
+        {
+          "no": 15,
+          "name": "Bit Manipulation"
+        },
+        {
+          "no": 16,
+          "name": "Matrix Traversal"
+        },
+        {
+          "no": 17,
+          "name": "Heap / Priority Queue"
+        },
+        {
+          "no": 18,
+          "name": "Divide and Conquer"
+        },
+        {
+          "no": 19,
+          "name": "Prefix Sum"
+        },
+        {
+          "no": 20,
+          "name": "Sliding Window Maximum"
+        },
+        {
+          "no": 21,
+          "name": "Kadane's Algorithm"
+        },
+        {
+          "no": 22,
+          "name": "Trie (Prefix Tree)"
+        },
+        {
+          "no": 23,
+          "name": "Segment Trees"
+        },
+        {
+          "no": 24,
+          "name": "Graph Traversal"
+        },
+        {
+          "no": 25,
+          "name": "Flood Fill"
+        },
+        {
+          "no": 26,
+          "name": "Monotonic Stack"
+        },
+        {
+          "no": 27,
+          "name": "String Matching (KMP, Rabin-Karp)"
+        },
+        {
+          "no": 28,
+          "name": "Binary Indexed Tree (Fenwick Tree)"
+        },
+        {
+          "no": 29,
+          "name": "Reservoir Sampling"
+        },
+        {
+          "no": 30,
+          "name": "LRU Cache"
+        },
+        {
+          "no": 31,
+          "name": "Fibonacci Sequence"
+        }
+      ]
+    },
+    {
+      "title": "Advanced Patterns (32-50)",
+      "patterns": [
+        {
+          "no": 32,
+          "name": "Morris Traversal"
+        },
+        {
+          "no": 33,
+          "name": "Boyer-Moore Majority Vote"
+        },
+        {
+          "no": 34,
+          "name": "Rolling Hash"
+        },
+        {
+          "no": 35,
+          "name": "Manacher's Algorithm"
+        },
+        {
+          "no": 36,
+          "name": "Catalan Numbers"
+        },
+        {
+          "no": 37,
+          "name": "Game Theory (Minimax)"
+        },
+        {
+          "no": 38,
+          "name": "Line Sweep"
+        },
+        {
+          "no": 39,
+          "name": "Shortest Path Algorithms"
+        },
+        {
+          "no": 40,
+          "name": "Meet in the Middle"
+        },
+        {
+          "no": 41,
+          "name": "Critical Connections"
+        },
+        {
+          "no": 42,
+          "name": "Z-Algorithm"
+        },
+        {
+          "no": 43,
+          "name": "Coordinate Compression"
+        },
+        {
+          "no": 44,
+          "name": "Convex Hull"
+        },
+        {
+          "no": 45,
+          "name": "Sqrt Decomposition"
+        },
+        {
+          "no": 46,
+          "name": "Heavy-Light Decomposition"
+        },
+        {
+          "no": 47,
+          "name": "Network Flow (Max Flow)"
+        },
+        {
+          "no": 48,
+          "name": "Persistent Data Structures"
+        },
+        {
+          "no": 49,
+          "name": "Suffix Array/Tree"
+        },
+        {
+          "no": 50,
+          "name": "Aho-Corasick Algorithm"
+        }
+      ]
+    }
+  ],
+  "tables": 3,
+  "problemLinks": 92,
+  "counts": {
+    "tableRows": 63,
+    "patterns": 50,
+    "complexityRows": 10,
+    "listItems": 20
+  }
+}

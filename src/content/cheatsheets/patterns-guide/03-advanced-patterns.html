@@ -1,0 +1,204 @@
+<h2>⚡ Advanced Patterns (32-50)</h2>
+<div class="cs-pg-scroll"><table>
+        <thead>
+            <tr>
+                <th width="5%">No.</th>
+                <th width="20%">Pattern</th>
+                <th width="25%">Description</th>
+                <th width="25%">Key Idea</th>
+                <th width="25%">Example Problems &amp; Links</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="pattern-number">32</td>
+                <td class="pattern-name">Morris Traversal</td>
+                <td>Used for tree traversal without extra space.</td>
+                <td class="key-idea">Use threading to traverse without recursion/stack.</td>
+                <td>
+                    <a href="https://leetcode.com/problems/binary-tree-inorder-traversal/" class="problem-link">94. Binary Tree Inorder Traversal</a>
+                    <a href="https://leetcode.com/problems/binary-tree-preorder-traversal/" class="problem-link">144. Binary Tree Preorder Traversal</a>
+                </td>
+            </tr>
+            <tr>
+                <td class="pattern-number">33</td>
+                <td class="pattern-name">Boyer-Moore Majority Vote</td>
+                <td>Used for finding majority elements.</td>
+                <td class="key-idea">Use voting algorithm to find majority in O(n) time.</td>
+                <td>
+                    <a href="https://leetcode.com/problems/majority-element/" class="problem-link">169. Majority Element</a>
+                    <a href="https://leetcode.com/problems/majority-element-ii/" class="problem-link">229. Majority Element II</a>
+                </td>
+            </tr>
+            <tr>
+                <td class="pattern-number">34</td>
+                <td class="pattern-name">Rolling Hash</td>
+                <td>Used for string/array comparison problems.</td>
+                <td class="key-idea">Use polynomial rolling hash for efficient comparisons.</td>
+                <td>
+                    <a href="https://leetcode.com/problems/repeated-dna-sequences/" class="problem-link">187. Repeated DNA Sequences</a>
+                    <a href="https://leetcode.com/problems/longest-duplicate-substring/" class="problem-link">1044. Longest Duplicate Substring</a>
+                </td>
+            </tr>
+            <tr>
+                <td class="pattern-number">35</td>
+                <td class="pattern-name">Manacher's Algorithm</td>
+                <td>Used for palindrome problems.</td>
+                <td class="key-idea">Find all palindromes in linear time.</td>
+                <td>
+                    <a href="https://leetcode.com/problems/longest-palindromic-substring/" class="problem-link">5. Longest Palindromic Substring</a>
+                    <a href="https://leetcode.com/problems/palindromic-substrings/" class="problem-link">647. Palindromic Substrings</a>
+                </td>
+            </tr>
+            <tr>
+                <td class="pattern-number">36</td>
+                <td class="pattern-name">Catalan Numbers</td>
+                <td>Used for counting problems with nested structures.</td>
+                <td class="key-idea">Count valid combinations of nested elements.</td>
+                <td>
+                    <a href="https://leetcode.com/problems/generate-parentheses/" class="problem-link">22. Generate Parentheses</a>
+                    <a href="https://leetcode.com/problems/unique-binary-search-trees/" class="problem-link">96. Unique Binary Search Trees</a>
+                </td>
+            </tr>
+            <tr>
+                <td class="pattern-number">37</td>
+                <td class="pattern-name">Game Theory (Minimax)</td>
+                <td>Used for game-playing problems.</td>
+                <td class="key-idea">Use minimax with alpha-beta pruning.</td>
+                <td>
+                    <a href="https://leetcode.com/problems/can-i-win/" class="problem-link">464. Can I Win</a>
+                    <a href="https://leetcode.com/problems/stone-game/" class="problem-link">877. Stone Game</a>
+                </td>
+            </tr>
+            <tr>
+                <td class="pattern-number">38</td>
+                <td class="pattern-name">Line Sweep</td>
+                <td>Used for computational geometry problems.</td>
+                <td class="key-idea">Process events in sorted order.</td>
+                <td>
+                    <a href="https://leetcode.com/problems/meeting-rooms-ii/" class="problem-link">253. Meeting Rooms II</a>
+                    <a href="https://leetcode.com/problems/the-skyline-problem/" class="problem-link">218. The Skyline Problem</a>
+                </td>
+            </tr>
+            <tr>
+                <td class="pattern-number">39</td>
+                <td class="pattern-name">Shortest Path Algorithms</td>
+                <td>Used for graph path problems.</td>
+                <td class="key-idea">Dijkstra's, Bellman-Ford, Floyd-Warshall.</td>
+                <td>
+                    <a href="https://leetcode.com/problems/cheapest-flights-within-k-stops/" class="problem-link">787. Cheapest Flights Within K Stops</a>
+                    <a href="https://leetcode.com/problems/find-the-city-with-the-smallest-number-of-neighbors-at-a-threshold-distance/" class="problem-link">1334. Find the City With Smallest Number of Neighbors</a>
+                </td>
+            </tr>
+            <tr>
+                <td class="pattern-number">40</td>
+                <td class="pattern-name">Meet in the Middle</td>
+                <td>Used for optimization when brute force is O(2^n).</td>
+                <td class="key-idea">Split problem space and combine results.</td>
+                <td>
+                    <a href="https://leetcode.com/problems/4sum/" class="problem-link">18. 4Sum</a>
+                    <a href="https://leetcode.com/problems/closest-subsequence-sum/" class="problem-link">1755. Closest Subsequence Sum</a>
+                </td>
+            </tr>
+            <tr>
+                <td class="pattern-number">41</td>
+                <td class="pattern-name">Critical Connections</td>
+                <td>Used for finding critical nodes/edges in graphs.</td>
+                <td class="key-idea">Use DFS with low-link values (Tarjan's Algorithm).</td>
+                <td>
+                    <a href="https://leetcode.com/problems/critical-connections-in-a-network/" class="problem-link">1192. Critical Connections in a Network</a>
+                    <a href="https://leetcode.com/problems/minimum-number-of-days-to-disconnect-island/" class="problem-link">1568. Minimum Days to Disconnect Island</a>
+                </td>
+            </tr>
+            <tr>
+                <td class="pattern-number">42</td>
+                <td class="pattern-name">Z-Algorithm</td>
+                <td>Used for string matching problems.</td>
+                <td class="key-idea">Find all occurrences of pattern in text in linear time.</td>
+                <td>
+                    <a href="https://leetcode.com/problems/find-the-index-of-the-first-occurrence-in-a-string/" class="problem-link">28. Find the Index of the First Occurrence</a>
+                    <a href="https://leetcode.com/problems/longest-happy-prefix/" class="problem-link">1392. Longest Happy Prefix</a>
+                </td>
+            </tr>
+            <tr>
+                <td class="pattern-number">43</td>
+                <td class="pattern-name">Coordinate Compression</td>
+                <td>Used when dealing with large coordinate ranges.</td>
+                <td class="key-idea">Map large coordinates to smaller range.</td>
+                <td>
+                    <a href="https://leetcode.com/problems/perfect-rectangle/" class="problem-link">391. Perfect Rectangle</a>
+                    <a href="https://leetcode.com/problems/rectangle-area-ii/" class="problem-link">850. Rectangle Area II</a>
+                </td>
+            </tr>
+            <tr>
+                <td class="pattern-number">44</td>
+                <td class="pattern-name">Convex Hull</td>
+                <td>Used for computational geometry problems.</td>
+                <td class="key-idea">Find the convex hull of a set of points.</td>
+                <td>
+                    <a href="https://leetcode.com/problems/erect-the-fence/" class="problem-link">587. Erect the Fence</a>
+                    <a href="https://leetcode.com/problems/maximum-number-of-darts-inside-of-a-circular-dartboard/" class="problem-link">1453. Maximum Darts Inside Circular Dartboard</a>
+                </td>
+            </tr>
+            <tr>
+                <td class="pattern-number">45</td>
+                <td class="pattern-name">Sqrt Decomposition</td>
+                <td>Used for range queries with updates.</td>
+                <td class="key-idea">Divide array into √n blocks for balanced operations.</td>
+                <td>
+                    <a href="https://leetcode.com/problems/range-sum-query-mutable/" class="problem-link">307. Range Sum Query - Mutable</a>
+                    <a href="https://leetcode.com/problems/count-of-range-sum/" class="problem-link">327. Count of Range Sum</a>
+                </td>
+            </tr>
+            <tr>
+                <td class="pattern-number">46</td>
+                <td class="pattern-name">Heavy-Light Decomposition</td>
+                <td>Used for tree path queries (Advanced).</td>
+                <td class="key-idea">Decompose tree into heavy and light edges.</td>
+                <td>
+                    <span class="problem-link">Used in competitive programming</span>
+                    <span class="problem-link">Tree path sum queries</span>
+                </td>
+            </tr>
+            <tr>
+                <td class="pattern-number">47</td>
+                <td class="pattern-name">Network Flow (Max Flow)</td>
+                <td>Used for flow optimization problems.</td>
+                <td class="key-idea">Find maximum flow through a network.</td>
+                <td>
+                    <span class="problem-link">Maximum bipartite matching</span>
+                    <span class="problem-link">Min-cut problems</span>
+                </td>
+            </tr>
+            <tr>
+                <td class="pattern-number">48</td>
+                <td class="pattern-name">Persistent Data Structures</td>
+                <td>Used when you need to maintain multiple versions.</td>
+                <td class="key-idea">Keep history of data structure modifications.</td>
+                <td>
+                    <span class="problem-link">Version control systems</span>
+                    <span class="problem-link">Functional programming structures</span>
+                </td>
+            </tr>
+            <tr>
+                <td class="pattern-number">49</td>
+                <td class="pattern-name">Suffix Array/Tree</td>
+                <td>Used for string processing problems.</td>
+                <td class="key-idea">Efficient substring operations and pattern matching.</td>
+                <td>
+                    <a href="https://leetcode.com/problems/longest-duplicate-substring/" class="problem-link">1044. Longest Duplicate Substring</a>
+                    <span class="problem-link">Advanced string algorithms</span>
+                </td>
+            </tr>
+            <tr>
+                <td class="pattern-number">50</td>
+                <td class="pattern-name">Aho-Corasick Algorithm</td>
+                <td>Used for multiple string matching.</td>
+                <td class="key-idea">Build automaton for multiple pattern matching.</td>
+                <td>
+                    <a href="https://leetcode.com/problems/stream-of-characters/" class="problem-link">1032. Stream of Characters</a>
+                    <span class="problem-link">Multiple pattern search</span>
+                </td>
+            </tr>
+        </tbody>
+    </table></div>

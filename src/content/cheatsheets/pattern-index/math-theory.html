@@ -1,0 +1,258 @@
+                <div class="topic-head">
+                    <span class="topic-num">19</span>
+                    <h2>Math &amp; Number Theory</h2>
+                </div>
+                <p class="topic-intro">Mathematical foundations for competitive programming: modular arithmetic, number
+                    theory, combinatorics.</p>
+                <h3 class="block-label">Recognition</h3>
+                <div class="table-scroll"><table class="sig-table">
+                    <thead>
+                        <tr>
+                            <th>When you see…</th>
+                            <th>Pattern</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="sig">GCD / LCM problems</td>
+                            <td class="pat"><span class="pat-tag">Euclidean algorithm; LCM = (a*b)/GCD</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Modular exponentiation</td>
+                            <td class="pat"><span class="pat-tag">Fast exponentiation with % MOD</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Modular inverse</td>
+                            <td class="pat"><span class="pat-tag">Fermat's little theorem (if MOD is prime)</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Prime checking</td>
+                            <td class="pat"><span class="pat-tag">Sieve of Eratosthenes or Miller–Rabin</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Factorization / divisors</td>
+                            <td class="pat"><span class="pat-tag">Trial division up to sqrt(n)</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Combinatorics (nCr, nPr)</td>
+                            <td class="pat"><span class="pat-tag">Precompute factorials &amp; inverse factorials</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Chinese Remainder Theorem</td>
+                            <td class="pat"><span class="pat-tag">Solve x ≡ a1 (mod m1), x ≡ a2 (mod
+                                    m2)</span></td>
+                        </tr>
+                        <tr>
+                            <td class="sig">Extended GCD (linear Diophantine)</td>
+                            <td class="pat"><span class="pat-tag">Find x, y such that ax + by = gcd(a, b)</span></td>
+                        </tr>
+                    </tbody>
+                </table></div>
+
+                <h3 class="block-label">Example algorithms</h3>
+                <div class="examples-grid">
+                    <div class="example">
+                        <h4>Sieve of Eratosthenes</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function">vector&lt;<span class="hljs-type">bool</span>&gt; <span class="hljs-title">sieve</span><span class="hljs-params">(<span class="hljs-type">int</span> n)</span> </span>{
+    <span class="hljs-function">vector&lt;<span class="hljs-type">bool</span>&gt; <span class="hljs-title">is_prime</span><span class="hljs-params">(n+<span class="hljs-number">1</span>, <span class="hljs-literal">true</span>)</span></span>;
+    is_prime[<span class="hljs-number">0</span>] = is_prime[<span class="hljs-number">1</span>] = <span class="hljs-literal">false</span>;
+
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">2</span>; i * i &lt;= n; i++) {
+        <span class="hljs-keyword">if</span> (is_prime[i]) {
+            <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> j = i * i; j &lt;= n; j += i) {
+                is_prime[j] = <span class="hljs-literal">false</span>;
+            }
+        }
+    }
+    <span class="hljs-keyword">return</span> is_prime;
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Extended GCD — Linear Diophantine</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function"><span class="hljs-type">long</span> <span class="hljs-type">long</span> <span class="hljs-title">extgcd</span><span class="hljs-params">(<span class="hljs-type">long</span> <span class="hljs-type">long</span> a, <span class="hljs-type">long</span> <span class="hljs-type">long</span> b, <span class="hljs-type">long</span> <span class="hljs-type">long</span> &amp;x, <span class="hljs-type">long</span> <span class="hljs-type">long</span> &amp;y)</span> </span>{
+    <span class="hljs-keyword">if</span> (b == <span class="hljs-number">0</span>) {
+        x = <span class="hljs-number">1</span>; y = <span class="hljs-number">0</span>;
+        <span class="hljs-keyword">return</span> a;
+    }
+    <span class="hljs-type">long</span> <span class="hljs-type">long</span> x1, y1;
+    <span class="hljs-type">long</span> <span class="hljs-type">long</span> g = <span class="hljs-built_in">extgcd</span>(b, a % b, x1, y1);
+    x = y1;
+    y = x1 - (a / b) * y1;
+    <span class="hljs-keyword">return</span> g;
+}
+
+<span class="hljs-function"><span class="hljs-type">bool</span> <span class="hljs-title">diophantine</span><span class="hljs-params">(<span class="hljs-type">long</span> <span class="hljs-type">long</span> a, <span class="hljs-type">long</span> <span class="hljs-type">long</span> b, <span class="hljs-type">long</span> <span class="hljs-type">long</span> c,
+                 <span class="hljs-type">long</span> <span class="hljs-type">long</span> &amp;x, <span class="hljs-type">long</span> <span class="hljs-type">long</span> &amp;y)</span> </span>{
+    <span class="hljs-type">long</span> <span class="hljs-type">long</span> x0, y0;
+    <span class="hljs-type">long</span> <span class="hljs-type">long</span> g = <span class="hljs-built_in">extgcd</span>(a, b, x0, y0);
+    <span class="hljs-keyword">if</span> (c % g != <span class="hljs-number">0</span>) <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;
+    x = x0 * (c / g);
+    y = y0 * (c / g);
+    <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Combinatorics with Precomputed Factorials</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-type">const</span> <span class="hljs-type">int</span> MAXN = <span class="hljs-number">1e5</span> + <span class="hljs-number">5</span>, MOD = <span class="hljs-number">1e9</span> + <span class="hljs-number">7</span>;
+<span class="hljs-type">long</span> <span class="hljs-type">long</span> fact[MAXN], inv_fact[MAXN];
+
+<span class="hljs-function"><span class="hljs-type">long</span> <span class="hljs-type">long</span> <span class="hljs-title">power</span><span class="hljs-params">(<span class="hljs-type">long</span> <span class="hljs-type">long</span> a, <span class="hljs-type">long</span> <span class="hljs-type">long</span> b, <span class="hljs-type">long</span> <span class="hljs-type">long</span> m)</span> </span>{
+    <span class="hljs-type">long</span> <span class="hljs-type">long</span> r = <span class="hljs-number">1</span>; a %= m;
+    <span class="hljs-keyword">while</span> (b) { <span class="hljs-keyword">if</span> (b &amp; <span class="hljs-number">1</span>) r = r * a % m; a = a * a % m; b &gt;&gt;= <span class="hljs-number">1</span>; }
+    <span class="hljs-keyword">return</span> r;
+}
+
+<span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">precompute</span><span class="hljs-params">()</span> </span>{
+    fact[<span class="hljs-number">0</span>] = <span class="hljs-number">1</span>;
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">1</span>; i &lt; MAXN; i++) fact[i] = fact[i<span class="hljs-number">-1</span>] * i % MOD;
+    inv_fact[MAXN<span class="hljs-number">-1</span>] = <span class="hljs-built_in">power</span>(fact[MAXN<span class="hljs-number">-1</span>], MOD<span class="hljs-number">-2</span>, MOD);
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = MAXN<span class="hljs-number">-2</span>; i &gt;= <span class="hljs-number">0</span>; i--)
+        inv_fact[i] = inv_fact[i+<span class="hljs-number">1</span>] * (i+<span class="hljs-number">1</span>) % MOD;
+}
+
+<span class="hljs-function"><span class="hljs-type">long</span> <span class="hljs-type">long</span> <span class="hljs-title">C</span><span class="hljs-params">(<span class="hljs-type">int</span> n, <span class="hljs-type">int</span> r)</span> </span>{
+    <span class="hljs-keyword">if</span> (r &lt; <span class="hljs-number">0</span> || r &gt; n) <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;
+    <span class="hljs-keyword">return</span> fact[n] * inv_fact[r] % MOD * inv_fact[n-r] % MOD;
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>GCD / LCM</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function"><span class="hljs-type">long</span> <span class="hljs-type">long</span> <span class="hljs-title">gcdll</span><span class="hljs-params">(<span class="hljs-type">long</span> <span class="hljs-type">long</span> a, <span class="hljs-type">long</span> <span class="hljs-type">long</span> b)</span> </span>{ <span class="hljs-keyword">return</span> b ? <span class="hljs-built_in">gcdll</span>(b, a % b) : a; }
+<span class="hljs-function"><span class="hljs-type">long</span> <span class="hljs-type">long</span> <span class="hljs-title">lcmll</span><span class="hljs-params">(<span class="hljs-type">long</span> <span class="hljs-type">long</span> a, <span class="hljs-type">long</span> <span class="hljs-type">long</span> b)</span> </span>{ <span class="hljs-keyword">return</span> a / <span class="hljs-built_in">gcdll</span>(a, b) * b; }    <span class="hljs-comment">// divide first to avoid overflow</span></code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Modular Exponentiation and Modular Inverse</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function"><span class="hljs-type">long</span> <span class="hljs-type">long</span> <span class="hljs-title">modPow</span><span class="hljs-params">(<span class="hljs-type">long</span> <span class="hljs-type">long</span> a, <span class="hljs-type">long</span> <span class="hljs-type">long</span> b, <span class="hljs-type">long</span> <span class="hljs-type">long</span> m)</span> </span>{
+    <span class="hljs-type">long</span> <span class="hljs-type">long</span> r = <span class="hljs-number">1</span>; a %= m;
+    <span class="hljs-keyword">while</span> (b) { <span class="hljs-keyword">if</span> (b &amp; <span class="hljs-number">1</span>) r = r * a % m; a = a * a % m; b &gt;&gt;= <span class="hljs-number">1</span>; }
+    <span class="hljs-keyword">return</span> r;
+}
+<span class="hljs-function"><span class="hljs-type">long</span> <span class="hljs-type">long</span> <span class="hljs-title">modInverse</span><span class="hljs-params">(<span class="hljs-type">long</span> <span class="hljs-type">long</span> a, <span class="hljs-type">long</span> <span class="hljs-type">long</span> p)</span> </span>{ <span class="hljs-keyword">return</span> <span class="hljs-built_in">modPow</span>(a, p - <span class="hljs-number">2</span>, p); }   <span class="hljs-comment">// p must be prime</span></code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Prime Check, Factorization, Divisors (trial division up to √n)</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function"><span class="hljs-type">bool</span> <span class="hljs-title">isPrime</span><span class="hljs-params">(<span class="hljs-type">long</span> <span class="hljs-type">long</span> n)</span> </span>{
+    <span class="hljs-keyword">if</span> (n &lt; <span class="hljs-number">2</span>) <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">long</span> <span class="hljs-type">long</span> i = <span class="hljs-number">2</span>; i * i &lt;= n; i++) <span class="hljs-keyword">if</span> (n % i == <span class="hljs-number">0</span>) <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;
+    <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;
+}
+vector&lt;pair&lt;<span class="hljs-type">long</span> <span class="hljs-type">long</span>,<span class="hljs-type">int</span>&gt;&gt; <span class="hljs-built_in">factorize</span>(<span class="hljs-type">long</span> <span class="hljs-type">long</span> n) {
+    vector&lt;pair&lt;<span class="hljs-type">long</span> <span class="hljs-type">long</span>,<span class="hljs-type">int</span>&gt;&gt; f;
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">long</span> <span class="hljs-type">long</span> p = <span class="hljs-number">2</span>; p * p &lt;= n; p++) {
+        <span class="hljs-keyword">if</span> (n % p) <span class="hljs-keyword">continue</span>;
+        <span class="hljs-type">int</span> cnt = <span class="hljs-number">0</span>;
+        <span class="hljs-keyword">while</span> (n % p == <span class="hljs-number">0</span>) { n /= p; cnt++; }
+        f.<span class="hljs-built_in">push_back</span>({p, cnt});
+    }
+    <span class="hljs-keyword">if</span> (n &gt; <span class="hljs-number">1</span>) f.<span class="hljs-built_in">push_back</span>({n, <span class="hljs-number">1</span>});
+    <span class="hljs-keyword">return</span> f;
+}
+<span class="hljs-function">vector&lt;<span class="hljs-type">long</span> <span class="hljs-type">long</span>&gt; <span class="hljs-title">divisors</span><span class="hljs-params">(<span class="hljs-type">long</span> <span class="hljs-type">long</span> n)</span> </span>{
+    vector&lt;<span class="hljs-type">long</span> <span class="hljs-type">long</span>&gt; d;
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">long</span> <span class="hljs-type">long</span> i = <span class="hljs-number">1</span>; i * i &lt;= n; i++)
+        <span class="hljs-keyword">if</span> (n % i == <span class="hljs-number">0</span>) { d.<span class="hljs-built_in">push_back</span>(i); <span class="hljs-keyword">if</span> (i != n / i) d.<span class="hljs-built_in">push_back</span>(n / i); }
+    <span class="hljs-built_in">sort</span>(d.<span class="hljs-built_in">begin</span>(), d.<span class="hljs-built_in">end</span>());
+    <span class="hljs-keyword">return</span> d;
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Smallest Prime Factor Sieve (fast factorization for many queries)</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function">vector&lt;<span class="hljs-type">int</span>&gt; <span class="hljs-title">buildSPF</span><span class="hljs-params">(<span class="hljs-type">int</span> n)</span> </span>{
+    <span class="hljs-function">vector&lt;<span class="hljs-type">int</span>&gt; <span class="hljs-title">spf</span><span class="hljs-params">(n + <span class="hljs-number">1</span>)</span></span>;
+    <span class="hljs-built_in">iota</span>(spf.<span class="hljs-built_in">begin</span>(), spf.<span class="hljs-built_in">end</span>(), <span class="hljs-number">0</span>);
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">2</span>; i * i &lt;= n; i++)
+        <span class="hljs-keyword">if</span> (spf[i] == i)
+            <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> j = i * i; j &lt;= n; j += i) <span class="hljs-keyword">if</span> (spf[j] == j) spf[j] = i;
+    <span class="hljs-keyword">return</span> spf;
+}
+<span class="hljs-comment">// factorize x: while (x &gt; 1) { cout &lt;&lt; spf[x]; x /= spf[x]; }</span></code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Miller–Rabin (deterministic for 64-bit)</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-keyword">typedef</span> <span class="hljs-type">unsigned</span> <span class="hljs-type">long</span> <span class="hljs-type">long</span> ull;
+<span class="hljs-function">ull <span class="hljs-title">mulmod</span><span class="hljs-params">(ull a, ull b, ull m)</span> </span>{ <span class="hljs-keyword">return</span> (<span class="hljs-type">__uint128_t</span>)a * b % m; }
+<span class="hljs-function">ull <span class="hljs-title">powmod</span><span class="hljs-params">(ull a, ull b, ull m)</span> </span>{
+    ull r = <span class="hljs-number">1</span>; a %= m;
+    <span class="hljs-keyword">while</span> (b) { <span class="hljs-keyword">if</span> (b &amp; <span class="hljs-number">1</span>) r = <span class="hljs-built_in">mulmod</span>(r, a, m); a = <span class="hljs-built_in">mulmod</span>(a, a, m); b &gt;&gt;= <span class="hljs-number">1</span>; }
+    <span class="hljs-keyword">return</span> r;
+}
+<span class="hljs-function"><span class="hljs-type">bool</span> <span class="hljs-title">millerRabin</span><span class="hljs-params">(ull n)</span> </span>{
+    <span class="hljs-keyword">if</span> (n &lt; <span class="hljs-number">2</span>) <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;
+    <span class="hljs-type">static</span> <span class="hljs-type">const</span> ull bases[] = {<span class="hljs-number">2</span>, <span class="hljs-number">3</span>, <span class="hljs-number">5</span>, <span class="hljs-number">7</span>, <span class="hljs-number">11</span>, <span class="hljs-number">13</span>, <span class="hljs-number">17</span>, <span class="hljs-number">19</span>, <span class="hljs-number">23</span>, <span class="hljs-number">29</span>, <span class="hljs-number">31</span>, <span class="hljs-number">37</span>};
+    <span class="hljs-keyword">for</span> (ull p : bases) <span class="hljs-keyword">if</span> (n % p == <span class="hljs-number">0</span>) <span class="hljs-keyword">return</span> n == p;
+    ull d = n - <span class="hljs-number">1</span>; <span class="hljs-type">int</span> r = <span class="hljs-number">0</span>;
+    <span class="hljs-keyword">while</span> ((d &amp; <span class="hljs-number">1</span>) == <span class="hljs-number">0</span>) { d &gt;&gt;= <span class="hljs-number">1</span>; r++; }
+    <span class="hljs-keyword">for</span> (ull a : bases) {
+        ull x = <span class="hljs-built_in">powmod</span>(a, d, n);
+        <span class="hljs-keyword">if</span> (x == <span class="hljs-number">1</span> || x == n - <span class="hljs-number">1</span>) <span class="hljs-keyword">continue</span>;
+        <span class="hljs-type">bool</span> composite = <span class="hljs-literal">true</span>;
+        <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">1</span>; i &lt; r; i++) {
+            x = <span class="hljs-built_in">mulmod</span>(x, x, n);
+            <span class="hljs-keyword">if</span> (x == n - <span class="hljs-number">1</span>) { composite = <span class="hljs-literal">false</span>; <span class="hljs-keyword">break</span>; }
+        }
+        <span class="hljs-keyword">if</span> (composite) <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;
+    }
+    <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;
+}</code></pre>
+                        </div>
+                    </div>
+                    <div class="example">
+                        <h4>Chinese Remainder Theorem (two congruences, uses extgcd from above)</h4>
+
+                        <div class="code-wrap">
+
+                            <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+                            <pre><code class="hljs language-cpp"><span class="hljs-function">pair&lt;<span class="hljs-type">long</span> <span class="hljs-type">long</span>,<span class="hljs-type">long</span> <span class="hljs-type">long</span>&gt; <span class="hljs-title">crt</span><span class="hljs-params">(<span class="hljs-type">long</span> <span class="hljs-type">long</span> a1, <span class="hljs-type">long</span> <span class="hljs-type">long</span> m1, <span class="hljs-type">long</span> <span class="hljs-type">long</span> a2, <span class="hljs-type">long</span> <span class="hljs-type">long</span> m2)</span> </span>{
+    <span class="hljs-type">long</span> <span class="hljs-type">long</span> x, y;
+    <span class="hljs-type">long</span> <span class="hljs-type">long</span> g = <span class="hljs-built_in">extgcd</span>(m1, m2, x, y);
+    <span class="hljs-keyword">if</span> ((a2 - a1) % g != <span class="hljs-number">0</span>) <span class="hljs-keyword">return</span> {<span class="hljs-number">-1</span>, <span class="hljs-number">-1</span>};                  <span class="hljs-comment">// no solution</span>
+    <span class="hljs-type">long</span> <span class="hljs-type">long</span> lcm = m1 / g * m2;
+    <span class="hljs-type">long</span> <span class="hljs-type">long</span> t = ((a2 - a1) / g % (m2 / g)) * x % (m2 / g);
+    <span class="hljs-type">long</span> <span class="hljs-type">long</span> res = (a1 + m1 * t) % lcm;
+    <span class="hljs-keyword">if</span> (res &lt; <span class="hljs-number">0</span>) res += lcm;
+    <span class="hljs-keyword">return</span> {res, lcm};                                          <span class="hljs-comment">// x ≡ res (mod lcm)</span>
+}</code></pre>
+                        </div>
+                    </div>
+                </div>
