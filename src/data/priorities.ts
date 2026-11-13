@@ -133,6 +133,8 @@ const P2_PACKS = [
   '547-number-of-provinces', '310-minimum-height-trees', '1631-path-with-minimum-effort',
   'alg-bellman-ford-shortest-paths-negative-edges', 'alg-floyd-warshall-all-pairs-shortest-paths',
   '1192-critical-connections-in-a-network', '785-is-graph-bipartite',
+  // Union-find with rank and path compression (pack p11)
+  'alg-union-find-number-of-provinces-union-by-rank-path-compression',
   // Dynamic programming
   'cp-0-1-knapsack', 'cp-unbounded-knapsack', '518-coin-change-ii', '279-perfect-squares', '516-longest-palindromic-subsequence',
   '494-target-sum', '309-best-time-to-buy-and-sell-stock-with-cooldown', '918-maximum-sum-circular-subarray',

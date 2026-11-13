@@ -8,10 +8,20 @@ const lc = (id: string, title: string, difficulty: PracticeItem['difficulty'], s
   id, title, difficulty, note, href: `https://leetcode.com/problems/${slug}/`,
 });
 
+/** Textbook union-find animation (pack p11): the opening example of the union-find page. */
+const UF_RANK = 'alg-union-find-number-of-provinces-union-by-rank-path-compression';
+
 export const d4: DetailMap = {
   'graph-union-find': {
-    tags: ['Connectivity', 'Cycle detection', 'Path compression', 'Union by size'],
+    tags: ['Connectivity', 'Cycle detection', 'Path compression', 'Union by rank'],
+    examples: [
+      { slug: UF_RANK, why: 'The textbook form with both speed-ups. Watch a two-hop chain collapse under path compression, the shorter tree hang under the taller one, and a link that closes a loop get skipped; the answer is the number of roots left.' },
+      { slug: '684-redundant-connection', why: 'The classic cycle test: the first edge whose endpoints already share a leader closes the loop, so union-find doubles as an online cycle detector.' },
+      { slug: '1319-number-of-operations-to-make-network-connected', why: 'Counts both sides of the same coin: the unions that fail are spare cables and the groups left over need that many links. Shows union-find as a component counter.' },
+      { slug: '990-satisfiability-of-equality-equations', why: 'The nodes are letters and the edges are statements, not roads. Equalities are united first and inequalities are checked afterwards, so the order of the two passes matters.' },
+    ],
     content: {
+      animation: UF_RANK,
       whenToUse: [
         'You add edges one at a time and must answer **"are these two nodes already connected?"** after each addition. A fresh DFS per query costs O(V + E) every time, while union-find answers with two finds in near-constant time.',
         'The task asks for the **edge that closes a cycle** in an undirected graph: the first edge whose endpoints already share a leader is the culprit. Redundant Connection, "is this graph a tree?" and spare-cable counting all reduce to that single test.',
@@ -19,10 +29,10 @@ export const d4: DetailMap = {
         'The relation is **transitive but never given as a graph**: equal letters (a==b), accounts sharing an email, stones sharing a row or column. Treat every item as a node, union what is related, then read the groups; do all unions before any not-equal check.',
         'You need a **minimum spanning tree by sorting edges** (Kruskal) or a quick connectivity filter inside a larger algorithm. Each accept-or-reject decision is one find pair, so sorting dominates and the structure itself never becomes the bottleneck.',
       ],
-      tip: 'Always link roots, never plain nodes, and flatten with path compression plus union by size. If find(a) equals find(b) before the union, that edge closes a cycle; every successful union removes exactly one component.',
+      tip: 'Always link roots, never plain nodes, and flatten with path compression plus union by rank or size. If find(a) equals find(b) before the union, that edge closes a cycle; every successful union removes exactly one component.',
       practice: [
         '1971-find-if-path-exists-in-graph',
-        { slug: '547-number-of-provinces', note: 'count the groups left after all unions' },
+        { slug: UF_RANK, note: 'rank + path compression, count the roots left' },
         { slug: '684-redundant-connection', note: 'the first edge inside one group' },
         { slug: '1319-number-of-operations-to-make-network-connected', note: 'failed unions are spare cables' },
         { slug: '990-satisfiability-of-equality-equations', note: 'union ==, then check !=' },
@@ -32,8 +42,8 @@ export const d4: DetailMap = {
       ],
     },
     meta: {
-      useNote: 'Always link roots, never plain nodes, and flatten with path compression plus union by size. If find(a) equals find(b) before the union, that edge closes a cycle; every successful union removes exactly one component.',
-      complexityNote: 'Path compression plus union by size keep every tree almost flat, so one find or union costs inverse-Ackermann time, under 5 for any real input. The parent and size arrays take O(n); m operations run in O(m·α(n)).',
+      useNote: 'Always link roots, never plain nodes, and flatten with path compression plus union by rank or size. If find(a) equals find(b) before the union, that edge closes a cycle; every successful union removes exactly one component.',
+      complexityNote: 'Path compression plus union by rank keep every tree almost flat, so one find or union costs inverse-Ackermann time, under 5 for any real input. The parent and rank arrays take O(n); m operations run in O(m·α(n)).',
       highlight: ['are these two nodes already connected?', 'edge that closes a cycle', 'connected components as they merge', 'transitive but never given as a graph', 'minimum spanning tree by sorting edges'],
     },
   },

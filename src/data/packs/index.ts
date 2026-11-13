@@ -9,8 +9,9 @@ import { pack as p7 } from './p7.ts';
 import { pack as p8 } from './p8.ts';
 import { pack as p9 } from './p9.ts';
 import { pack as p10 } from './p10.ts';
+import { pack as p11 } from './p11.ts';
 
 export type { PatternPack, PatternExample, PackProblem } from './types.ts';
 
 /** All packs, merged into the catalog, the pattern list, the pattern content/meta and the examples. */
-export const PACKS: PatternPack[] = [p1, p2, p3, p4, p5, p6, p7, p8, p9, p10];
+export const PACKS: PatternPack[] = [p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11];

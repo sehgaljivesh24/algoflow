@@ -47,7 +47,7 @@ function buildCounting({ nums }: NIn): Step[] {
 }
 
 export const countingSort: ProblemDef<NIn> = {
-  slug: '912-counting-sort', id: '912', title: 'Counting Sort', difficulty: 'Easy', category: 'Sorting', tag: 'count, no comparisons',
+  slug: '912-counting-sort', id: '912', title: 'Counting Sort', difficulty: 'Medium', category: 'Sorting', tag: 'count, no comparisons',
   statement: 'Sort an array of integers drawn from a small known range without comparing elements: count how often each value occurs, then write the values back in increasing order.',
   constraints: 'Range k = max − min + 1 should be O(n) (animation input: 2–12 values between −20 and 20 with max − min ≤ 11)',
   examples: [

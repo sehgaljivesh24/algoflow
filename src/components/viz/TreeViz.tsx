@@ -27,6 +27,9 @@ export function TreeViz({ scene, sortedSolid = false }: { scene: Extract<Scene, 
   const py = (y: number) => 36 + y * DY;
   const width = Math.max(260, 80 + Math.max(0, order - 1) * DX);
   const height = 72 + maxDepth * DY;
+  // Small trees keep their natural node size (scale 1 for a single node, easing up to ~1.4x at 7 nodes);
+  // from 8 nodes on the picture fills the card width as before.
+  const maxScale = order >= 8 ? undefined : 1 + (0.4 * (order - 1)) / 6;
   const lit = (id: number) => {
     const s = scene.states[id];
     return !!s && LIT.includes(s);
@@ -34,7 +37,7 @@ export function TreeViz({ scene, sortedSolid = false }: { scene: Extract<Scene, 
 
   return (
     <div className="tv-wrap">
-      <svg className="svg-viz tv" style={{ minWidth: Math.min(width, 520) }} viewBox={`0 0 ${width} ${height}`} role="img" aria-label="Binary tree">
+      <svg className="svg-viz tv" style={{ minWidth: Math.min(width, 520), ...(maxScale ? { maxWidth: Math.round(width * maxScale) } : null) }} viewBox={`0 0 ${width} ${height}`} role="img" aria-label="Binary tree">
         <defs>
           <marker id="tv-xarrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
             <path d="M0 0L10 5L0 10z" className="tv-xarrow" />

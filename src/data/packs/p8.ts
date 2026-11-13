@@ -19,7 +19,7 @@ export const pack: PatternPack = {
     { id: '50', title: 'Pow(x, n)', difficulty: 'Medium', tag: 'fast exponentiation', category: 'Math' },
     { id: 'ALG', title: "Euclid's GCD and LCM", difficulty: 'Easy', tag: 'Euclid, remainders', category: 'Math' },
     // linear sorts
-    { id: '912', title: 'Counting Sort', difficulty: 'Easy', tag: 'count, no comparisons', category: 'Sorting' },
+    { id: '912', title: 'Counting Sort', difficulty: 'Medium', tag: 'count, no comparisons', category: 'Sorting' },
     { id: '912', title: 'Radix Sort', difficulty: 'Medium', tag: 'digit buckets, LSD', category: 'Sorting' },
     { id: '164', title: 'Maximum Gap', difficulty: 'Medium', tag: 'bucket sort, pigeonhole', category: 'Sorting' },
     // KMP
