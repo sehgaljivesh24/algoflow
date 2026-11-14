@@ -19,23 +19,28 @@ function build({ vals }: In): Step[] {
 
   cur.slow = 0;
   cur.fast = 0;
-  emit('Start', 'Goal: L0 → Ln → L1 → Ln−1 → … Plan: find the middle, reverse the second half, then weave the two halves together.', 'Reordering needs the tail nodes in reverse order — a reversed second half provides exactly that, in place.', 'info', [1], [1], 0);
+  emit('Start', 'Goal: L0 → Ln → L1 → Ln−1 → … Plan: find the middle, reverse the second half, then weave the two halves together.', 'Reordering needs the tail nodes in reverse order — a reversed second half provides exactly that, in place.', 'info', [1], [1], 0,
+    undefined, { tag: 'START', note: `slow = fast = head = ${vals[0]}, ${n} node${n === 1 ? '' : 's'}` });
 
   let round = 0;
   while (next[cur.fast as number] !== null && next[next[cur.fast as number] as number] !== null) {
     cur.slow = next[cur.slow as number];
     cur.fast = next[next[cur.fast as number] as number];
     round++;
-    emit(`Find middle: round ${round}`, `slow → ${show(cur.slow, vals)}, fast → ${show(cur.fast, vals)}.`, 'The loop stops while there is still room for slow to be the end of the first half.', 'info', [2, 3, 4], [2, 3, 4], 0);
+    emit(`Find middle: round ${round}`, `slow moves one step to ${show(cur.slow, vals)}, fast moves two steps to ${show(cur.fast, vals)}`, 'The loop stops while there is still room for slow to be the end of the first half.', 'info', [2, 3, 4], [2, 3, 4], 0,
+      undefined, { tag: 'FIND MIDDLE', note: `slow = ${show(cur.slow, vals)}, fast = fast.next.next = ${show(cur.fast, vals)}` });
   }
 
   const mid = cur.slow as number;
+  hot = { [mid]: 'compare' };
+  emit('Middle found', `fast=${show(cur.fast, vals)} cannot jump two more nodes, so slow=${vals[mid]} is the end of the first half`, 'The loop stops while there is still room for slow to be the end of the first half.', 'success', [2], [2], 0,
+    undefined, { tag: 'MIDDLE', note: `fast.next${next[cur.fast as number] === null ? '' : '.next'} == null → stop, slow = ${vals[mid]}` });
   const secondHead = next[mid];
   next[mid] = null;
   cur.fast = null;
   cur.curr = secondHead;
-  hot = { [mid]: 'compare' };
-  emit('Cut the list after the middle', `slow (${vals[mid]}) ends the first half. Save curr = slow.next and set slow.next = null.`, 'Cutting makes two independent lists: a first half and a second half to reverse.', 'info', [5, 6], [5, 6], 1);
+  emit('Cut the list after the middle', `slow=${vals[mid]} ends the first half: save curr = slow.next = ${show(secondHead, vals)} and set slow.next = null`, 'Cutting makes two independent lists: a first half and a second half to reverse.', 'info', [5, 6], [5, 6], 1,
+    undefined, { tag: 'CUT', note: `curr = ${show(secondHead, vals)}; ${vals[mid]}.next = null` });
 
   const rev: number[] = [];
   while (cur.curr !== null) {
@@ -45,7 +50,8 @@ function build({ vals }: In): Step[] {
     rev.push(c);
     hot = { [mid]: 'compare', [c]: 'swap' };
     for (const r of rev.slice(0, -1)) hot[r] = 'sorted';
-    emit(`Reverse: flip node ${vals[c]}`, `curr.next now points to ${cur.prev === null ? 'null' : vals[cur.prev]}.`, 'Standard in-place reversal of the second half.', 'info', [8, 9, 10, 11], [7, 8, 9, 10], 1);
+    emit(`Reverse: flip node ${vals[c]}`, `flip node ${vals[c]}: curr.next now points to ${cur.prev === null ? 'null' : vals[cur.prev]}`, 'Standard in-place reversal of the second half.', 'info', [8, 9, 10, 11], [7, 8, 9, 10], 1,
+      undefined, { tag: 'REVERSE', note: `${vals[c]}.next = prev = ${cur.prev === null ? 'null' : vals[cur.prev]}; prev = ${vals[c]}` });
     cur.prev = c;
     cur.curr = nx;
   }
@@ -56,8 +62,9 @@ function build({ vals }: In): Step[] {
   cur.prev = null;
   order = chainOrder(next, [0, cur.l2]);
   hot = {};
-  emit('Halves ready', cur.l2 === null ? 'There is no second half (one node), so nothing to weave.' : `Second half is reversed. l1 = ${vals[0]} (first half), l2 = ${vals[cur.l2]} (reversed second half). Redrawn as two lists.`,
-    'Now alternate: one node from l1, one from l2.', 'info', [13], [11], 2);
+  emit('Halves ready', cur.l2 === null ? 'There is no second half (one node), so nothing to weave.' : `second half is reversed: l1 = ${vals[0]} (first half), l2 = ${vals[cur.l2]} (reversed second half), drawn as two lists`,
+    'Now alternate: one node from l1, one from l2.', 'info', [13], [11], 2,
+    undefined, { tag: 'HALVES', note: cur.l2 === null ? 'l2 == null: nothing to weave' : `l1 = head = ${vals[0]}, l2 = prev = ${vals[cur.l2]}` });
 
   while (cur.l2 !== null) {
     const a = cur.l1 as number;
@@ -66,19 +73,22 @@ function build({ vals }: In): Step[] {
     const t2 = next[b];
     next[a] = b;
     hot = { [a]: 'compare', [b]: 'swap' };
-    emit(`Link ${vals[a]} → ${vals[b]}`, `Remember t1 = ${show(t1, vals)} and t2 = ${show(t2, vals)}, then l1.next = l2: ${vals[a]} now points to ${vals[b]}.`, 'Save both successors first; otherwise the rest of each half would be lost.', 'info', [15, 16], [13, 14], 2);
+    emit(`Link ${vals[a]} → ${vals[b]}`, `remember t1=${show(t1, vals)} and t2=${show(t2, vals)}, then l1.next = l2 so ${vals[a]} now points to ${vals[b]}`, 'Save both successors first; otherwise the rest of each half would be lost.', 'info', [15, 16], [13, 14], 2,
+      undefined, { tag: 'LINK', note: `t1 = ${show(t1, vals)}, t2 = ${show(t2, vals)}; ${vals[a]}.next = ${vals[b]}` });
     next[b] = t1;
     hot = { [a]: 'found', [b]: 'found' };
     cur.l1 = t1;
     cur.l2 = t2;
-    emit(`Link ${vals[b]} → ${show(t1, vals)}`, `l2.next = t1: ${vals[b]} now points to ${show(t1, vals)}. Advance l1 = ${show(t1, vals)}, l2 = ${show(t2, vals)}.`, 'The pair a → b has been spliced in; the rest is processed the same way.', 'success', [17, 18], [15, 16], 2);
+    emit(`Link ${vals[b]} → ${show(t1, vals)}`, `l2.next = t1 so ${vals[b]} now points to ${show(t1, vals)}; advance l1 = ${show(t1, vals)} and l2 = ${show(t2, vals)}`, 'The pair a → b has been spliced in; the rest is processed the same way.', 'success', [17, 18], [15, 16], 2,
+      undefined, { tag: 'LINK', note: `${vals[b]}.next = ${show(t1, vals)}; l1 = ${show(t1, vals)}, l2 = ${show(t2, vals)}` });
     order = chainOrder(next, [0, cur.l2]);
   }
 
   const out = chainKeys(next, 0).map((k) => vals[k]);
   cur.l1 = null;
   hot = {};
-  emit('Done', `The list is reordered: ${arrow(out)}.`, 'Nodes alternate between the front and the back of the original list.', 'success', [19], [16], 3, { title: arrow(out), text: 'Reordered in place' });
+  emit('Done', `l2 is null, so the list is reordered in place: ${arrow(out)}`, 'Nodes alternate between the front and the back of the original list.', 'success', [19], [16], 3, { title: arrow(out), text: 'Reordered in place' },
+    { tag: '✅ Done!', note: `l2 == null → ${arrow(out)}` });
   return steps;
 }
 
@@ -97,6 +107,13 @@ export const reorderList: ProblemDef<In> = {
   buildSteps: build, viz: 'cells',
   legend: [{ label: 'End of first half', state: 'compare' }, { label: 'Being flipped / linked', state: 'swap' }, { label: 'Reversed half', state: 'sorted' }, { label: 'Woven pair', state: 'found' }],
   varLabels: ['slow', 'fast', 'prev', 'curr', 'l1', 'l2'],
+  emphasis: ['in place', 'relinking nodes'],
+  phases: [
+    { icon: '🔎', label: 'FIND middle (slow / fast)', tone: 'cyan' },
+    { icon: '🔄', label: 'CUT + REVERSE 2nd half', tone: 'orange' },
+    { icon: '🧵', label: 'WEAVE halves', tone: 'gold' },
+    { icon: '✅', label: 'Done', tone: 'green' },
+  ],
   approach: {
     title: 'Middle, reverse, weave',
     text: 'Three classic list tricks in a row: slow/fast pointers find the middle, the second half is reversed in place, and the two halves are interleaved by alternately relinking one node from each.',

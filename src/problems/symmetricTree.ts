@@ -71,7 +71,7 @@ function build({ tokens }: TreeIn): Step[] {
       add({
         title: `(${nm(a)}, ${nm(b)}) → false`, desc: `One side has node ${val(real)} but its mirror position is empty.`,
         logic: 'The shapes differ, so the tree cannot be symmetric.', tone: 'warn',
-        j: J.oneNull, p: P.oneNull, a: 2, vars: vars(nm(a), nm(b), 'false'), aux: aux(),
+        j: J.oneNull, p: P.oneNull, a: 1, vars: vars(nm(a), nm(b), 'false'), aux: aux(),
       });
       stack.pop();
       return false;

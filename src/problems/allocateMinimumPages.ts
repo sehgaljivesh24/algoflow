@@ -8,14 +8,20 @@ function build(inp: PartIn): Step[] {
     const cells = nums.map((value, i) => ({ key: i, value, state: 'error' as const }));
     return [
       {
-        title: 'Start', desc: `${nums.length} books, ${k} students. Every student must get at least one book.`,
+        title: 'Start', tag: 'BOUND —', desc: `${nums.length} books and ${k} students: every student must get at least one book of the contiguous blocks.`,
         cells, pointers: [], vars, logic: 'Books are handed out in contiguous blocks and nobody may be left empty-handed.', logicTone: 'info',
-        javaLines: [0], pyLines: [0], algoStep: 0,
+        javaLines: [0], pyLines: [0], algoStep: 0, note: `n = ${nums.length}, m = ${k}`,
       },
       {
-        title: 'Impossible', desc: `${k} students > ${nums.length} books, so at least one student would get nothing.`,
+        title: 'Impossible', tag: 'REJECT:', desc: `${k} students > ${nums.length} books, so at least one student would get no book at all.`,
         cells, pointers: [], vars, logic: 'Return −1 immediately; no capacity can fix this.', logicTone: 'warn',
-        javaLines: [1], pyLines: [1, 2], algoStep: 0,
+        alert: `m = ${k} is larger than the ${nums.length} books: some student would be empty-handed, so the answer is −1.`,
+        javaLines: [1], pyLines: [1, 2], algoStep: 0, note: `${k} > ${nums.length} → return −1`,
+      },
+      {
+        title: 'Answer = −1', tag: '✅ Done!', desc: `no allocation exists with ${k} students and only ${nums.length} books, so the function returns −1.`,
+        cells, pointers: [], vars, logic: 'The −1 sentinel tells the caller that the input is infeasible.', logicTone: 'success',
+        javaLines: [1], pyLines: [2], algoStep: 4, note: 'return −1',
         result: { title: '-1', text: 'More students than books: allocation is impossible' },
       },
     ];
@@ -26,6 +32,7 @@ function build(inp: PartIn): Step[] {
     resultText: (a) => `The busiest student reads at least ${a} pages, and ${a} is achievable`,
     java: { init: [2, 3], mid: [4, 5], check: [6, 13, 14], ok: [6], bad: [7], ret: [9] },
     py: { init: [3], mid: [4, 5], check: [6, 13, 14], ok: [6, 7], bad: [8, 9], ret: [10] },
+    fiveStep: true,
   });
 }
 
@@ -89,11 +96,20 @@ export const allocateMinimumPages: ProblemDef<PartIn> = {
     '        load += p',
     '    return students',
   ],
+  phases: [
+    { icon: '📐', label: 'Bound the page limit', tone: 'blue' },
+    { icon: '🎯', label: 'Guess mid', tone: 'cyan' },
+    { icon: '📚', label: 'Allocate greedily (test)', tone: 'gold' },
+    { icon: '✂️', label: 'Narrow the range', tone: 'orange' },
+    { icon: '✅', label: 'Done', tone: 'green' },
+  ],
+  emphasis: ['contiguous block', 'Minimise the maximum pages', 'return −1'],
   algorithm: [
     'If m > n return −1; otherwise lo = max(pages), hi = sum(pages)',
     'Pick mid as the candidate page limit',
     'Feasibility: allocate greedily; are at most m students needed?',
-    'Feasible → hi = mid; otherwise lo = mid + 1. Return lo when they meet',
+    'Feasible → hi = mid; otherwise lo = mid + 1',
+    'When lo == hi, return lo',
   ],
   complexity: [{ label: 'Time', value: 'O(n log(sum))' }, { label: 'Space', value: 'O(1)' }],
   why: 'Raising the limit never increases the number of students needed, so feasibility is monotone. Greedy allocation is optimal for a fixed limit. When m ≤ n, using fewer than m students can always be turned into exactly m by splitting a block, without raising the maximum.',

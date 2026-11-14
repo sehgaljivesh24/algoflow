@@ -65,7 +65,7 @@ function build({ s }: In): Step[] {
     const open = stack.pop()!;
     if (open !== PAIRS[c]) {
       steps.push({
-        title: 'Mismatch', tag: 'MISMATCH —', desc: `s[${i}] = '${c}' needs '${PAIRS[c]}' but the top was '${open}'. Brackets cross, so the string is invalid.`,
+        title: 'Mismatch', tag: 'MISMATCH —', desc: `s[${i}] = '${c}' needs '${PAIRS[c]}' but the top was '${open}'. The types do not match, so the string is invalid.`,
         note: `pop '${open}' ≠ '${PAIRS[c]}' → return false`,
         alert: `Invalid! '${open}' cannot be closed by '${c}' at index ${i}.`,
         cells: cells(i, i), pointers: ptr(i), aux: aux(undefined, [`'${c}' needs '${PAIRS[c]}'`, `popped '${open}'`, '✗ no match'], [2]), vars: vars(i),

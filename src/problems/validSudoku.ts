@@ -37,24 +37,30 @@ function build({ board }: In): Step[] {
       else if (ch === '.') state = 'dim';
       return { key: `${r},${c}`, value: ch === '.' ? '' : ch, state, tone };
     }));
-  const auxPanels = () => {
+  const auxPanels = (dup?: string) => {
     const r = cur ? cur[0] : -1;
     const c = cur ? cur[1] : -1;
     const b = cur ? boxOf(cur[0], cur[1]) : -1;
+    const list = (title: string, empty: string, keys: string[] | null) => {
+      const items = keys ? keys.sort() : [];
+      return { title: keys ? title : empty, kind: 'list' as const, items, bad: dup ? items.flatMap((x, i) => (x === dup ? [i] : [])) : undefined };
+    };
     return [
-      { title: r >= 0 ? `row ${r} has seen` : 'row seen-set', kind: 'list' as const, items: r >= 0 ? [...rowSeen[r].keys()].sort() : [] },
-      { title: c >= 0 ? `column ${c} has seen` : 'column seen-set', kind: 'list' as const, items: c >= 0 ? [...colSeen[c].keys()].sort() : [] },
-      { title: b >= 0 ? `box ${b} has seen` : 'box seen-set', kind: 'list' as const, items: b >= 0 ? [...boxSeen[b].keys()].sort() : [] },
+      list(`row ${r} has seen`, 'row seen-set', r >= 0 ? [...rowSeen[r].keys()] : null),
+      list(`column ${c} has seen`, 'column seen-set', c >= 0 ? [...colSeen[c].keys()] : null),
+      list(`box ${b} has seen`, 'box seen-set', b >= 0 ? [...boxSeen[b].keys()] : null),
     ];
   };
-  const push = (title: string, desc: string, logic: string, tone: LogicTone, j: number[], p: number[], a: number, result?: Step['result']) =>
+  const push = (title: string, tag: string, desc: string, note: string, logic: string, tone: LogicTone, j: number[], p: number[], a: number,
+    extra: { result?: Step['result']; alert?: string; dup?: string } = {}) =>
     steps.push({
-      title, desc, scene: { kind: 'grid', rows: rows(), rowHeads: board.map((_, r) => String(r)), colHeads: [...board[0]].map((_, c) => String(c)) },
-      aux: auxPanels(), vars: { row: cur ? cur[0] : '—', col: cur ? cur[1] : '—', box: cur ? boxOf(cur[0], cur[1]) : '—', 'digits checked': filled },
-      logic, logicTone: tone, javaLines: j, pyLines: p, algoStep: a, result,
+      title, tag, desc, note, alert: extra.alert, scene: { kind: 'grid', rows: rows(), rowHeads: board.map((_, r) => String(r)), colHeads: [...board[0]].map((_, c) => String(c)) },
+      aux: auxPanels(extra.dup), vars: { row: cur ? cur[0] : '—', col: cur ? cur[1] : '—', box: cur ? boxOf(cur[0], cur[1]) : '—', 'digits checked': filled },
+      logic, logicTone: tone, javaLines: j, pyLines: p, algoStep: a, result: extra.result,
     });
 
-  push('Start', 'A 9×9 board. Rows, columns and 3×3 boxes may not repeat a digit (empty cells are ignored).',
+  push('Start', 'START —', 'A 9×9 board with nine empty row sets, nine column sets and nine box sets. Rows, columns and 3×3 boxes may not repeat a digit.',
+    'filled cells = 0, nothing seen yet',
     'Each filled cell is checked against three seen-sets: its row, its column and its box. A repeat in any of them means the board is invalid.', 'info', [1, 2, 3], [1, 2, 3], 0);
 
   for (let r = 0; r < 9; r++) {
@@ -69,24 +75,34 @@ function build({ board }: In): Step[] {
       if (prevRow !== undefined || prevCol !== undefined || prevBox !== undefined) {
         const where = prevRow !== undefined ? `row ${r}` : prevCol !== undefined ? `column ${c}` : `box ${b}`;
         clash = prevRow !== undefined ? [r, prevRow] : prevCol !== undefined ? [prevCol, c] : (prevBox!.split(',').map(Number) as [number, number]);
-        push(`Duplicate ${d} in ${where}`, `Digit ${d} at (${r}, ${c}) was already seen in ${where}, at (${clash[0]}, ${clash[1]}).`,
+        push(`Duplicate ${d} in ${where}`, 'REJECT:', `digit ${d} at (${r}, ${c}) is already in ${where}, first seen at (${clash[0]}, ${clash[1]}).`,
+          `${d} ∈ ${where} set → return false`,
           'One repeated digit is enough: the board is invalid.', 'warn', [6, 7, 8, 9], [6, 7], 2,
-          { title: 'false', text: `Duplicate ${d} in ${where}` });
+          { alert: `Duplicate ${d} in ${where}: cells (${clash[0]}, ${clash[1]}) and (${r}, ${c}) both hold ${d}.`, dup: d });
+        push('Invalid board', '✅ Done!', `The scan stops at the first repeat (${d} in ${where}), so the board is invalid after ${filled} accepted digit${filled === 1 ? '' : 's'}.`,
+          `return false`,
+          'The first violation settles the answer; the rest of the board never needs to be read.', 'success', [9], [7], 4,
+          { result: { title: 'false', text: `Duplicate ${d} in ${where}` }, dup: d });
         return steps;
       }
-      push(`Check ${d} at (${r}, ${c})`, `${d} is new to row ${r}, column ${c} and box ${b}. Record it in all three sets.`,
-        'The box index is (r / 3) * 3 + (c / 3), which numbers the nine boxes 0 … 8.', 'info', [5, 6, 7, 8], [4, 6, 8], 1);
+      push(`Look up ${d} at (${r}, ${c})`, 'LOOKUP:', `${d} at (${r}, ${c}) is missing from row ${r}, column ${c} and box ${b}, so no repeat yet.`,
+        `${d} ∉ row ${r}, col ${c}, box ${b}`,
+        'The box index is (r / 3) * 3 + (c / 3), which numbers the nine boxes 0 … 8.', 'info', [5, 6, 7, 8], [4, 6, 7], 1);
       rowSeen[r].set(d, c);
       colSeen[c].set(d, r);
       boxSeen[b].set(d, `${r},${c}`);
       checked[r][c] = true;
       filled++;
+      push(`Record ${d}`, 'RECORD:', `add ${d} to row ${r}, column ${c} and box ${b}: ${filled} digit${filled === 1 ? '' : 's'} verified so far.`,
+        `rows[${r}], cols[${c}], boxes[${b}] += ${d}`,
+        'Recording the digit lets every later cell in the same row, column or box detect a repeat.', 'info', [6, 7, 8], [8], 3);
     }
   }
 
   cur = null;
-  push('Valid board', 'Every filled cell was unique in its row, column and box.', 'No duplicate was found after scanning the whole board.', 'success', [12], [9], 3,
-    { title: 'true', text: 'The board is a valid partial Sudoku' });
+  push('Valid board', '✅ Done!', `All ${filled} filled cells were unique in their row, column and box, so the board is valid.`, `return true after ${filled} digits`,
+    'No duplicate was found after scanning the whole board.', 'success', [11], [9], 4,
+    { result: { title: 'true', text: 'The board is a valid partial Sudoku' } });
   return steps;
 }
 
@@ -135,11 +151,20 @@ export const validSudoku: ProblemDef<In> = {
     '            rows[r].add(d); cols[c].add(d); boxes[k].add(d)',
     '    return True',
   ],
+  phases: [
+    { icon: '🧰', label: 'Set up seen-sets', tone: 'blue' },
+    { icon: '🔍', label: 'Look up digit', tone: 'cyan' },
+    { icon: '⛔', label: 'Reject duplicate', tone: 'orange' },
+    { icon: '📝', label: 'Record digit', tone: 'gold' },
+    { icon: '✅', label: 'Done', tone: 'green' },
+  ],
+  emphasis: ['no digit 1-9 may repeat', 'row', 'column', '3 × 3 box'],
   algorithm: [
     'Create one seen-set for each row, column and 3 × 3 box',
-    'Visit every filled cell in reading order',
-    'If its digit is already in its row, column or box set, return false',
-    'Otherwise record the digit in all three sets; if the scan ends, return true',
+    'Visit the next filled cell in reading order and look its digit up in its row, column and box sets',
+    'If the digit is in any of the three sets, return false',
+    'Otherwise record the digit in all three sets and move on',
+    'Done: return true if the scan ends, false at the first repeat',
   ],
   complexity: [{ label: 'Time', value: 'O(81) = O(1)' }, { label: 'Space', value: 'O(81) = O(1)' }],
   why: 'A board violates the rules exactly when some digit occurs twice inside one row, one column or one box. Each cell belongs to exactly one of each, so checking three sets per cell sees every possible repeat. The check is purely local, so validity does not require the puzzle to be solvable.',

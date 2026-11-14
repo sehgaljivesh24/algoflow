@@ -53,9 +53,9 @@ function build({ tokens }: TreeIn): Step[] {
   const vars = (node: number | string, l: number | string, r: number | string, ret: number | string) => ({ node, left: l, right: r, returns: ret });
 
   add({
-    title: 'Start', desc: 'A tree is height-balanced when, at every node, the two subtree heights differ by at most 1.',
+    title: 'Start', desc: `A tree is height-balanced when at every node the two subtree heights differ by at most 1. Call height(${val(0)}).`,
     logic: 'Compute heights bottom-up and let the value −1 mean "an imbalance was found below" so we can stop early.',
-    j: J.start, p: P.start, a: 0, vars: vars('—', '—', '—', '—'), aux: aux(),
+    j: J.start, p: P.start, a: 0, vars: vars('—', '—', '—', '—'), aux: aux(), tag: 'CALL', note: `isBalanced(${val(0)}) = height(${val(0)}) != -1`,
   });
 
   const fail = (id: number, l: number | string, r: number | string, why: string, lines: { j: number[]; p: number[] }, tone: 'warn' = 'warn') => {
@@ -63,7 +63,8 @@ function build({ tokens }: TreeIn): Step[] {
     labels[id] = '−1';
     add({
       title: `Node ${val(id)} returns −1`, desc: why, logic: 'Once any subtree is unbalanced the whole tree is unbalanced; −1 travels up without further work.', tone,
-      j: lines.j, p: lines.p, a: 2, vars: vars(val(id), l, r, -1), aux: aux(),
+      j: lines.j, p: lines.p, a: 2, vars: vars(val(id), l, r, -1), aux: aux(), tag: 'UNBALANCED',
+      note: `node ${val(id)}: l = ${l}, r = ${r} → return -1`, alert: `Node ${val(id)} returns −1: the tree cannot be balanced, so −1 climbs to the root.`,
     });
     stack.pop();
     return -1;
@@ -76,20 +77,22 @@ function build({ tokens }: TreeIn): Step[] {
     add({
       title: `Visit node ${val(id)}`, desc: `Call height(${val(id)}). Measure the left subtree, then the right.`,
       logic: 'We need both child heights before we can judge this node.',
-      j: J.visit, p: P.visit, a: 1, vars: vars(val(id), '?', '?', '—'), aux: aux(),
+      j: J.visit, p: P.visit, a: 1, vars: vars(val(id), '?', '?', '—'), aux: aux(), tag: 'VISIT',
+      note: `height(${val(id)}): l = ?, r = ?, depth ${stack.length}`,
     });
     const l = n.left === null ? 0 : height(n.left);
-    if (l === -1) return fail(id, -1, '?', `The left subtree already reported −1, so return −1 immediately (skip the right side).`, { j: J.propL, p: P.propL });
+    if (l === -1) return fail(id, -1, '?', `Node ${val(id)}: the left subtree already reported −1, so return −1 immediately (skip the right side).`, { j: J.propL, p: P.propL });
     const r = n.right === null ? 0 : height(n.right);
-    if (r === -1) return fail(id, l, -1, `The right subtree reported −1, so this node returns −1 too.`, { j: J.propR, p: P.propR });
-    if (Math.abs(l - r) > 1) return fail(id, l, r, `|${l} − ${r}| = ${Math.abs(l - r)} > 1: the subtree heights differ too much here.`, { j: J.diff, p: P.diff });
+    if (r === -1) return fail(id, l, -1, `Node ${val(id)}: the right subtree reported −1 (left height ${l}), so this node returns −1 too.`, { j: J.propR, p: P.propR });
+    if (Math.abs(l - r) > 1) return fail(id, l, r, `Node ${val(id)}: |${l} − ${r}| = ${Math.abs(l - r)} > 1, the subtree heights differ too much here.`, { j: J.diff, p: P.diff });
     const h = 1 + Math.max(l, r);
     states[id] = 'found';
     labels[id] = `h=${h}`;
     add({
-      title: `Node ${val(id)} is balanced, height ${h}`, desc: `|${l} − ${r}| = ${Math.abs(l - r)} ≤ 1, so return 1 + max(${l}, ${r}) = ${h}.`,
+      title: `Node ${val(id)} is balanced, height ${h}`, desc: `Node ${val(id)}: |${l} − ${r}| = ${Math.abs(l - r)} ≤ 1, so return 1 + max(${l}, ${r}) = ${h}.`,
       logic: 'A balanced node reports its real height to its parent.', tone: 'success',
-      j: J.ok, p: P.ok, a: 3, vars: vars(val(id), l, r, h), aux: aux(),
+      j: J.ok, p: P.ok, a: 3, vars: vars(val(id), l, r, h), aux: aux(), tag: 'RETURN',
+      note: `|${l} − ${r}| = ${Math.abs(l - r)} ≤ 1 → 1 + max(${l}, ${r}) = ${h}`,
     });
     stack.pop();
     return h;
@@ -98,9 +101,10 @@ function build({ tokens }: TreeIn): Step[] {
   const h = height(0);
   const balanced = h !== -1;
   add({
-    title: 'Done', desc: balanced ? `The root returned height ${h}, not −1.` : 'The root returned −1.',
+    title: 'Done', desc: balanced ? `The root returned height ${h}, not −1, so the tree is balanced.` : 'The root returned −1, so the tree is not balanced.',
     logic: balanced ? 'Every node had subtree heights within 1 of each other.' : 'Some node had subtree heights differing by more than 1.', tone: balanced ? 'success' : 'warn',
-    j: J.start, p: P.start, a: 3, vars: vars('—', '—', '—', h), aux: aux(), result: { title: String(balanced), text: balanced ? 'Balanced' : 'Not balanced' },
+    j: J.start, p: P.start, a: 4, vars: vars('—', '—', '—', h), aux: aux(), result: { title: String(balanced), text: balanced ? 'Balanced' : 'Not balanced' },
+    tag: '✅ Done!', note: `height(root) = ${h} → ${balanced ? 'true' : 'false'}`,
   });
   return steps;
 }
@@ -119,16 +123,25 @@ export const balancedBinaryTree: ProblemDef<TreeIn> = {
   parseInput: parseTree, buildSteps: build, viz: 'cells',
   legend: [{ label: 'Visiting', state: 'active' }, { label: 'Balanced, height known', state: 'found' }, { label: 'Imbalance (−1)', state: 'error' }],
   varLabels: ['node', 'left', 'right', 'returns'],
+  emphasis: ['height-balanced', 'differ by no more than one'],
+  phases: [
+    { icon: '🌲', label: 'CALL height(root)', tone: 'blue' },
+    { icon: '⬇', label: 'VISIT (left, then right)', tone: 'cyan' },
+    { icon: '🚫', label: 'UNBALANCED → −1', tone: 'orange' },
+    { icon: '⬆', label: 'RETURN height', tone: 'gold' },
+    { icon: '✅', label: 'Done', tone: 'green' },
+  ],
   approach: {
     title: 'Height with an early-exit sentinel',
     text: 'Compute each node’s height bottom-up, but return −1 as soon as a child is unbalanced or the two heights differ by more than 1. The tree is balanced exactly when the root does not return −1.',
   },
   java, python,
   algorithm: [
-    'Compute height(root); −1 is the “unbalanced” signal',
-    'Get the left height; if it is −1, return −1',
-    'Get the right height; if it is −1, return −1',
-    'If the heights differ by more than 1 return −1, else return 1 + max',
+    'Call height(root); −1 is the “unbalanced” signal',
+    'Visit a node: get the left height, then the right height',
+    'If a child returned −1, or the heights differ by more than 1, return −1',
+    'Otherwise return 1 + max(left, right)',
+    'The tree is balanced exactly when the root did not return −1',
   ],
   complexity: [{ label: 'Time', value: 'O(n)' }, { label: 'Space', value: 'O(h)' }],
   why: 'Checking balance by calling height() at every node repeats work and costs O(n²). Folding the check into the height computation visits each node once: a node is balanced iff both children are balanced and their heights are within 1, and the −1 sentinel carries that failure to the root.',

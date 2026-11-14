@@ -130,7 +130,7 @@ function build({ s: raw }: In): Step[] {
         tries.push(`share with k=${k}: dp[${i + 1}][${k - 1}] + dp[${k}][${j}] = ${inside} + ${dp[k][j]} = ${c}`);
         if (idx === matches.length - 1) done = true;
         say({
-          title: `s[${i}] = s[${k}] = '${s[i]}': share one stroke`, desc: `One stroke of '${s[i]}' can cover position ${i} and position ${k}; the letters between (${i + 1}..${k - 1}) are printed over it: ${inside}. Then ${k}..${j} costs ${dp[k][j]} (the stroke is already paid for). Total ${c}. ${better ? `Improves dp[${i}][${j}] to ${c}.` : `Not better than ${dp[i][j]}.`}`,
+          title: `s[${i}] = s[${k}] = '${s[i]}': share one stroke`, desc: `One stroke of '${s[i]}' can cover position ${i} and position ${k}; the letters between (${i + 1}..${k - 1}) are printed over it: ${inside}. Then ${k}..${j} costs ${dp[k][j]} (that stroke also covers position ${i}). Total ${c}. ${better ? `Improves dp[${i}][${j}] to ${c}.` : `Not better than ${dp[i][j]}.`}`,
           logic: 'Painting a long stretch first and overwriting the middle is free sharing: s[i] rides along with the stroke that prints s[k].', tone: better ? 'success' : 'info', java: J.b, py: P.b, algo: 3,
           tag: better ? 'SHARE STROKE · BEST —' : 'SHARE STROKE —', note: `dp[${i}][${j}] = min(…, dp[${i + 1}][${k - 1}] + dp[${k}][${j}] = ${inside} + ${dp[k][j]} = ${c}) = ${dp[i][j]}`,
         });

@@ -25,10 +25,10 @@ function build({ nums, target }: In): Step[] {
   const vars = (mid: number | string) => ({ lo, mid, hi, iterations: iter });
 
   steps.push({
-    title: 'Start', desc: `Is ${target} in this rotated array of ${n} (duplicates allowed)?`,
+    title: 'Start', tag: 'START —', desc: `is ${target} in this rotated array of ${n} numbers (duplicates allowed)? lo = 0 and hi = ${n - 1} cover everything.`,
     cells: windowCells(nums, lo, hi), pointers: ptrs(), vars: vars('—'),
     logic: 'Duplicates can hide which half is sorted: when nums[lo] = nums[mid] = nums[hi] we cannot tell. In that case we peel off both ends.', logicTone: 'info',
-    javaLines: [0, 1], pyLines: [0, 1], algoStep: 0,
+    javaLines: [0, 1], pyLines: [0, 1], algoStep: 0, note: `lo = 0, hi = ${n - 1}`,
   });
 
   while (lo <= hi) {
@@ -36,12 +36,18 @@ function build({ nums, target }: In): Step[] {
     const mid = lo + Math.floor((hi - lo) / 2);
     const hit = nums[mid] === target;
     steps.push({
-      title: `mid = ${mid}`, desc: `nums[${mid}] = ${nums[mid]}${hit ? ` equals the target ${target}.` : ` is not ${target}.`}`,
+      title: `mid = ${mid}`, tag: 'PROBE:', desc: `mid = ${lo} + (${hi} − ${lo}) / 2 = ${mid}: nums[${mid}] = ${nums[mid]}${hit ? ` equals the target ${target}.` : ` is not ${target}.`}`,
       cells: windowCells(nums, lo, hi, { [mid]: hit ? 'found' : 'compare' }), pointers: ptrs(mid), vars: vars(mid),
       logic: hit ? 'Return true.' : 'Not a hit; work out which half can be trusted.', logicTone: hit ? 'success' : 'info', javaLines: [3, 4], pyLines: [3, 4, 5], algoStep: 1,
+      note: `nums[${mid}] = ${nums[mid]} ${hit ? '==' : '!='} ${target}`,
     });
     if (hit) {
-      steps[steps.length - 1].result = { title: 'true', text: `${target} is in the array (index ${mid})` };
+      steps.push({
+        title: 'Found', tag: '✅ Done!', desc: `${target} sits at index ${mid} after ${iter} probe${iter === 1 ? '' : 's'}, so the answer is true.`,
+        cells: windowCells(nums, lo, hi, { [mid]: 'found' }), pointers: ptrs(mid), vars: vars(mid),
+        logic: 'One matching element is enough to return true.', logicTone: 'success', javaLines: [4], pyLines: [5], algoStep: 4, note: 'return true',
+        result: { title: 'true', text: `${target} is in the array (index ${mid})` },
+      });
       return steps;
     }
     if (nums[lo] === nums[mid] && nums[mid] === nums[hi]) {
@@ -50,10 +56,11 @@ function build({ nums, target }: In): Step[] {
       lo++;
       hi--;
       steps.push({
-        title: 'Ambiguous: lo, mid, hi all equal', desc: `nums[${l0}] = nums[${mid}] = nums[${h0}] = ${nums[mid]}. We cannot tell which half is sorted, so drop both ends: lo = ${lo}, hi = ${hi}.`,
+        title: 'Ambiguous: lo, mid, hi all equal', tag: 'AMBIGUOUS:', desc: `nums[${l0}] = nums[${mid}] = nums[${h0}] = ${nums[mid]}, so the sorted half cannot be identified: drop both ends, lo = ${lo} and hi = ${hi}.`,
         cells: windowCells(nums, lo, hi), pointers: ptrs(), vars: vars(mid),
+        alert: `nums[lo] = nums[mid] = nums[hi] = ${nums[mid]}: no half can be trusted, so both ends are peeled off (the O(n) worst case).`,
         logic: 'nums[mid] is not the target and equals both ends, so neither end can be the target either. Dropping them is safe, but this is why the worst case is O(n).', logicTone: 'warn',
-        javaLines: [5, 6], pyLines: [6, 7, 8], algoStep: 2,
+        javaLines: [5, 6], pyLines: [6, 7, 8], algoStep: 2, note: `lo = ${lo}, hi = ${hi}`,
       });
       continue;
     }
@@ -62,28 +69,31 @@ function build({ nums, target }: In): Step[] {
     for (let i = leftSorted ? lo : mid; i <= (leftSorted ? mid : hi); i++) marks[i] = 'active';
     marks[mid] = 'compare';
     steps.push({
-      title: leftSorted ? 'Left half [lo..mid] is sorted' : 'Right half [mid..hi] is sorted',
-      desc: leftSorted ? `nums[lo] = ${nums[lo]} ≤ nums[mid] = ${nums[mid]}.` : `nums[lo] = ${nums[lo]} > nums[mid] = ${nums[mid]}, so the right half is ascending.`,
+      title: leftSorted ? 'Left half [lo..mid] is sorted' : 'Right half [mid..hi] is sorted', tag: 'SORTED:',
+      desc: leftSorted ? `nums[lo] = ${nums[lo]} ≤ nums[mid] = ${nums[mid]}, so [${lo}..${mid}] is ascending.` : `nums[lo] = ${nums[lo]} > nums[mid] = ${nums[mid]}, so the right half [${mid}..${hi}] is ascending.`,
       cells: windowCells(nums, lo, hi, marks), pointers: ptrs(mid), vars: vars(mid),
-      logic: 'Blue cells show the half whose order we can trust.', logicTone: 'info', javaLines: leftSorted ? [7] : [10], pyLines: leftSorted ? [9] : [14], algoStep: 2,
+      logic: 'Blue cells show the half whose order we can trust.', logicTone: 'info', javaLines: leftSorted ? [7] : [10], pyLines: leftSorted ? [9] : [14], algoStep: 3,
+      note: leftSorted ? `${nums[lo]} ≤ ${nums[mid]} → left sorted` : `${nums[lo]} > ${nums[mid]} → right sorted`,
     });
     const inside = leftSorted ? nums[lo] <= target && target < nums[mid] : nums[mid] < target && target <= nums[hi];
+    const range = leftSorted ? `${nums[lo]} ≤ ${target} < ${nums[mid]}` : `${nums[mid]} < ${target} ≤ ${nums[hi]}`;
     const goLeft = leftSorted ? inside : !inside;
     if (goLeft) hi = mid - 1;
     else lo = mid + 1;
     steps.push({
-      title: inside ? 'Target is inside the sorted half' : 'Target is outside the sorted half',
-      desc: `${inside ? 'Keep' : 'Discard'} the sorted half → ${goLeft ? `hi = ${mid - 1}` : `lo = ${mid + 1}`}.`,
+      title: inside ? 'Target is inside the sorted half' : 'Target is outside the sorted half', tag: inside ? 'KEEP:' : 'DISCARD:',
+      desc: `${range} is ${inside ? 'true' : 'false'}, so the target ${inside ? 'lies in' : 'is not in'} the sorted half: ${inside ? 'keep' : 'discard'} it, ${goLeft ? `hi = ${mid - 1}` : `lo = ${mid + 1}`}.`,
       cells: windowCells(nums, lo, hi), pointers: ptrs(), vars: vars(mid),
       logic: inside ? 'A range check on a sorted half is reliable.' : 'So the target can only be in the other half.', logicTone: 'warn',
       javaLines: leftSorted ? (goLeft ? [8] : [9]) : (goLeft ? [12] : [11]), pyLines: leftSorted ? (goLeft ? [10, 11] : [12, 13]) : (goLeft ? [17, 18] : [15, 16]), algoStep: 3,
+      note: `${range} → ${inside ? 'true' : 'false'}, ${goLeft ? `hi = ${mid - 1}` : `lo = ${mid + 1}`}`,
     });
   }
 
   steps.push({
-    title: 'Not found', desc: `The window is empty, so ${target} is not in the array.`,
+    title: 'Not found', tag: '✅ Done!', desc: `lo = ${lo} passed hi = ${hi}, so the window is empty and ${target} is not in the array.`,
     cells: nums.map((value, i) => ({ key: i, value, state: 'dim' as const })), pointers: [], vars: vars('—'),
-    logic: 'Return false.', logicTone: 'warn', javaLines: [15], pyLines: [19], algoStep: 3,
+    logic: 'Return false.', logicTone: 'warn', javaLines: [15], pyLines: [19], algoStep: 4, note: `${lo} ≤ ${hi} is false → return false`,
     result: { title: 'false', text: `${target} is not present` },
   });
   return steps;
@@ -94,8 +104,8 @@ export const searchInRotatedSortedArrayIi: ProblemDef<In> = {
   statement: 'A non-decreasing array (duplicates allowed) was rotated at an unknown pivot. Return true if the target is present, otherwise false. Duplicates can make the sorted half ambiguous, so the worst case degrades to O(n).',
   constraints: '1 ≤ n ≤ 5000 · values may repeat (animation input is limited to 14 numbers)',
   examples: [
+    { label: '[2,5,6,0,0,1,2], 3', input: { nums: [2, 5, 6, 0, 0, 1, 2], target: 3 }, output: 'false', answer: 'false (3 is not in the array)' },
     { label: '[2,5,6,0,0,1,2], 0', input: { nums: [2, 5, 6, 0, 0, 1, 2], target: 0 }, output: 'true' },
-    { label: '[2,5,6,0,0,1,2], 3', input: { nums: [2, 5, 6, 0, 0, 1, 2], target: 3 }, output: 'false' },
     { label: '[1,0,1,1,1], 0', input: { nums: [1, 0, 1, 1, 1], target: 0 }, output: 'true' },
   ],
   inputPlaceholder: 'e.g. 2 5 6 0 0 1 2 ; 0',
@@ -147,11 +157,20 @@ export const searchInRotatedSortedArrayIi: ProblemDef<In> = {
     '                hi = mid - 1',
     '    return False',
   ],
+  phases: [
+    { icon: '🎯', label: 'Set lo, hi', tone: 'blue' },
+    { icon: '🔍', label: 'Probe mid', tone: 'cyan' },
+    { icon: '⚠️', label: 'Ambiguous: peel ends', tone: 'orange' },
+    { icon: '↔️', label: 'Sorted half → keep / discard', tone: 'green' },
+    { icon: '✅', label: 'Done', tone: 'green' },
+  ],
+  emphasis: ['rotated', 'duplicates', 'target'],
   algorithm: [
     'Set lo = 0, hi = n − 1',
     'Take mid; if nums[mid] is the target return true',
-    'If lo, mid and hi are equal shrink both ends; otherwise find the sorted half',
-    'Keep the sorted half if the target is inside it, otherwise keep the other half',
+    'If lo, mid and hi are equal shrink both ends',
+    'Otherwise find the sorted half; keep it if the target is inside it, else keep the other half',
+    'Done: true on a hit, false when the window is empty',
   ],
   complexity: [{ label: 'Time', value: 'O(log n) typical, O(n) worst case' }, { label: 'Space', value: 'O(1)' }],
   why: 'With distinct values one half is always provably sorted. With duplicates, nums[lo] = nums[mid] = nums[hi] says nothing about where the pivot is, e.g. [1,1,1,0,1]. Since mid was already ruled out and equals both ends, dropping lo and hi loses nothing; all other cases keep the original argument.',

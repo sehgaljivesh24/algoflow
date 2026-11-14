@@ -44,7 +44,7 @@ function build({ s }: In): Step[] {
       while (true) {
         if (l < 0 || r >= n) {
           steps.push({
-            title: `${label}: reached the edge`, desc: `l = ${l}, r = ${r} is outside the string; this centre is finished.`,
+            title: `${label}: reached the edge`, desc: `l = ${l}, r = ${r}: ${l < 0 ? 'l has run off the left end' : 'r has run off the right end'} of the string; this centre is finished.`,
             cells: cells(0, -1, 'active'), pointers: [], aux: aux(), vars: vars(label, l, r),
             logic: 'Stop when either end leaves the string.', logicTone: 'warn', javaLines: [5], pyLines: [5], algoStep: 2,
             tag: 'EDGE —', note: `l = ${l}, r = ${r} out of range → next centre`,

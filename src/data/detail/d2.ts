@@ -82,7 +82,7 @@ export const d2: DetailMap = {
         'Each bar or value defines a **rectangle whose width depends on the first shorter neighbour** on each side. Largest Rectangle in Histogram pops a bar the moment a shorter one arrives and multiplies its height by the width between the two walls.',
         'A **maximal rectangle in a binary matrix** reduces to the histogram problem row by row: heights count the consecutive ones above, and one stack pass per row finds the best rectangle ending on that row in O(columns).',
         'You must build the **smallest result by removing items**: Remove K Digits, Remove Duplicate Letters, the smallest subsequence. A larger leading value is evicted while it is bigger than its successor and removals remain.',
-        'You sum or count **over all subarrays by their minimum**, as in Sum of Subarray Minimums, or measure water between walls. The stack finds how far each element is the minimum on the left and on the right, which gives its contribution.',
+        'You sum or count **over all subarrays by their minimum**, as in Sum of Subarray Minimums. The stack finds how far each element is the minimum on the left and on the right, which gives its contribution.',
       ],
       tip: 'Append a sentinel height of 0 so leftover bars are popped by the same code. After a pop, width = i − stack.top − 1, or simply i when the stack is empty.',
       practice: [
@@ -92,7 +92,7 @@ export const d2: DetailMap = {
         '739-daily-temperatures',
         lc('907', 'Sum of Subarray Minimums', 'Medium', 'sum-of-subarray-minimums', 'left reach × right reach per element'),
         lc('316', 'Remove Duplicate Letters', 'Medium', 'remove-duplicate-letters', 'smallest result, each letter once'),
-        lc('42', 'Trapping Rain Water', 'Hard', 'trapping-rain-water', 'a stack of walls computes water layer by layer'),
+        lc('42', 'Trapping Rain Water', 'Hard', 'trapping-rain-water', 'contrast: its stack of walls is decreasing, popped by a taller wall, water layer by layer'),
       ],
     },
     meta: {
@@ -297,7 +297,7 @@ static int height(TreeNode node) {
         'The answer is the **shallowest node that satisfies a condition**, such as the minimum depth of a tree, the closest leaf, or the first level that contains a value: BFS reaches nodes in order of depth, so the first hit is the nearest.',
         'A **zigzag or alternating-direction** traversal is requested: traverse in the normal left-to-right queue order and only reverse, or insert at the front of, each level\'s list before storing it, so the queue itself never has to change direction.',
         'You need **neighbours on the same level** (connect next-right pointers, find cousins, check level-wise symmetry): the queue holds one whole level in left-to-right order, so consecutive dequeues within one round are exactly the neighbours.',
-        'The tree is **very deep or skewed**, so recursion risks a stack overflow, or the task spreads outward from a root (fewest steps, nearest target). The queue holds at most one level, which is O(width) instead of O(height).',
+        'The tree is **very deep or skewed**, so recursion risks a stack overflow, or the task spreads outward from a root (fewest steps, nearest target). The queue holds about one level (never more than two adjacent levels), which is O(width) instead of O(height).',
       ],
       practice: [
         '102-binary-tree-level-order-traversal',
@@ -311,7 +311,7 @@ static int height(TreeNode node) {
       ],
     },
     meta: {
-      complexityNote: 'Every node enters and leaves the queue exactly once, so time is O(n). The queue never holds more than the widest level, so extra space is O(w): about n / 2 for a complete tree and just 1 for a chain.',
+      complexityNote: 'Every node enters and leaves the queue exactly once, so time is O(n). The queue holds at most two adjacent levels, so extra space is O(w) for the widest level: about n / 2 for a complete tree, 1 for a chain.',
       highlight: ['organised by level', 'shallowest node', 'zigzag', 'neighbours on the same level', 'very deep or skewed'],
     },
   },
@@ -388,7 +388,7 @@ static int height(TreeNode node) {
     tags: ['Threaded tree', 'In-order', 'Pre-order', 'O(1) space'],
     content: {
       whenToUse: [
-        'The task demands a tree traversal in **O(1) extra space**: no recursion stack and no explicit stack. The follow-ups of Inorder Traversal and Recover BST ask for exactly this, and temporary threads take over the stack\'s job.',
+        'The task demands a tree traversal in **O(1) extra space**: no recursion stack and no explicit stack. The follow-up of Recover Binary Search Tree asks for exactly this (Inorder Traversal only asks to avoid recursion), and temporary threads take over the stack\'s job.',
         'The tree is **extremely deep or skewed**, so a recursive walk would overflow the call stack and an O(h) stack is not allowed or not wise. Morris walks a chain of a million nodes with a handful of pointers.',
         'You need the **in-order sequence of a BST on the fly**, for example to compare each key with the previous one, find the k-th smallest value or detect the two swapped nodes, without storing the sequence or a stack.',
         'The tree may be **modified temporarily as long as it is restored**: Morris writes a thread into an empty right pointer and removes it on the second visit, so every pointer is back to normal when the traversal ends.',

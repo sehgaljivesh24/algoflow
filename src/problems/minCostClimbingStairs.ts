@@ -38,9 +38,9 @@ function build({ cost }: In): Step[] {
   const say = recorder(steps, snap);
 
   say({
-    title: 'Define the table', desc: 'dp[i] = the minimum cost to stand on step i (the top is index n). You may start on step 0 or step 1 for free.',
+    title: 'Define the table', tag: 'DEFINE —', desc: `dp[i] is the minimum cost to stand on step i (the top is index ${n}); you may start on step 0 or step 1 for free.`,
     logic: 'Paying cost[i] is what lets you leave step i, so the price of arriving is paid when you depart from the previous steps.',
-    java: [0, 1], py: [0, 1], algo: 0,
+    java: [0, 1], py: [0, 1], algo: 0, note: `n = ${n}, dp has ${n + 1} cells`,
   });
 
   for (let i = 0; i <= 1; i++) {
@@ -49,8 +49,8 @@ function build({ cost }: In): Step[] {
     from = [];
     done = true;
     say({
-      title: `Base case dp[${i}] = 0`, desc: `Starting on step ${i} costs nothing.`,
-      logic: 'The rules allow beginning on either of the first two steps.', tone: 'success', java: [2], py: [2], algo: 1,
+      title: `Base case dp[${i}] = 0`, tag: 'BASE:', desc: `standing on step ${i} costs nothing, because the climb may begin there for free.`,
+      logic: 'The rules allow beginning on either of the first two steps.', tone: 'success', java: [2], py: [2], algo: 1, note: `dp[${i}] = 0`,
     });
   }
 
@@ -63,15 +63,17 @@ function build({ cost }: In): Step[] {
     from = [i - 1, i - 2];
     done = false;
     say({
-      title: `Reach ${i === n ? 'the top' : `step ${i}`}`, desc: `From ${i - 1}: dp[${i - 1}] + cost[${i - 1}] = ${dp[i - 1]} + ${cost[i - 1]} = ${via1}. From ${i - 2}: ${dp[i - 2]} + ${cost[i - 2]} = ${via2}.`,
+      title: `Reach ${i === n ? 'the top' : `step ${i}`}`, tag: 'OPTIONS:',
+      desc: `to reach ${i === n ? 'the top' : `step ${i}`}: from ${i - 1} costs dp[${i - 1}] + cost[${i - 1}] = ${dp[i - 1]} + ${cost[i - 1]} = ${via1}; from ${i - 2} costs ${dp[i - 2]} + ${cost[i - 2]} = ${via2}.`,
       logic: 'You arrive by a 1-step from i−1 or a 2-step from i−2 and pay the cost of the step you left.', java: [3, 4], py: [3, 4], algo: 2,
+      note: `${dp[i - 1]} + ${cost[i - 1]} = ${via1} vs ${dp[i - 2]} + ${cost[i - 2]} = ${via2}`,
     });
     dp[i] = Math.min(via1, via2);
     from = [];
     done = true;
     say({
-      title: `dp[${i}] = min(${via1}, ${via2}) = ${dp[i]}`, desc: `The cheaper route to ${i === n ? 'the top' : `step ${i}`} costs ${dp[i]}.`,
-      logic: 'Keep the cheaper of the two ways in.', tone: 'success', java: [4], py: [4], algo: 2,
+      title: `dp[${i}] = min(${via1}, ${via2}) = ${dp[i]}`, tag: 'STORE:', desc: `the cheaper way to ${i === n ? 'the top' : `step ${i}`} is ${via1 <= via2 ? `from step ${i - 1}` : `from step ${i - 2}`} and costs ${dp[i]}.`,
+      logic: 'Keep the cheaper of the two ways in.', tone: 'success', java: [4], py: [4], algo: 3, note: `dp[${i}] = min(${via1}, ${via2}) = ${dp[i]}`,
     });
   }
 
@@ -81,9 +83,9 @@ function build({ cost }: In): Step[] {
   from = [];
   done = true;
   say({
-    title: 'Done', desc: `The cheapest way to the top costs dp[${n}] = ${dp[n]}.`,
+    title: 'Done', tag: '✅ Done!', desc: `the top is dp[${n}] = ${dp[n]}, so the cheapest way up costs ${dp[n]}.`,
     logic: 'The top sits one past the last step, so the answer is dp[n].', tone: 'success', java: [6], py: [5],
-    algo: 3, result: { title: String(dp[n]), text: 'Minimum cost to reach the top' },
+    algo: 4, note: `return dp[${n}] = ${dp[n]}`, result: { title: String(dp[n]), text: 'Minimum cost to reach the top' },
   });
   return steps;
 }
@@ -124,11 +126,20 @@ export const minCostClimbingStairs: ProblemDef<In> = {
     '        dp[i] = min(dp[i - 1] + cost[i - 1], dp[i - 2] + cost[i - 2])',
     '    return dp[n]',
   ],
+  phases: [
+    { icon: '🧱', label: 'Define dp', tone: 'blue' },
+    { icon: '🌱', label: 'Base cases', tone: 'cyan' },
+    { icon: '🔀', label: 'Compare two ways in', tone: 'orange' },
+    { icon: '💾', label: 'Store the cheaper', tone: 'gold' },
+    { icon: '✅', label: 'Done', tone: 'green' },
+  ],
+  emphasis: ['minimum total cost', 'top'],
   algorithm: [
     'dp[i] is the minimum cost to be standing on index i (top = n)',
     'Base cases: dp[0] = dp[1] = 0 (free starting spots)',
-    'For i ≥ 2 take the cheaper of arriving from i−1 or i−2',
-    'Return dp[n]',
+    'For i ≥ 2 compare arriving from i−1 with arriving from i−2',
+    'Store the cheaper of the two in dp[i]',
+    'Done: return dp[n]',
   ],
   complexity: [{ label: 'Time', value: 'O(n)' }, { label: 'Space', value: 'O(n), or O(1) with two variables' }],
   why: 'The last move into stair i must come from i−1 or i−2, and its cost is fixed by the stair it leaves. The cheapest way to reach each earlier stair is already stored, so taking the minimum of the two options is optimal (optimal substructure) and every state is computed once.',

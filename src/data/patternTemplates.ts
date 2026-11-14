@@ -96,14 +96,15 @@ export const TEMPLATES: Record<string, string> = {
 }`,
 
   'stack-simple': `boolean balanced(String s) {
+    Map<Character, Character> opener = Map.of(')', '(', ']', '[', '}', '{');   // closer -> its opener
     Deque<Character> stack = new ArrayDeque<>();
 
     for (char c : s.toCharArray()) {
-        if (isOpener(c)) {
-            stack.push(c);                       // remember unfinished work
+        if (!opener.containsKey(c)) {
+            stack.push(c);                       // an opener: remember the unfinished work
         } else {
             if (stack.isEmpty()) return false;   // a closer with nothing to close
-            if (!matches(stack.pop(), c)) return false;
+            if (!stack.pop().equals(opener.get(c))) return false;   // the most recent opener must be its partner
         }
     }
 

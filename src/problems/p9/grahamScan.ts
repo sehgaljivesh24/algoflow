@@ -78,7 +78,7 @@ function build({ pts }: In): Step[] {
         title: pop ? `cross = ${c}: not a left turn, pop ${fmtPt(pts[b])}` : `cross = ${c}: left turn, keep ${fmtPt(pts[b])}`,
         desc: pop ? `${fmtPt(pts[a])} to ${fmtPt(pts[b])} to ${fmtPt(pts[id])} goes ${c === 0 ? 'straight' : 'clockwise'}, so ${fmtPt(pts[b])} is not a corner.` : `The path keeps turning counter-clockwise at ${fmtPt(pts[b])}, so it stays on the stack.`,
         logic: pop ? 'A hull corner always turns left. A right turn or a straight line means the top point is inside or on an edge: remove it.' : 'A left turn is consistent with a convex counter-clockwise boundary, so stop popping.',
-        tone: pop ? 'warn' : 'info', java: [9, 10], py: [5, 6], algo: 3,
+        tone: pop ? 'warn' : 'info', java: pop ? [9, 10] : [9], py: pop ? [5, 6] : [5], algo: 3,
         tag: pop ? 'POP:' : 'KEEP (left):',
         note: `cross = (${pts[b][0] - pts[a][0]})(${pts[id][1] - pts[a][1]}) − (${pts[b][1] - pts[a][1]})(${pts[id][0] - pts[a][0]}) = ${c}${pop ? (c === 0 ? ' = 0 → pop' : ' < 0 → pop') : ' > 0 → keep'}`,
         alert: pop ? `${c === 0 ? 'Straight' : 'Clockwise'} turn at ${fmtPt(pts[b])}: not a hull corner, popped.` : undefined,

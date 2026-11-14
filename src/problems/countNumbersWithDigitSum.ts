@@ -159,7 +159,9 @@ function build({ n, target: S }: In): Step[] {
     notes = terms;
     prefix = p;
     say({
-      title: `Position ${i}: N has ${c}`, desc: `Prefix sum so far ${p}. Put a smaller digit (0..${c - 1}) here and leave ${L - 1 - i} free digit${L - 1 - i === 1 ? '' : 's'}: ${add} number${add === 1 ? '' : 's'}. Count = ${count}.`,
+      title: `Position ${i}: N has ${c}`, desc: c === 0
+        ? `Prefix sum so far ${p}. N has 0 here, so no smaller digit exists: ${add} numbers added. Count = ${count}.`
+        : `Prefix sum so far ${p}. Put a smaller digit (0..${c - 1}) here and leave ${L - 1 - i} free digit${L - 1 - i === 1 ? '' : 's'}: ${add} number${add === 1 ? '' : 's'}. Count = ${count}.`,
       logic: 'The free suffix must supply exactly S − prefix − chosen digit.', java: J.walk, py: P.walk, algo: 4,
       tag: `POSITION ${i} —`, note: `digits < ${c} with prefix ${p}: +${add} → count = ${count}`,
     });

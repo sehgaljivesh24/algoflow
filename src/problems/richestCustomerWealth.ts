@@ -19,12 +19,13 @@ function build({ accounts }: In): Step[] {
   let best = 0;
   let bestRow = -1;
 
-  const scene = (cur: number, finished: boolean) => ({
+  const scene = (cur: number, finished: boolean, col = -1) => ({
     kind: 'grid' as const,
     rows: accounts.map((row, r): Cell[] =>
       row.map((value, c) => {
         let state: CellState | undefined;
         if (r === bestRow && (r !== cur || finished)) state = 'found';
+        else if (r === cur && col >= 0) state = c < col ? 'active' : c === col ? 'compare' : undefined;
         else if (r === cur) state = 'active';
         else if (wealth[r] !== null) state = 'dim';
         return { key: `${r},${c}`, value, state, tone: state === 'found' ? ('green' as const) : state === 'active' ? ('blue' as const) : undefined };
@@ -40,35 +41,45 @@ function build({ accounts }: In): Step[] {
     title: 'Start', desc: `${R} customers × ${C} banks. A customer's wealth is the sum of their row.`,
     scene: scene(-1, false), aux: aux(), vars: vars('—', '—'),
     logic: 'Rows are customers and columns are banks, so "wealth" is a row sum. We need the largest row sum.', logicTone: 'info',
-    javaLines: [0, 1], pyLines: [0, 1], algoStep: 0,
+    javaLines: [0, 1], pyLines: [0, 1], algoStep: 0, tag: 'READY —', note: 'best = 0',
   });
 
   for (let r = 0; r < R; r++) {
-    const sum = accounts[r].reduce((a, b) => a + b, 0);
-    wealth[r] = sum;
-    steps.push({
-      title: `Add up customer ${r}`, desc: `${accounts[r].join(' + ')} = ${sum}`,
-      scene: scene(r, false), aux: aux(), vars: vars(r, sum),
-      logic: 'Walk across the row once, adding every bank balance.', logicTone: 'info', javaLines: [2, 3, 4, 5], pyLines: [2, 3], algoStep: 1,
-    });
+    const total = accounts[r].reduce((a, b) => a + b, 0);
+    let running = 0;
+    for (let c = 0; c < C; c++) {
+      const prev = running;
+      running += accounts[r][c];
+      if (c === C - 1) wealth[r] = total;
+      steps.push({
+        title: `Customer ${r}: add bank ${c}`, tag: 'ADD BANK',
+        desc: `customer ${r} holds ${accounts[r][c]} in bank ${c} → running sum ${prev} + ${accounts[r][c]} = ${running}`,
+        scene: scene(r, false, c), aux: aux(), vars: vars(r, running),
+        logic: 'Walk across the row once, adding every bank balance.', logicTone: 'info', javaLines: [3, 4, 5], pyLines: [3], algoStep: 1,
+        note: `sum += ${accounts[r][c]} → ${prev} + ${accounts[r][c]} = ${running}`,
+      });
+    }
+    const sum = total;
     const improved = sum > best;
+    const old = best;
     if (improved) {
       best = sum;
       bestRow = r;
     }
     steps.push({
-      title: improved ? `New richest: customer ${r}` : `Customer ${r} is not richer`,
-      desc: improved ? `${sum} beats the previous best, so best = ${sum}.` : `${sum} ≤ ${best}, so best stays ${best}.`,
+      title: improved ? `New richest: customer ${r}` : `Customer ${r} is not richer`, tag: improved ? 'NEW RICHEST' : 'COMPARE',
+      desc: improved ? `wealth ${sum} beats the previous best ${old}, so best = ${sum} (customer ${r})` : `wealth ${sum} ≤ best ${best}, so best stays ${best}`,
       scene: scene(r, false), aux: aux(), vars: vars(r, sum),
+      alert: improved ? undefined : `Customer ${r} (${sum}) cannot beat the best ${best}: skipped.`,
       logic: improved ? 'Remember only the largest total; we never need the others again.' : 'A smaller (or equal) total cannot change the maximum.', logicTone: improved ? 'success' : 'warn',
-      javaLines: [6], pyLines: [4], algoStep: 2,
+      javaLines: [6], pyLines: [4], algoStep: 2, note: `best = max(${old}, ${sum}) = ${best}`,
     });
   }
 
   steps.push({
-    title: 'Done', desc: `Customer ${bestRow} is the richest with ${best}.`,
+    title: 'Done', tag: '✅ Done!', desc: `customer ${bestRow} is the richest with wealth ${best}, so the answer is ${best}`,
     scene: scene(-1, true), aux: aux(), vars: vars('—', '—'),
-    logic: `The maximum row sum is ${best}.`, logicTone: 'success', javaLines: [8], pyLines: [5],
+    logic: `The maximum row sum is ${best}.`, logicTone: 'success', javaLines: [8], pyLines: [5], note: `return ${best}`,
     algoStep: 3, result: { title: String(best), text: `Customer ${bestRow} holds the most` },
   });
   return steps;
@@ -88,6 +99,13 @@ export const richestCustomerWealth: ProblemDef<In> = {
   parseInput: parse, buildSteps: build, viz: 'cells',
   legend: [{ label: 'Customer being summed', state: 'active' }, { label: 'Richest so far', state: 'found' }, { label: 'Already checked', state: 'dim' }],
   varLabels: ['customer', 'sum', 'best'],
+  emphasis: ['wealth', 'largest wealth'],
+  phases: [
+    { icon: '🏦', label: 'SETUP best = 0', tone: 'blue' },
+    { icon: '➕', label: 'ADD the row', tone: 'cyan' },
+    { icon: '⚖', label: 'COMPARE with best', tone: 'gold' },
+    { icon: '✅', label: 'Done', tone: 'green' },
+  ],
   approach: {
     title: 'Row sum, then maximum',
     text: 'Treat each row as one customer. Sum the row, compare it with the best total seen so far, and keep the larger one. One pass over every cell.',

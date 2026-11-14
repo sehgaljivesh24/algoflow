@@ -74,7 +74,7 @@ function build({ iv }: In): Step[] {
       removed++;
       state[i] = 'error';
       push({
-        tag: 'REMOVE', title: `${fmt(s, e)}: ${s} < ${lastEnd}, remove`, desc: `${s} < ${lastEnd}: ${fmt(s, e)} overlaps the kept interval and ends later, so drop it. removed = ${removed}.`,
+        tag: 'REMOVE', title: `${fmt(s, e)}: ${s} < ${lastEnd}, remove`, desc: `${s} < ${lastEnd}: ${fmt(s, e)} overlaps the kept interval and ends no earlier (sorted by end), so drop it. removed = ${removed}.`,
         note: `removed++ → ${removed}`, alert: `Overlap! ${fmt(s, e)} starts at ${s} before lastEnd ${lastEnd}, so it is removed.`,
         logic: 'Of two overlapping intervals the one ending earlier is already kept, so dropping the later-ending one never hurts.', logicTone: 'warn',
         javaLines: [8], pyLines: [7], algoStep: 3,

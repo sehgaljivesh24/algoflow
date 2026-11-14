@@ -15,7 +15,7 @@ export const d7: DetailMap = {
       summary: 'XOR cancels equal values (a ^ a = 0, a ^ 0 = a) and is its own inverse. Folding an array leaves whatever appears an odd number of times, and prefix XORs turn range queries into a single operation.',
       whenToUse: [
         'Every value appears **twice except one** (or two) and the statement forbids a hash map or sorting: fold the whole array with ^, the pairs cancel, and the odd one survives in **O(1) extra space**. This is Single Number and its relatives.',
-        'You must find the **missing or duplicated number** in a range 0..n or 1..n: XOR all indices together with all values, so every number that is present cancels and the absent one remains, with none of the overflow risk of the sum trick.',
+        'You must find the **missing or duplicated number** in a range 0..n or 1..n: XOR all indices together with all values, so every number that is present cancels and the absent one remains, with none of the overflow risk of the sum trick. If one value is also doubled, the fold leaves missing ^ duplicate, which the bit-split below pulls apart.',
         'After folding, **two unknown values** a and b remain as a ^ b: isolate a set bit with x & -x, split the array into two groups by that bit, and each group folds down to one answer, exactly as in Single Number III.',
         'A question asks for the **XOR of a range** or subarray, many times over: build a prefix XOR array so any range is prefix[r+1] ^ prefix[l], the same cancellation that subtraction performs for prefix sums.',
         'You need to **toggle, flip or swap** without extra storage, or to spot the one changed element between two near-identical lists, such as the extra letter in a shuffled string, by XOR-ing both sides together; a ^ k ^ k = a also undoes any XOR mask.',
@@ -74,7 +74,7 @@ export const d7: DetailMap = {
     content: {
       summary: 'Count how many numbers have a 1 in each bit position. Values repeated k times add multiples of k to every column, so the column count mod k is the lone number\'s bit; the same columns also count differing pairs.',
       whenToUse: [
-        'Every element appears **exactly k times except one**, and k is odd or larger than two so XOR alone cannot cancel the repeats: count the ones in each of the 32 bit columns, take the count modulo k, and the remainders rebuild the loner.',
+        'Every element appears **exactly k times except one**, and k is odd and at least 3, so XOR alone cannot cancel the repeats (a ^ a ^ a = a): count the ones in each of the 32 bit columns, take the count modulo k, and the remainders rebuild the loner.',
         'You want **constant extra space** and a single linear pass where a frequency map is not allowed: 32 per-column counters (or the two-variable ones/twos state machine) replace a hash map holding up to n entries.',
         'A problem sums a quantity over **all pairs of numbers**, such as total Hamming distance: examine each bit column on its own, where it contributes ones × zeros differing pairs, turning an O(n²) pair loop into O(32n).',
         'You must pick the largest subset whose **bitwise AND is non-zero**: a subset survives only if all its members share a set bit, so the answer is the largest number of ones found in any single bit column.',
@@ -182,7 +182,7 @@ export const d7: DetailMap = {
     },
     meta: {
       useNote: 'Counting sort needs a small value range, radix sort handles wider numbers one stable digit pass at a time, and buckets turn neighbour questions into min/max bookkeeping.',
-      complexityNote: 'Counting sort touches the input twice and the count array once: O(n + k) time, O(k) space. Radix sort repeats one counting pass per digit, O(d·(n + base)); maximum gap stays linear by keeping only each bucket\'s min and max.',
+      complexityNote: 'Counting sort touches the input twice and the count array once: O(n + k) time, O(k) extra space (plus an output array of n when stability is needed). Radix sort repeats one counting pass per digit, O(d·(n + base)); maximum gap stays linear by keeping only each bucket\'s min and max.',
       highlight: ['small known range', 'bounded but wide', 'neighbouring values in sorted order', 'frequency order or grouping', 'stable ordering'],
     },
   },
@@ -268,7 +268,7 @@ export const d7: DetailMap = {
     },
     meta: {
       useNote: 'Equal strings always hash equally, so a mismatch is conclusive; a match must be verified unless the encoding is exact. Remove the leading character before shifting.',
-      complexityNote: 'Hashing the first window costs O(m) and every slide is one subtract, multiply and add, so the total is O(n + m) expected. A poor modulus or adversarial input forces collisions and can degrade to O(n·m) without verification.',
+      complexityNote: 'Hashing the first window costs O(m) and every slide is one subtract, multiply and add, so the total is O(n + m) expected. A poor modulus or adversarial input forces collisions and can degrade to O(n·m), because every false hit must be verified character by character.',
       highlight: ['many same-length windows', 'repeated or duplicate substrings', 'binary search on the length', 'exact hash', 'collide'],
     },
   },

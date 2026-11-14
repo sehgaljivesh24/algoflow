@@ -73,7 +73,7 @@ function build({ nums }: In): Step[] {
       } else if (cand === len[x]) {
         eq = `${cand} = ${len[x]} → cnt[${x}] = ${cnt[x]} + ${cnt[y]} = ${cnt[x]! + cnt[y]!}`;
         cnt[x]! += cnt[y]!;
-        said = `Same length ${cand} as the best so far: add the ways, cnt[${x}] = ${cnt[x]}.`;
+        said = `Same length ${cand} as the chain already found for index ${x}: add the ways, cnt[${x}] = ${cnt[x]}.`;
         tone = 'success';
         kind = 'TIE: ADD —';
       } else {

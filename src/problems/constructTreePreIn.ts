@@ -141,6 +141,9 @@ function build({ pre, ino }: In): Step[] {
     });
     states[id] = 'compare';
     make(lo, mid - 1, id, 'left');
+    range = `[${lo}..${hi}]`;
+    hlIn = mid;
+    hlPre = preIdx < pre.length ? preIdx : undefined;
     add({
       title: `Left subtree of ${rootVal} done`, desc: `Preorder has now consumed the whole left part. Next build the right range [${mid + 1}..${hi}].`,
       logic: 'Preorder visits the left subtree completely before the right one, so the shared index is exactly at the right subtree’s root.',
@@ -154,6 +157,7 @@ function build({ pre, ino }: In): Step[] {
   make(0, ino.length - 1, null, 'left');
   hlPre = undefined;
   hlIn = undefined;
+  range = `[0..${ino.length - 1}]`;
   const out = toLevelOrder(nodes, 0);
   add({
     title: 'Done', desc: `All ${pre.length} values placed. Level order of the rebuilt tree: ${out}`,

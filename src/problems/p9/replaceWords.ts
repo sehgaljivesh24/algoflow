@@ -62,7 +62,7 @@ function build({ roots, words }: In): Step[] {
       const nid = trie.child(id, w[k]);
       if (nid === null) {
         scene = trie.scene(path, { [id]: 'error' });
-        say({ title: `No '${w[k]}' edge: keep "${w}"`, desc: `"${w.slice(0, k)}" has no child '${w[k]}', so no root is a prefix of "${w}". The word stays as it is.`, logic: 'A missing edge proves that no stored root starts with this prefix.', tone: 'warn', java: [20, 21], py: [11, 12], algo: 3, tag: 'NO ROOT —', alert: `No '${w[k]}' edge after "${w.slice(0, k)}": no root is a prefix of "${w}"`, note: `t = t.next['${w[k]}'] == null → break, keep = "${w}"` });
+        say({ title: `No '${w[k]}' edge: keep "${w}"`, desc: `${k === 0 ? 'The trie root' : `Node "${w.slice(0, k)}"`} has no child '${w[k]}', so no root is a prefix of "${w}". The word stays as it is.`, logic: 'A missing edge proves that no stored root starts with this prefix.', tone: 'warn', java: [20, 21], py: [11, 12], algo: 3, tag: 'NO ROOT —', alert: `No '${w[k]}' edge ${k === 0 ? 'at the root' : `after "${w.slice(0, k)}"`}: no root is a prefix of "${w}"`, note: `t = t.next['${w[k]}'] == null → break, keep = "${w}"` });
         finished = false;
         break;
       }

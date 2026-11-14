@@ -1,10 +1,11 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { useSearchParams } from 'react-router-dom';
-import type { AnyProblem, Aux, Phase, Pointer, Step } from '../../engine/types';
+import type { AnyProblem, Aux, Pointer, Step } from '../../engine/types';
 import type { Accent } from '../../data/patternAccent';
 import { SceneView } from '../SceneView';
 import { Emph } from './Emph';
+import { alertText as alertOf, execLine, formatInput, narrationTone, phaseChips, tagText as tagOf } from './stepView';
 
 const SPEEDS = [
   { name: 'Slow', ms: 1500 },
@@ -41,30 +42,6 @@ function windowRange(step: Step, kind: FrameKind): [number, number] | null {
 
 const RECORD_KEY = /(max|best|ans|result|longest|shortest|min)/i;
 
-/** One value of an example input in a readable form: strings quoted (letters spaced out for a caption), arrays with ", ". */
-function fmtVal(v: unknown, spaced: boolean): string {
-  if (typeof v === 'string') return spaced && /^\S{1,20}$/.test(v) ? `"${[...v].join(' ')}"` : `"${v}"`;
-  if (Array.isArray(v)) return `[${v.map((x) => fmtVal(x, false)).join(', ')}]`;
-  if (v === null || v === undefined) return 'null';
-  if (typeof v === 'object') return `{${Object.entries(v as Record<string, unknown>).map(([k, x]) => `${k}: ${fmtVal(x, false)}`).join(', ')}}`;
-  return String(v);
-}
-
-/** `nums = [2, 1, 5], k = 3` from an example's input object (null when it would be unreadably long). */
-function formatInput(input: unknown, spaced = false): string | null {
-  let text: string;
-  if (input && typeof input === 'object' && !Array.isArray(input)) {
-    const entries = Object.entries(input as Record<string, unknown>);
-    if (entries.length === 0) return null;
-    // arrays of objects (operation lists) read badly as JSON-like text: let the caller fall back to the example label
-    if (entries.some(([, v]) => Array.isArray(v) && v.some((x) => x !== null && typeof x === 'object'))) return null;
-    text = entries.map(([k, v]) => `${k} = ${fmtVal(v, spaced)}`).join(spaced ? '   ' : ', ');
-  } else {
-    text = `input = ${fmtVal(input, spaced)}`;
-  }
-  return text.length > 220 ? null : text;
-}
-
 /** `'p' ×2` -> bold key and a small count. */
 function chipContent(item: string): ReactNode {
   const m = /^(.*?)\s*(×\s*\d+)$/.exec(item);
@@ -93,23 +70,6 @@ function AuxRow({ aux }: { aux?: Aux[] }) {
     </div>
   );
 }
-
-type NarrTone = 'blue' | 'cyan' | 'green' | 'orange' | 'gold' | 'accent';
-
-/** Left-border colour of the narration bar: green done, orange problem / warning, gold new best, otherwise the phase colour. */
-function narrationTone(step: Step, phases: Phase[] | undefined, final: boolean, cur: number): NarrTone {
-  if (final) return 'green';
-  if (step.logicTone === 'warn') return 'orange';
-  if (step.logicTone === 'success') return 'gold';
-  if (phases) {
-    if (cur === 0) return 'accent';
-    const t = phases[step.algoStep]?.tone;
-    return t === 'gold' ? 'green' : t ?? 'accent'; // a gold phase only turns the bar gold on a real record (logicTone success)
-  }
-  return step.algoStep === 0 ? 'blue' : 'accent';
-}
-
-const endsWithMark = (s: string) => /[^\p{L}\p{N}\s]$/u.test(s);
 
 interface Props {
   problem: AnyProblem;
@@ -258,20 +218,8 @@ export function PatternAnimation({ problem, heading, windowed, fixedWindow, sear
   }, [place]);
 
   /* ---- derived text ---- */
-  const javaLine = problem.java[step.javaLines[0]]?.trim();
   /* Live values on the code line: an authored `note`, otherwise the variables that changed on this step (up to 3). */
-  const autoNote =
-    step.note || cur === 0
-      ? ''
-      : problem.varLabels
-          .filter((k: string) => step.vars[k] !== undefined && String(step.vars[k]) !== String(before.vars[k]))
-          .slice(0, 3)
-          .map((k: string) => `${k}=${step.vars[k]}`)
-          .join(', ');
-  const noteText = step.note ?? autoNote;
-  // an authored note replaces a static trailing comment of the code line (its values are more useful than "// choose")
-  const bareLine = step.note && javaLine ? javaLine.replace(/\s*\/\/.*$/, '') : javaLine;
-  const hint = bareLine ? (noteText && !bareLine.includes('//') ? `${bareLine} // ${noteText}` : bareLine) : '';
+  const hint = execLine(problem, step, before, cur);
   const tone = narrationTone(step, problem.phases, final, cur);
   const inputText = formatInput(example.input) ?? example.label;
   const caption = problem.vizCaption ?? formatInput(example.input, true) ?? example.label;
@@ -283,16 +231,10 @@ export function PatternAnimation({ problem, heading, windowed, fixedWindow, sear
   );
 
   /* ---- phase chips: `phases` when given (index = algoStep), otherwise one chip per algorithm step plus Done ---- */
-  const chips: { icon: string; label: string; tone: NarrTone }[] = problem.phases
-    ? problem.phases
-    : [
-        ...problem.algorithm.map((a: string, i: number) => ({ icon: '', label: `Phase ${i + 1}: ${a}`, tone: (i === 0 ? 'blue' : 'accent') as NarrTone })),
-        { icon: '✅', label: 'Done', tone: 'green' as NarrTone },
-      ];
-  const activeChip = problem.phases ? (cur === 0 ? -1 : step.algoStep) : final ? chips.length - 1 : step.algoStep;
+  const { chips, active: activeChip } = phaseChips(problem, step, cur, final);
 
-  const tagText = step.tag ? (endsWithMark(step.tag) ? step.tag : `${step.tag}:`) : '';
-  const alertText = step.alert ? (/^\p{Extended_Pictographic}/u.test(step.alert) ? step.alert : `⚠ ${step.alert}`) : '';
+  const tagText = tagOf(step);
+  const alertText = alertOf(step);
 
   return (
     <section

@@ -43,7 +43,7 @@ function build({ k, w: w0, profits, capital }: In): Step[] {
       ],
     },
     aux: [heap.aux('affordable projects: max-heap of profits')],
-    vars: { round, capital: w, 'in heap': heap.size, 'next locked': ptr < n ? `c${capital[order[ptr]]}` : '—' },
+    vars: { round: Math.min(round, k), capital: w, 'in heap': heap.size, 'next locked': ptr < n ? `c${capital[order[ptr]]}` : '—' },
   }));
 
   say({

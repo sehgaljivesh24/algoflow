@@ -86,9 +86,11 @@ function build({ s }: PalIn): Step[] {
       cutSrc = isPal && b > 0 ? b - 1 : -1;
       cand = isPal ? (b === 0 ? 0 : cuts[b - 1]! + 1) : '—';
       let note: string;
+      let improved = false;
       if (isPal) {
         const c = cand as number;
         if (c < cuts[e]!) {
+          improved = true;
           cuts[e] = c;
           prev[e] = b;
           note = `Cut count ${c} beats the old value, so cuts[${e}] = ${c}.`;
@@ -103,7 +105,7 @@ function build({ s }: PalIn): Step[] {
         desc: `${s[b] === s[e] ? `Ends match (${s[b]})${e - b < 2 ? ' and the piece is at most 2 letters long' : `, and the inside "${s.slice(b + 1, e)}" is ${inner ? '' : 'not '}a palindrome`}.` : `Ends differ: '${s[b]}' ≠ '${s[e]}'.`} ${isPal ? `Cuts before it: ${b === 0 ? 0 : `cuts[${b - 1}] + 1 = ${cand}`}. ${note}` : note}`,
         logic: 'pal[i][j] reuses pal[i+1][j−1] from the previous column, so each palindrome test is O(1).', tone: isPal ? 'success' : 'info',
         java: isPal ? [6, 7, 8, 9] : [6, 7], py: isPal ? [6, 7, 8, 9] : [6, 7], algo: 2,
-        tag: isPal ? (typeof cand === 'number' && cuts[e] === cand && prev[e] === b ? 'BETTER CUT —' : 'PALINDROME —') : 'NOT A PALINDROME —',
+        tag: isPal ? (improved ? 'BETTER CUT —' : 'PALINDROME —') : 'NOT A PALINDROME —',
         note: isPal ? `pal[${b}][${e}] = T → cuts[${e}] = min(…, ${b === 0 ? '0' : `cuts[${b - 1}] + 1`} = ${cand}) = ${cuts[e]}` : `s[${b}] = '${s[b]}' ${s[b] === s[e] ? '= ' : '≠ '}s[${e}] = '${s[e]}'${s[b] === s[e] ? `, inside not a palindrome → pal[${b}][${e}] = F` : ` → pal[${b}][${e}] = F`}`,
         ...(isPal ? {} : { alert: `"${s.slice(b, e + 1)}" is not a palindrome, so it cannot be the last piece.` }),
       });
@@ -146,7 +148,7 @@ export const palindromePartitioningII: ProblemDef<PalIn> = {
   constraints: '1 ≤ s.length ≤ 2000 (animation input: 1–8 lowercase letters)',
   examples: [
     { label: 'aab', input: { s: 'aab' }, output: '1' },
-    { label: 'abacdc', input: { s: 'abacdc' }, output: '2' },
+    { label: 'abacdc', input: { s: 'abacdc' }, output: '1' },
     { label: 'aaaaaa', input: { s: 'aaaaaa' }, output: '0' },
   ],
   inputPlaceholder: 'lowercase letters, e.g. aab',

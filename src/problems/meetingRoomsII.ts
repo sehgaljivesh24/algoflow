@@ -94,7 +94,7 @@ function build({ iv }: In): Step[] {
         tag: 'REUSE', title: `${fmt(s, e)}: reuse room ${r.room + 1}`, desc: `Room ${r.room + 1} was free since ${old} ≤ ${s}. Pop ${old}, push ${e}: the room now frees at ${e}. Rooms in use stay at ${rooms.length}.`,
         note: `poll ${old}, add ${e} → heap size ${rooms.length}`,
         logic: 'Reusing a room replaces its end time; the number of rooms does not grow.', logicTone: 'success',
-        javaLines: [5], pyLines: [5, 6], algoStep: 2,
+        javaLines: [5, 7], pyLines: [5, 6], algoStep: 2,
       });
     } else {
       const soonest = rooms.length ? Math.min(...rooms.map((r) => r.end)) : null;

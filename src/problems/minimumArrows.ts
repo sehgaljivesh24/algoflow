@@ -33,15 +33,15 @@ function build({ iv }: In): Step[] {
   const push = (s: Omit<Step, 'vars' | 'aux' | 'scene'>) => steps.push({ ...s, scene: scene(), aux: aux(), vars: vars() });
 
   push({
-    title: 'Start', desc: `${n} balloon${n === 1 ? '' : 's'}, each covering a horizontal range. An arrow shot straight up at x pops every balloon whose range contains x.`,
+    title: 'Start', tag: 'START —', desc: `${n} balloon${n === 1 ? '' : 's'}, each covering a horizontal range; an arrow shot straight up at x pops every balloon whose range contains x.`,
     logic: 'We want the fewest vertical lines so that every range is crossed by at least one line.', logicTone: 'info',
-    javaLines: [0], pyLines: [0], algoStep: 0,
+    javaLines: [0], pyLines: [0], algoStep: 0, note: `${n} balloons, 0 arrows`,
   });
   sorted = true;
   push({
-    title: 'Sort by right end', desc: `Order: ${order.map((i) => fmt(iv[i][0], iv[i][1])).join(', ')}.`,
+    title: 'Sort by right end', tag: 'SORT:', desc: `order by right end: ${order.map((i) => fmt(iv[i][0], iv[i][1])).join(', ')}.`,
     logic: 'Shooting at the right end of the earliest-ending balloon pops it and reaches as far right as possible.', logicTone: 'info',
-    javaLines: [1], pyLines: [1], algoStep: 1,
+    javaLines: [1], pyLines: [1], algoStep: 1, note: `sorted by end: ${order.map((i) => iv[i][1]).join(' ≤ ')}`,
   });
 
   order.forEach((i, k) => {
@@ -52,34 +52,44 @@ function build({ iv }: In): Step[] {
       arrows.push(e);
       state[i] = 'found';
       push({
-        title: `Shoot the first arrow at x = ${e}`, desc: `The first balloon ${fmt(s, e)} ends earliest; an arrow at its right end (${e}) pops it.`,
+        title: `Shoot the first arrow at x = ${e}`, tag: 'SHOOT:', desc: `the first balloon ${fmt(s, e)} ends earliest; an arrow at its right end x = ${e} pops it.`,
         logic: 'Any arrow must hit this balloon, and the rightmost spot inside it is the best place to catch others.', logicTone: 'success',
-        javaLines: [2, 3], pyLines: [2], algoStep: 2,
-      });
-    } else if (s <= (pos as number)) {
-      state[i] = 'found';
-      push({
-        title: `${fmt(s, e)} contains x = ${pos}: popped`, desc: `${s} ≤ ${pos} (and the balloon extends to ${e} ≥ ${pos}), so the current arrow already pops it.`,
-        logic: 'Balloons are sorted by end, so every later balloon ends at or after the arrow; starting at or before it means it is crossed.', logicTone: 'info',
-        javaLines: [4, 5], pyLines: [3, 4], algoStep: 3,
+        javaLines: [2, 3], pyLines: [2], algoStep: 2, note: `arrows = 1, pos = ${e}`,
       });
     } else {
-      pos = e;
-      arrows.push(e);
-      state[i] = 'found';
+      const hit = s <= (pos as number);
       push({
-        title: `${fmt(s, e)} starts after x: new arrow at ${e}`, desc: `${s} > ${arrows[arrows.length - 2]}, so the last arrow misses it. Shoot a new arrow at its right end ${e}.`,
-        logic: 'A balloon the current arrow cannot reach forces one more arrow.', logicTone: 'warn',
-        javaLines: [5, 6, 7], pyLines: [4, 5, 6], algoStep: 2,
+        title: `Test ${fmt(s, e)} against x = ${pos}`, tag: 'CHECK:', desc: `balloon ${fmt(s, e)} starts at ${s}; the arrow is at x = ${pos}, so ${s} ${hit ? '≤' : '>'} ${pos}.`,
+        logic: 'Balloons are sorted by end, so a balloon that starts at or before x also reaches x.', logicTone: 'info',
+        javaLines: [4, 5], pyLines: [3, 4], algoStep: 3, note: `${s} > ${pos}? ${hit ? 'no' : 'yes'}`,
       });
+      if (hit) {
+        state[i] = 'found';
+        push({
+          title: `${fmt(s, e)} contains x = ${pos}: popped`, tag: 'POP:', desc: `${s} ≤ ${pos} ≤ ${e}, so the arrow at x = ${pos} already pops this balloon; no new arrow.`,
+          logic: 'Balloons are sorted by end, so every later balloon ends at or after the arrow; starting at or before it means it is crossed.', logicTone: 'info',
+          javaLines: [4, 5], pyLines: [3, 4], algoStep: 4, note: `arrows stays ${arrows.length}`,
+        });
+      } else {
+        const old = pos as number;
+        pos = e;
+        arrows.push(e);
+        state[i] = 'found';
+        push({
+          title: `${fmt(s, e)} starts after x: new arrow at ${e}`, tag: 'SHOOT:', desc: `${s} > ${old}, so the arrow at ${old} misses it: shoot a new arrow at its right end ${e}.`,
+          alert: `Balloon ${fmt(s, e)} starts after x = ${old}: the old arrow misses it, so one more arrow is needed.`,
+          logic: 'A balloon the current arrow cannot reach forces one more arrow.', logicTone: 'warn',
+          javaLines: [5, 6, 7], pyLines: [4, 5, 6], algoStep: 4, note: `arrows = ${arrows.length}, pos = ${e}`,
+        });
+      }
     }
   });
   cur = -1;
   result = String(arrows.length);
   push({
-    title: 'Done', desc: `${arrows.length} arrow${arrows.length === 1 ? '' : 's'} pop all ${n} balloons.`,
+    title: 'Done', tag: '✅ Done!', desc: `${arrows.length} arrow${arrows.length === 1 ? '' : 's'} (at x = ${arrows.join(', ')}) pop all ${n} balloons.`,
     logic: 'Each arrow is placed as late as possible, so no arrow could have covered more.', logicTone: 'success',
-    javaLines: [10], pyLines: [7], algoStep: 3,
+    javaLines: [10], pyLines: [7], algoStep: 5, note: `return ${arrows.length}`,
     result: { title: result, text: 'Minimum arrows' },
   });
   return steps;
@@ -129,11 +139,22 @@ export const minimumArrows: ProblemDef<In> = {
     '            pos = e',
     '    return arrows',
   ],
+  phases: [
+    { icon: '🎈', label: 'Read balloons', tone: 'blue' },
+    { icon: '🔃', label: 'Sort by right end', tone: 'cyan' },
+    { icon: '🏹', label: 'First arrow', tone: 'gold' },
+    { icon: '🔍', label: 'Test next balloon', tone: 'blue' },
+    { icon: '💥', label: 'Pop or new arrow', tone: 'orange' },
+    { icon: '✅', label: 'Done', tone: 'green' },
+  ],
+  emphasis: ['minimum number of arrows', 'range contains x'],
   algorithm: [
     'Read the balloons',
     'Sort by right end',
     'Shoot an arrow at the right end of the first balloon',
-    'A balloon starting ≤ x is popped; one starting after x needs a new arrow at its right end',
+    'For each next balloon, compare its start with the arrow position x',
+    'Start ≤ x: popped; start > x: shoot a new arrow at its right end',
+    'Done: the arrow count is the answer',
   ],
   complexity: [{ label: 'Time', value: 'O(n log n)' }, { label: 'Space', value: 'O(1) extra' }],
   why: 'The balloon with the smallest right end must be hit by some arrow, and moving that arrow right up to this end can only add balloons it pops (all other balloons end no earlier). So an optimal solution can shoot there first. Everything it pops is discarded, and the remaining balloons form the same problem, which the sorted sweep solves one arrow at a time.',

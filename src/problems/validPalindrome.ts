@@ -39,25 +39,29 @@ function build({ s }: In): Step[] {
     title: 'Start', desc: 'Ignoring case and non-alphanumeric characters, does the text read the same both ways?',
     cells: cells(), pointers: ptrs(), vars: vars(),
     logic: 'Instead of building a cleaned copy, walk two pointers inward and skip anything that is not a letter or digit as we go.', logicTone: 'info',
-    javaLines: [0, 1], pyLines: [0, 1], algoStep: 0,
+    javaLines: [0, 1], pyLines: [0, 1], algoStep: 0, tag: 'READY —', note: `l = 0, r = ${n - 1}`,
   });
 
   while (l < r) {
     while (l < r && !alnum(s[l])) {
       skipped.add(l);
       steps.push({
-        title: `Skip '${show(s[l])}' on the left`, desc: `'${show(s[l])}' is not a letter or digit, so move l right.`,
+        title: `Skip '${show(s[l])}' on the left`, tag: 'SKIP LEFT:', desc: `s[${l}]='${show(s[l])}' is not a letter or digit, so move l right to ${l + 1}`,
         cells: cells([l], 'dim', skipped), pointers: ptrs(), vars: vars(),
+        alert: `'${show(s[l])}' is not alphanumeric: it takes no part in the comparison, so it is skipped.`,
         logic: 'Punctuation and spaces do not take part in the comparison.', logicTone: 'warn', javaLines: [3], pyLines: [3], algoStep: 1,
+        note: `isLetterOrDigit('${show(s[l])}') is false: l = ${l + 1}`,
       });
       l++;
     }
     while (l < r && !alnum(s[r])) {
       skipped.add(r);
       steps.push({
-        title: `Skip '${show(s[r])}' on the right`, desc: `'${show(s[r])}' is not a letter or digit, so move r left.`,
+        title: `Skip '${show(s[r])}' on the right`, tag: 'SKIP RIGHT:', desc: `s[${r}]='${show(s[r])}' is not a letter or digit, so move r left to ${r - 1}`,
         cells: cells([r], 'dim', skipped), pointers: ptrs(), vars: vars(),
+        alert: `'${show(s[r])}' is not alphanumeric: it takes no part in the comparison, so it is skipped.`,
         logic: 'Same rule on the right side.', logicTone: 'warn', javaLines: [4], pyLines: [4], algoStep: 1,
+        note: `isLetterOrDigit('${show(s[r])}') is false: r = ${r - 1}`,
       });
       r--;
     }
@@ -65,17 +69,27 @@ function build({ s }: In): Step[] {
     const b = s[r].toLowerCase();
     if (a !== b) {
       steps.push({
-        title: `Mismatch: '${a}' ≠ '${b}'`, desc: `s[${l}] and s[${r}] differ after ignoring case, so this is not a palindrome.`,
+        title: `Mismatch: '${a}' ≠ '${b}'`, tag: 'MISMATCH:', desc: `s[${l}]='${a}' and s[${r}]='${b}' differ after ignoring case, so this is not a palindrome`,
         cells: cells([l, r], 'error', skipped), pointers: ptrs(), vars: vars(),
+        alert: `'${a}' ≠ '${b}': one mismatching mirrored pair is enough to say false.`,
         logic: 'One mismatching mirrored pair is enough to rule out a palindrome.', logicTone: 'warn', javaLines: [5, 6], pyLines: [5, 6], algoStep: 3,
+        note: `'${a}' != '${b}' → return false`,
+      });
+      steps.push({
+        title: 'Done', tag: '✅ Done!', desc: `the answer is false: '${a}' at index ${l} does not match '${b}' at index ${r}`,
+        cells: cells([l, r], 'error', skipped), pointers: ptrs(), vars: vars(),
+        logic: 'The scan stops at the first mismatch; nothing after it can change the answer.', logicTone: 'warn', javaLines: [6], pyLines: [6], algoStep: 4,
+        note: 'return false',
         result: { title: 'false', text: `'${a}' at ${l} does not match '${b}' at ${r}` },
       });
       return steps;
     }
     steps.push({
-      title: `Match: '${a}' = '${b}'`, desc: l === r ? 'The pointers met on the same character.' : `s[${l}] and s[${r}] agree (ignoring case). Move both inward.`,
+      title: `Match: '${a}' = '${b}'`, tag: 'MATCH:',
+      desc: l === r ? `l and r met on s[${l}]='${a}', which is its own mirror` : `s[${l}]='${a}' and s[${r}]='${b}' agree (ignoring case), so move both inward`,
       cells: cells([l, r], 'found', skipped), pointers: ptrs(), vars: vars(),
       logic: 'This mirrored pair is fine; shrink the range.', logicTone: 'success', javaLines: [5, 7, 8], pyLines: [5, 7, 8], algoStep: 2,
+      note: `'${a}' == '${b}': l = ${l + 1}, r = ${r - 1}`,
     });
     l++;
     r--;
@@ -84,9 +98,10 @@ function build({ s }: In): Step[] {
   l = Math.min(l, n - 1);
   r = Math.max(r, 0);
   steps.push({
-    title: 'Pointers met', desc: 'Every mirrored pair of alphanumeric characters matched.',
+    title: 'Pointers met', tag: '✅ Done!', desc: 'the pointers crossed and every mirrored pair of alphanumeric characters matched, so the answer is true',
     cells: cells([], 'found', skipped, 'found'), pointers: [], vars: vars(),
-    logic: 'No mismatch was found, so the cleaned text is a palindrome.', logicTone: 'success', javaLines: [10], pyLines: [9], algoStep: 3,
+    logic: 'No mismatch was found, so the cleaned text is a palindrome.', logicTone: 'success', javaLines: [10], pyLines: [9], algoStep: 4,
+    note: 'l >= r → return true',
     result: { title: 'true', text: 'It is a palindrome' },
   });
   return steps;
@@ -106,6 +121,14 @@ export const validPalindrome: ProblemDef<In> = {
   parseInput: parse, buildSteps: build, viz: 'cells',
   legend: [{ label: 'Matching pair', state: 'found' }, { label: 'Skipped character', state: 'dim' }, { label: 'Mismatch', state: 'error' }, { label: 'Already checked', state: 'sorted' }],
   varLabels: ['l', 'r', 'left char', 'right char'],
+  emphasis: ['lowercasing', 'letter or digit', 'reads the same forwards and backwards'],
+  phases: [
+    { icon: '🎯', label: 'SETUP (l = 0, r = n−1)', tone: 'blue' },
+    { icon: '⏭', label: 'SKIP non-alphanumeric', tone: 'cyan' },
+    { icon: '✔', label: 'MATCH → move inward', tone: 'green' },
+    { icon: '❌', label: 'MISMATCH → false', tone: 'orange' },
+    { icon: '✅', label: 'Done', tone: 'green' },
+  ],
   approach: {
     title: 'Two pointers that skip junk',
     text: 'Start at both ends. Move each pointer inward past anything that is not a letter or digit, compare the two characters ignoring case, and repeat until the pointers meet.',
@@ -140,7 +163,8 @@ export const validPalindrome: ProblemDef<In> = {
     'Put l at the start and r at the end',
     'Advance l and retreat r past non-alphanumeric characters',
     'Compare s[l] and s[r] ignoring case; on equality move both inward',
-    'Return false at the first mismatch, true if the pointers meet',
+    'On the first mismatch return false',
+    'If the pointers meet, return true',
   ],
   complexity: [{ label: 'Time', value: 'O(n)' }, { label: 'Space', value: 'O(1)' }],
   why: 'A string is a palindrome iff its i-th character equals its (n−1−i)-th for every i. Skipping non-alphanumerics on the fly pairs up exactly the characters of the cleaned string, without ever building it, and each index is visited by at most one pointer: O(n) time and O(1) space.',

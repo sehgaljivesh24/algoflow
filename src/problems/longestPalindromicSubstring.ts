@@ -31,42 +31,56 @@ function build({ s }: In): Step[] {
   ];
 
   steps.push({
-    title: 'Start', desc: `Find the longest palindromic substring of "${s}".`,
+    title: 'Start', tag: 'START —', desc: `find the longest palindromic substring of "${s}" by trying all ${2 * n - 1} centres (${n} letters and ${n - 1} gaps).`,
     cells: cells(0, -1, 'active'), pointers: [], aux: aux(), vars: vars('—', '—', '—'),
     logic: 'Every palindrome mirrors around a centre — a letter (odd length) or the gap between two letters (even length). Try each centre and expand outward while the two ends match.', logicTone: 'info',
-    javaLines: [0, 1], pyLines: [0, 1], algoStep: 0,
+    javaLines: [0, 1], pyLines: [0, 1], algoStep: 0, note: 'bestLen = 0, start = 0',
   });
 
   for (let c = 0; c < n; c++) {
     for (let ext = 0; ext < 2; ext++) {
+      if (ext === 1 && c === n - 1) continue; // there is no gap after the last letter
       let l = c;
       let r = c + ext;
       const label = `${ext === 0 ? 'odd' : 'even'} @ ${c}`;
+      steps.push({
+        title: `Centre: ${label}`, tag: 'CENTER:',
+        desc: ext === 0 ? `centre on the letter s[${c}]='${s[c]}': l = r = ${c}, odd-length palindromes grow from here.` : `centre on the gap between s[${c}]='${s[c]}' and s[${c + 1}]='${s[c + 1]}': l = ${c}, r = ${c + 1}.`,
+        cells: cells(l, r, 'active'), pointers: ptrs(l, r), aux: aux(), vars: vars(label, l, r),
+        logic: ext === 0 ? 'A single letter is always a palindrome, so expansion starts from length 1.' : 'An even palindrome needs its two middle letters to be equal, so test them first.', logicTone: 'info',
+        javaLines: [2, 3, 4], pyLines: [2, 3, 4], algoStep: 0, note: `c = ${c}, l = ${l}, r = ${r}`,
+      });
       while (true) {
         if (l < 0 || r >= n) {
           steps.push({
-            title: `${label}: reached the edge`, desc: `l = ${l}, r = ${r} is outside the string, so this centre cannot grow further.`,
+            title: `${label}: reached the edge`, tag: 'STOP:', desc: `l = ${l}, r = ${r} is outside the string, so this centre cannot grow beyond s[${l + 1}..${r - 1}].`,
             cells: cells(l + 1, r - 1, 'active'), pointers: l + 1 <= r - 1 ? ptrs(l + 1, r - 1) : [], aux: aux(), vars: vars(label, l, r),
-            logic: 'Stop when either end leaves the string.', logicTone: 'warn', javaLines: [5], pyLines: [5], algoStep: 2,
+            alert: `l = ${l}, r = ${r}: an end left the string, so expansion stops.`,
+            logic: 'Stop when either end leaves the string.', logicTone: 'warn', javaLines: [5], pyLines: [5], algoStep: 3, note: `${l < 0 ? 'l < 0' : `r = ${r} ≥ n = ${n}`} → stop`,
           });
           break;
         }
         if (s[l] !== s[r]) {
           steps.push({
-            title: `${label}: '${s[l]}' ≠ '${s[r]}'`, desc: ext === 1 && l === c && r === c + 1 ? `The two middle letters differ, so there is no even palindrome here.` : `The ends differ, so the palindrome around this centre is s[${l + 1}..${r - 1}].`,
+            title: `${label}: '${s[l]}' ≠ '${s[r]}'`, tag: 'STOP:',
+            desc: ext === 1 && l === c && r === c + 1 ? `the two middle letters '${s[l]}' and '${s[r]}' differ, so there is no even palindrome here.` : `s[${l}]='${s[l]}' and s[${r}]='${s[r]}' differ, so the palindrome around this centre is s[${l + 1}..${r - 1}].`,
             cells: cells(l + 1, r - 1, 'active', [l, r]), pointers: ptrs(l, r), aux: aux(), vars: vars(label, l, r),
-            logic: 'A mismatch ends the expansion for this centre.', logicTone: 'warn', javaLines: [5], pyLines: [5], algoStep: 2,
+            alert: `Mismatch: '${s[l]}' ≠ '${s[r]}', so this centre cannot grow any wider.`,
+            logic: 'A mismatch ends the expansion for this centre.', logicTone: 'warn', javaLines: [5], pyLines: [5], algoStep: 3, note: `'${s[l]}' == '${s[r]}' → false`,
           });
           break;
         }
         const len = r - l + 1;
+        const prev = best;
         const improved = len > best;
         if (improved) { best = len; start = l; }
         steps.push({
-          title: `${label}: "${s.slice(l, r + 1)}" is a palindrome`, desc: improved ? `Length ${len} beats the previous best, so record it.` : `Length ${len} does not beat the best (${best}).`,
+          title: `${label}: "${s.slice(l, r + 1)}" is a palindrome`, tag: improved ? 'RECORD:' : 'EXPAND:',
+          desc: improved ? `s[${l}..${r}]="${s.slice(l, r + 1)}" matches ('${s[l]}' = '${s[r]}'): length ${len} beats the previous best ${prev}, so record it.` : `s[${l}..${r}]="${s.slice(l, r + 1)}" matches ('${s[l]}' = '${s[r]}'): length ${len} does not beat the best ${best}.`,
           cells: cells(l, r, improved ? 'found' : 'compare'), pointers: ptrs(l, r), aux: aux(), vars: vars(label, l, r),
           logic: improved ? 'New longest palindrome.' : 'A palindrome, but not longer than the best.', logicTone: improved ? 'success' : 'info',
-          javaLines: improved ? [5, 6, 7] : [5, 7], pyLines: improved ? [5, 6, 7, 8] : [5, 8], algoStep: 1,
+          javaLines: improved ? [5, 6, 7] : [5, 7], pyLines: improved ? [5, 6, 7, 8] : [5, 8], algoStep: improved ? 2 : 1,
+          note: improved ? `${len} > ${prev} → bestLen = ${len}, start = ${l}` : `${len} ≤ ${best}, best unchanged`,
         });
         l--;
         r++;
@@ -76,9 +90,10 @@ function build({ s }: In): Step[] {
 
   const ans = s.slice(start, start + best);
   steps.push({
-    title: 'Done', desc: `Longest palindromic substring: "${ans}" (length ${best}).`,
+    title: 'Done', tag: '✅ Done!', desc: `every centre was expanded as far as it goes: the longest palindromic substring is "${ans}" (length ${best}).`,
     cells: cells(0, -1, 'active'), pointers: [], aux: aux(), vars: vars('—', '—', '—'),
-    logic: 'Every centre was expanded to its maximum, so the best one is the answer (leftmost on ties).', logicTone: 'success', javaLines: [11], pyLines: [9], algoStep: 3,
+    logic: 'Every centre was expanded to its maximum, so the best one is the answer (leftmost on ties).', logicTone: 'success', javaLines: [11], pyLines: [9], algoStep: 4,
+    note: `s.substring(${start}, ${start + best}) = "${ans}"`,
     result: { title: JSON.stringify(ans), text: `Length ${best}` },
   });
   return steps;
@@ -129,11 +144,20 @@ export const longestPalindromicSubstring: ProblemDef<In> = {
     '                l -= 1; r += 1',
     '    return s[start:start + best]',
   ],
+  phases: [
+    { icon: '🎯', label: 'Pick a centre', tone: 'blue' },
+    { icon: '↔️', label: 'Expand l ← → r', tone: 'green' },
+    { icon: '🏆', label: 'Record longer span', tone: 'gold' },
+    { icon: '⛔', label: 'Stop: mismatch / edge', tone: 'orange' },
+    { icon: '✅', label: 'Done', tone: 'green' },
+  ],
+  emphasis: ['longest contiguous substring', 'forwards and backwards'],
   algorithm: [
     'Pick a centre: a letter, or the gap between two letters',
     'Expand outward while the characters at l and r are equal',
     'Whenever the span is longer than the best, remember its start and length',
-    'After trying all 2n − 1 centres, return the longest span',
+    'Stop when the ends differ or leave the string, then try the next centre',
+    'Done: after all 2n − 1 centres, return the longest span',
   ],
   complexity: [{ label: 'Time', value: 'O(n²)' }, { label: 'Space', value: 'O(1)' }],
   why: 'Every palindrome is symmetric about exactly one centre, so trying all 2n − 1 centres sees every palindrome. If the ends at l and r differ, no wider span around that centre can be a palindrome, so expansion can stop. Each centre costs O(n) at worst: O(n²) total with no extra memory (unlike a DP table).',

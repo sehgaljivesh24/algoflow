@@ -36,7 +36,7 @@ const python = [
   '        cameras += 1',
   '    return cameras',
 ];
-const J = { start: find(java, 'if (dfs(root) == 0)'), visit: find(java, 'if (node == null)', 'int left = dfs'), cam: find(java, 'if (left == 0 || right == 0)', 'cameras++;', 'return 1;'), no: find(java, 'return (left == 1'), fin: find(java, 'return cameras;') };
+const J = { start: find(java, 'if (dfs(root) == 0)'), visit: find(java, 'if (node == null)', 'int left = dfs'), cam: find(java, 'if (left == 0 || right == 0)', ['cameras++;', 2], 'return 1;'), no: find(java, 'return (left == 1'), fin: find(java, 'return cameras;') };
 const P = { start: find(python, 'if dfs(root) == 0'), visit: find(python, 'if not node', 'left, right = dfs'), cam: find(python, 'if left == 0 or right == 0', 'cameras += 1', 'return 1'), no: find(python, 'return 2 if'), fin: find(python, 'return cameras') };
 
 const NAME = ['gap', 'cam', 'ok'];
@@ -48,7 +48,14 @@ function build({ tokens }: TreeIn): Step[] {
   const labels: Record<number, string> = {};
   const stack: string[] = [];
   let cameras = 0;
-  const val = (id: number) => Number(nodes[id].value);
+  // every node has value 0, so name nodes by their path from the root (root, root.left, root.left.right, ...)
+  const pathName: string[] = [];
+  pathName[0] = 'root';
+  nodes.forEach((n, id) => {
+    if (n.left !== null) pathName[n.left] = `${pathName[id]}.left`;
+    if (n.right !== null) pathName[n.right] = `${pathName[id]}.right`;
+  });
+  const val = (id: number) => pathName[id];
   const { steps, add } = emitter(() => treeScene(nodes, states, labels));
   const aux = () => [stackAux('call stack', stack)];
   const vars = (node: number | string, left: number | string, right: number | string) => ({ node, left, right, cameras });
@@ -66,12 +73,12 @@ function build({ tokens }: TreeIn): Step[] {
   });
 
   const dfs = (id: number): number => {
-    stack.push(`node ${val(id)}`);
+    stack.push(val(id));
     states[id] = 'active';
     add({
-      title: `Visit node ${val(id)}`, desc: `Call dfs(${val(id)}). A missing child counts as "covered" (2) so it never forces a camera.`,
+      title: `Visit ${val(id)}`, desc: `Call dfs(${val(id)}). A missing child counts as "covered" (2) so it never forces a camera.`,
       logic: 'Post-order: decide a node only after learning the states of both children.', j: J.visit, p: P.visit, a: 1, vars: vars(val(id), '?', '?'), aux: aux(),
-      tag: 'VISIT —', note: `dfs(node ${val(id)}): children report first`,
+      tag: 'VISIT —', note: `dfs(${val(id)}): children report first`,
     });
     const n = nodes[id];
     const l = n.left === null ? 2 : dfs(n.left);
@@ -92,7 +99,7 @@ function build({ tokens }: TreeIn): Step[] {
     }
     setState(id, res);
     add({
-      title: `Node ${val(id)} → ${NAME[res]}`, desc: `Left ${fmt(n.left === null ? null : l)}, right ${fmt(n.right === null ? null : r)}. ${text}`,
+      title: `${val(id)} → ${NAME[res]}`, desc: `Left ${fmt(n.left === null ? null : l)}, right ${fmt(n.right === null ? null : r)}. ${text}`,
       logic: res === 1 ? 'A camera is forced here: the only other fixes would be one camera per child.' : res === 2 ? 'No cost: coverage came for free from below.' : 'Postponing the decision to the parent covers this node and more.',
       tone: res === 1 ? 'success' : res === 0 ? 'warn' : 'info', j: res === 1 ? J.cam : J.no, p: res === 1 ? P.cam : P.no, a: res === 1 ? 2 : 3, vars: vars(val(id), l, r), aux: aux(),
       tag: res === 1 ? 'CAMERA —' : res === 2 ? 'COVERED —' : 'GAP —',
@@ -109,12 +116,12 @@ function build({ tokens }: TreeIn): Step[] {
     setState(0, 1);
     add({
       title: 'Root is still a gap', desc: `The root has no parent to cover it, so it gets its own camera (cameras = ${cameras}).`,
-      logic: 'This is the one case where the greedy rule leaves a node uncovered at the very end.', tone: 'success', j: J.start, p: P.start, a: 4, vars: vars(Number(nodes[0].value), '—', '—'), aux: aux(),
+      logic: 'This is the one case where the greedy rule leaves a node uncovered at the very end.', tone: 'success', j: J.start, p: P.start, a: 4, vars: vars('root', '—', '—'), aux: aux(),
       tag: 'ROOT FIX —', note: `dfs(root) = 0 → cameras = ${cameras}`,
     });
   }
   add({
-    title: 'Done', desc: `${cameras} camera${cameras === 1 ? '' : 's'} (purple) watch every node.`,
+    title: 'Done', desc: `${cameras} camera${cameras === 1 ? '' : 's'} (purple) ${cameras === 1 ? 'watches' : 'watch'} every node.`,
     logic: 'Every node is a camera or covered, and the greedy bottom-up rule used each camera as high as it could be.', tone: 'success',
     j: J.fin, p: P.fin, a: 4, vars: vars('—', '—', '—'), aux: aux(), tag: '✅ Done!', note: `return cameras = ${cameras}`, result: { title: String(cameras), text: 'Minimum cameras' },
   });

@@ -155,7 +155,7 @@ function annotated(input: TreeIn): Step[] {
     { on: /^Enqueue children of (-?\d+)/, tag: 'ENQUEUE —', note: (m, s) => `q.add(children of ${m[1]}) → q = [${auxItems(s, 'queue').join(', ')}]`, algoStep: 2 },
     { on: /^Reverse level (\d+)/, tag: '🔀 REVERSE —', note: (m) => `Collections.reverse(level) for level ${m[1]}` },
     { on: /^Keep level (\d+)/, tag: 'KEEP —', note: (m) => `leftToRight → level ${m[1]} stays as collected` },
-    { on: /^Level (\d+) saved/, tag: 'SAVE —', note: (_m, s) => `res.add(level); leftToRight = ${s.vars.direction === 'L→R' ? 'false' : 'true'}` },
+    { on: /^Level (\d+) saved/, tag: 'SAVE —', note: (_m, s) => `res.add(level); leftToRight = ${s.vars.direction === 'L→R' ? 'true' : 'false'}` },
     { on: 'last', tag: '✅ Done!', note: (_m, s) => `return res → ${s.result?.title}`, desc: (_m, s) => `Every level was collected left to right and reversed on every second level. Result: ${s.result?.title}.`, algoStep: 4 },
   ]);
 }

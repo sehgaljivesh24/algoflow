@@ -387,7 +387,7 @@ static int minCoins(int[] coins, int amount) {   // same table, minimising: ever
         'The state needs **the set plus one more fact**: the last city for TSP (dp[mask][last]), the fill of the current bucket for partition problems, the current node for BFS over (mask, node). That second index multiplies the table by n.',
         'You process masks **in increasing numeric order**, because a superset always has a larger value than its subsets, so every sub-mask is solved before the masks that extend it. Test a bit with (mask >> i) & 1, set it with mask | (1 << i).',
       ],
-      tip: 'Increasing numeric order guarantees all sub-masks are done first. Test a bit with (mask >> i) & 1, set with mask | (1 << i), clear with mask ^ (1 << i).',
+      tip: 'Increasing numeric order guarantees all sub-masks are done first. Test a bit with (mask >> i) & 1, set with mask | (1 << i), clear with mask & ~(1 << i).',
       practice: [
         '847-shortest-path-visiting-all-nodes',
         '698-partition-to-k-equal-sum-subsets',
@@ -414,7 +414,7 @@ static int minCoins(int[] coins, int amount) {   // same table, minimising: ever
         'The **last (or first) operation on a segment divides it** into two independent smaller segments. Choose the last one when the first one would tie the two sides together, as in Burst Balloons where the last popped balloon has fixed neighbours.',
         'A state needs **two endpoints** and each cell depends on shorter intervals inside it, so you fill by increasing length (2, 3, … n) and then by left end. Looping by left end alone reads cells that are not computed yet.',
         'Each cell **tries every split point k** between l and r, so the cost is cubic: n² intervals times up to n splits. If n is at most a few hundred this is fine; a Knuth-style optimisation can lower it for special cost shapes.',
-        'The segments are **parts of a string with equal ends**: Strange Printer, Palindrome Partitioning, minimum cost to merge stones. The recurrence changes (equal letters share a stroke), but the interval table and the fill order stay the same.',
+        'The segments are **parts of a string or row whose equal ends or merge rules matter**: Strange Printer (equal letters share a stroke), palindrome tables, Minimum Cost to Merge Stones (a group-size rule). The recurrence changes, but the interval table and the fill order stay the same.',
       ],
       tip: 'Loop by length first, then by left end, so every shorter interval is computed. If choosing the FIRST action breaks independence (as in Burst Balloons), choose the LAST one instead.',
       practice: [
@@ -469,7 +469,7 @@ static int minCoins(int[] coins, int amount) {   // same table, minimising: ever
       whenToUse: [
         'You **count integers in a range [0, N]** (or [A, B] as f(B) − f(A−1)) that satisfy a property of their digits: only allowed digits, all digits different, digit sum equal to S. Looping over N is impossible; its digits are few.',
         'The property needs **a small digit state**: a digit sum, a mask of used digits, the last digit, a remainder. The table is indexed by (position, state) and a transition appends one digit, so 10 transitions per cell.',
-        'N is huge (up to 10¹⁸) but has **at most 19 digits**. That bounds the DP: positions × states × 10 is only a few thousand operations, so counting over 10¹⁸ numbers finishes instantly in any language.',
+        'N is huge (up to 10¹⁸) but has **at most 19 digits**. That bounds the DP: positions × states × 10 is only thousands to a few hundred thousand operations, so counting over 10¹⁸ numbers finishes instantly in any language.',
         'You build numbers **left to right with a tight flag**: while the prefix equals N\'s prefix you may only use digits up to N[i]; once a smaller digit is placed the rest is free, and free suffixes can be tabulated or memoised.',
         '**Leading zeros need a decision**: they may be part of the count (digit sum) or must be ignored (distinct digits, allowed digit sets). Add a started flag, or count shorter lengths separately as 9 × P(9, k) style formulas.',
       ],

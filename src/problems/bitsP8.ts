@@ -31,7 +31,7 @@ function buildQ({ arr: a, queries }: QIn): Step[] {
   };
   const auxA = () => [{ title: 'answers', kind: 'list' as const, items: answers.map(String) }];
   const vars = (j: number | string, q: number | string, l: number | string, r: number | string) => ({ j, 'prefix[j]': typeof j === 'number' ? pre[j] ?? '—' : '—', query: q, l, r });
-  rec.push({ t: 'Start', d: `Answering ${queries.length} range-XOR queries over ${arr(a)}. A prefix XOR array makes every query a single XOR.`, scene: table(1), aux: auxA(), v: vars(0, '—', '—', '—'), why: 'XOR is its own inverse, so prefix[r+1] ^ prefix[l] cancels everything before l and leaves only arr[l..r].', j: [1, 2], p: [1], a: 0, tag: 'READY —', note: 'prefix[0] = 0' });
+  rec.push({ t: 'Start', d: `Answering ${queries.length} range-XOR ${queries.length === 1 ? 'query' : 'queries'} over ${arr(a)}. A prefix XOR array makes every query a single XOR.`, scene: table(1), aux: auxA(), v: vars(0, '—', '—', '—'), why: 'XOR is its own inverse, so prefix[r+1] ^ prefix[l] cancels everything before l and leaves only arr[l..r].', j: [1, 2], p: [1], a: 0, tag: 'READY —', note: 'prefix[0] = 0' });
   for (let j = 1; j <= n; j++) {
     pre.push(pre[j - 1] ^ a[j - 1]);
     rec.push({ t: `prefix[${j}] = prefix[${j - 1}] ^ arr[${j - 1}]`, d: `${pre[j - 1]} ^ ${a[j - 1]} = ${pre[j]} (${pre[j - 1].toString(2).padStart(5, '0')} ^ ${a[j - 1].toString(2).padStart(5, '0')} = ${pre[j].toString(2).padStart(5, '0')})`, scene: table(j + 1, { [j]: 'found', [j - 1]: 'compare' }, j), aux: auxA(), v: vars(j, '—', '—', '—'), why: 'Each prefix entry extends the previous one by one element, so the whole table costs O(n).', j: [3], p: [2, 3], a: 1, tag: 'BUILD —', note: `prefix[${j}] = ${pre[j - 1]} ^ ${a[j - 1]} = ${pre[j]}` });

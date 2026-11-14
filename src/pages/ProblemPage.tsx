@@ -1,12 +1,15 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { BRAND } from '../config';
-import { CodePanel } from '../components/CodePanel';
+import { CodePanel, useCodeLang } from '../components/CodePanel';
 import { ControlBar } from '../components/ControlBar';
+import { Emph } from '../components/pattern/Emph';
+import { alertText, execLine, formatInput, narrationTone, phaseChips, tagText } from '../components/pattern/stepView';
 import { AuxPanels, SceneView, sceneTitle } from '../components/SceneView';
 import { Icon, approachIconName, sceneIcon } from '../components/viz/icons';
 import { Rich } from '../components/viz/Rich';
 import { ALL_ENTRIES } from '../data/catalog';
+import { problemAccent } from '../data/problemAccent';
 import { STATUS_LABEL, STATUS_ORDER, useNote, useProgress, useTheme } from '../data/storage';
 import { useStepPlayer } from '../engine/useStepPlayer';
 import type { AnyProblem, CellState, Status, Step } from '../engine/types';
@@ -119,19 +122,40 @@ export function Player({ problem, embedded = false }: { problem: AnyProblem; emb
   const hasGraph = sc?.kind === 'graph' || (sc?.kind === 'split' && sc.parts.some((x) => x.kind === 'graph'));
   const caption = problem.vizCaption ?? (!sceneKind || sceneKind === 'array' ? 'Current state' : '');
 
+  /* pattern-page detail: accent of the family, phase chips, alert banner, tagged narration, executed line with live values */
+  const [lang, setLang] = useCodeLang();
+  const accent = useMemo(() => problemAccent(problem.slug, problem.category, problem.tag), [problem]);
+  const final = !!step.result;
+  const before = steps[Math.max(0, p.index - 1)];
+  const { chips, active: activeChip } = phaseChips(problem, step, p.index, final, true);
+  const tone = narrationTone(step, problem.phases, final, p.index);
+  const hasAlert = useMemo(() => steps.some((s) => s.alert), [steps]);
+  const banner = alertText(step);
+  const hint = execLine(problem, step, before, p.index, lang);
+  const readable = (v: unknown) => (v && typeof v === 'object' && !Array.isArray(v) ? formatInput(v) : null);
+  const inputLine = readable(input) ? formatInput(input, true) : null;
+  const words = useMemo(
+    () => (problem.examples[0].input && typeof problem.examples[0].input === 'object' && !Array.isArray(problem.examples[0].input) ? Object.keys(problem.examples[0].input as object) : []),
+    [problem],
+  );
+
   return (
-    <Root className={`vp${embedded ? ' embedded' : ''}`}>
+    <Root className={`vp${embedded ? ' embedded' : ''}`} style={{ '--vp-accent': `var(--${accent})` } as CSSProperties}>
       {!embedded && <Header problem={problem} />}
 
       <div className="vp-top">
         <section className="card vp-problem" aria-labelledby="vp-problem-h">
           <h2 className="card-title" id="vp-problem-h">Problem{embedded ? ` · ${problem.title}` : ''}</h2>
-          <p className="q-stmt"><Rich text={problem.statement} /></p>
+          <p className="q-stmt">
+            {problem.statement.includes('`')
+              ? <Rich text={problem.statement} />
+              : <Emph text={problem.statement} terms={problem.emphasis ?? []} words={words} wholeWords />}
+          </p>
           {problem.examples.map((ex, i) => (
             <div className="q-example" key={ex.label + i}>
               <div className="q-ex-label">Example {i + 1}</div>
-              <div className="q-io"><span className="q-label">Input:</span><code>{ex.label}</code></div>
-              <div className="q-io"><span className="q-label">Output:</span><code>{ex.output}</code></div>
+              <div className="q-io"><span className="q-label">Input:</span><code>{readable(ex.input) ?? ex.label}</code></div>
+              <div className="q-io"><span className="q-label">Output:</span><code>{ex.answer ?? ex.output}</code></div>
             </div>
           ))}
           <p className="q-constraints"><strong>Constraints:</strong> {problem.constraints}</p>
@@ -184,16 +208,55 @@ export function Player({ problem, embedded = false }: { problem: AnyProblem; emb
               <span className="vp-viz-icon"><Icon name={sceneIcon(sceneKind, problem.viz === 'bars')} /></span>
               {problem.vizTitle ?? sceneTitle(step, problem.viz === 'bars')}
             </h2>
-            {!hasGraph && <div className="vp-legend">
-              {problem.legend.map((l: { label: string; state: CellState }) => (
-                <span key={l.label} className={`lg lg-${l.state}`}>{l.label}</span>
+            <div className="vp-phases" aria-label="Phases">
+              {chips.map((c, i) => (
+                <div
+                  key={i}
+                  className={`vp-ph vp-tone-${c.tone}${i === activeChip ? ' on' : ''}`}
+                  title={problem.phases ? c.label : problem.algorithm[i] ?? c.label}
+                  aria-current={i === activeChip ? 'step' : undefined}
+                >
+                  {c.icon && <span className={c.num ? 'vp-ph-num' : 'vp-ph-ic'} aria-hidden>{c.icon}</span>}
+                  <span className="vp-ph-txt">{c.label}</span>
+                </div>
               ))}
-            </div>}
+            </div>
+            {/* graph scenes draw their own node-colour legend */}
+            {!hasGraph && problem.legend.length > 0 && (
+              <div className="vp-legend" aria-label="Colour legend">
+                {problem.legend.map((l: { label: string; state: CellState }) => (
+                  <span key={l.label} className={`vp-leg lgd-${l.state}`}><i className="vp-leg-dot" aria-hidden />{l.label}</span>
+                ))}
+              </div>
+            )}
+            {hasAlert && (
+              <div className="vp-alert-slot">
+                {banner && <div className={`vp-alert${banner.startsWith('✅') ? ' ok' : ''}`} role="alert">{banner}</div>}
+              </div>
+            )}
             {caption && <div className="vp-caption">{caption}</div>}
+            {inputLine && <div className="vp-inputline">{inputLine}</div>}
             <div className="vp-stage">
               <SceneView step={step} bars={problem.viz === 'bars'} legend={problem.legend} />
             </div>
             <AuxPanels aux={step.aux} tone={step.logicTone} />
+
+            <div className={`vp-narr vp-tone-${tone}`} aria-live="polite" aria-atomic="true">
+              <div className="vp-narr-text">
+                {step.tag ? (
+                  <>
+                    <strong className="vp-narr-tag">{tagText(step)}</strong> <Rich text={step.desc} />
+                  </>
+                ) : (
+                  <>
+                    <strong className={`step-title ${stepTone}`}>{step.title}</strong>
+                    <span className="step-desc"><Rich text={step.desc} /></span>
+                  </>
+                )}
+              </div>
+              <span className="step-ctr">{p.index + 1} / {p.total}</span>
+            </div>
+            {hint && <div className="vp-exec" title={`Line being executed (${lang === 'java' ? 'Java' : 'Python'}) with the live values`}><code>{hint}</code></div>}
           </section>
 
           {step.result && (
@@ -210,14 +273,6 @@ export function Player({ problem, embedded = false }: { problem: AnyProblem; emb
             <div className={`logic-box ${step.logicTone}`} aria-live="polite"><Rich text={step.logic} /></div>
           </section>
 
-          <section className="card vp-step">
-            <div className="step-hdr">
-              <h2 className={`step-title ${stepTone}`}>{step.title}</h2>
-              <span className="step-ctr">{p.index + 1} / {p.total}</span>
-            </div>
-            <div className="prog-bar" aria-hidden><div className="prog-fill" style={{ width: `${p.total > 1 ? (p.index / (p.total - 1)) * 100 : 100}%` }} /></div>
-            <div className="step-desc"><Rich text={step.desc} /></div>
-          </section>
         </div>
 
         <div className="vp-right">
@@ -226,6 +281,7 @@ export function Player({ problem, embedded = false }: { problem: AnyProblem; emb
             java={problem.java} python={problem.python}
             javaActive={step.javaLines} pyActive={step.pyLines}
             done={!!step.result}
+            lang={lang} onLang={setLang}
           />
 
           <section className="card vp-algo">

@@ -73,7 +73,7 @@ function build({ n, edges }: In): Step[] {
   push({
     title: 'Start', desc: `Original graph on the left (${n} node${n === 1 ? '' : 's'}, ${edges.length} edge${edges.length === 1 ? '' : 's'}). The copy on the right starts with no nodes (faded).`,
     logic: 'A deep copy needs a brand-new node for every original node. A map from original to copy stops us from cloning a node twice (or looping forever on cycles).', logicTone: 'info',
-    javaLines: [0, 1], pyLines: [0, 1], algoStep: 0,
+    javaLines: [0, 1], pyLines: [0, 1], algoStep: 0, tag: 'READY —', note: `copies = {}, cloneGraph(1) is called`,
   });
 
   const dfs = (u: number) => {
@@ -82,9 +82,10 @@ function build({ n, edges }: In): Step[] {
     copy[u] = true;
     flash = u;
     push({
-      title: `clone(${u}): no copy yet, create ${u}'`, desc: `Node ${u} is not in the map, so create ${u}' and record ${u} → ${u}' before visiting neighbours.`,
+      title: `clone(${u}): no copy yet, create ${u}'`, tag: 'CLONE',
+      desc: `clone(${u}): node ${u} is not in the map, so create ${u}' and record ${u} → ${u}' before visiting neighbours`,
       logic: 'Recording the copy BEFORE recursing is what makes cycles safe: a neighbour that loops back finds the copy already waiting.', logicTone: 'success',
-      javaLines: [3, 4, 5], pyLines: [3, 5, 6], algoStep: 1,
+      javaLines: [3, 4, 5], pyLines: [3, 5, 6], algoStep: 1, note: `copies.put(${u}, ${u}'), map size ${copy.filter(Boolean).length}`,
     });
     flash = null;
     for (const v of adj[u]) {
@@ -92,25 +93,27 @@ function build({ n, edges }: In): Step[] {
       probe = [u, v];
       if (!copy[v]) {
         push({
-          title: `${u}' needs neighbour ${v}: recurse`, desc: `${v} has not been cloned, so call clone(${v}).`,
+          title: `${u}' needs neighbour ${v}: recurse`, tag: 'RECURSE', desc: `neighbour ${v} of ${u} has not been cloned yet, so call clone(${v})`,
           logic: 'Depth-first: finish cloning the new neighbour (and everything behind it) first.', logicTone: 'info',
-          javaLines: [6, 7], pyLines: [7, 8], algoStep: 2,
+          javaLines: [6, 7], pyLines: [7, 8], algoStep: 2, note: `cloneGraph(${v}), stack depth ${stack.length + 1}`,
         });
         dfs(v);
         cur = u;
         probe = [u, v];
         cloneAdj[u].push(v);
         push({
-          title: `Link ${u}' → ${v}'`, desc: `clone(${v}) returned ${v}'; add it to the neighbours of ${u}'.`,
+          title: `Link ${u}' → ${v}'`, tag: 'LINK', desc: `clone(${v}) returned ${v}', so add ${v}' to the neighbours of ${u}'`,
           logic: 'The returned copy is appended to the current copy’s neighbour list.', logicTone: 'success',
-          javaLines: [7], pyLines: [8], algoStep: 3,
+          javaLines: [7], pyLines: [8], algoStep: 3, note: `${u}'.neighbors.add(${v}'), now ${cloneAdj[u].length} link${cloneAdj[u].length === 1 ? '' : 's'}`,
         });
       } else {
         cloneAdj[u].push(v);
         push({
-          title: `${v} already has a copy: link ${u}' → ${v}'`, desc: `The map already holds ${v} → ${v}', so clone(${v}) returns it immediately and we just add the link.`,
+          title: `${v} already has a copy: link ${u}' → ${v}'`, tag: 'CACHE HIT',
+          desc: `the map already holds ${v} → ${v}', so clone(${v}) returns it at once and ${u}' just links to ${v}'`,
+          alert: `${v} is already copied: the recursion stops here, which is what makes cycles safe.`,
           logic: 'This is the cache hit that stops the recursion on cycles and on shared neighbours.', logicTone: 'warn',
-          javaLines: [3, 7], pyLines: [3, 4, 8], algoStep: 3,
+          javaLines: [3, 7], pyLines: [3, 4, 8], algoStep: 1, note: `copies.containsKey(${v}) → return ${v}'; ${u}'.neighbors.add(${v}')`,
         });
       }
       probe = null;
@@ -124,10 +127,10 @@ function build({ n, edges }: In): Step[] {
   probe = null;
   const result = `[${cloneAdj.slice(1).map((l) => `[${l.join(', ')}]`).join(', ')}]`;
   steps.push({
-    title: 'Done', desc: `All ${n} nodes are copied and every edge is linked from both sides, so the right graph is an independent deep copy.`,
+    title: 'Done', tag: '✅ Done!', desc: `all ${n} nodes are copied and all ${edges.length} edge${edges.length === 1 ? '' : 's'} are linked from both sides, so the right graph is an independent deep copy`,
     scene: scene(), aux: aux(), vars: vars(),
     logic: 'Every original node has exactly one copy, and each copy’s neighbours are copies, never originals.', logicTone: 'success',
-    javaLines: [9], pyLines: [9, 10], algoStep: 3,
+    javaLines: [9], pyLines: [9, 10], algoStep: 4, note: `return the copy of node 1, ${n} copies in the map`,
     result: { title: result, text: 'Adjacency list of the cloned graph' },
   });
   return steps;
@@ -149,6 +152,14 @@ export const cloneGraph: ProblemDef<In> = {
   parseInput: parse, buildSteps: build, viz: 'cells',
   legend: [{ label: 'Node being cloned', state: 'active' }, { label: 'Has a copy', state: 'found' }, { label: 'Not copied yet', state: 'dim' }],
   varLabels: ['node', 'copies', 'links made'],
+  emphasis: ['deep copy', 'connected undirected graph'],
+  phases: [
+    { icon: '🗺', label: 'EMPTY MAP', tone: 'blue' },
+    { icon: '🧬', label: 'CHECK MAP / CLONE node', tone: 'cyan' },
+    { icon: '↘', label: 'RECURSE into neighbour', tone: 'green' },
+    { icon: '🔗', label: 'LINK copies', tone: 'gold' },
+    { icon: '✅', label: 'Done', tone: 'green' },
+  ],
   approach: {
     title: 'DFS with a map from original to copy',
     text: 'Call clone(node). If the node already has a copy in the map, return it. Otherwise create the copy, store it in the map right away, then clone every neighbour recursively and add the returned copies to the new node’s neighbour list.',
@@ -183,7 +194,8 @@ export const cloneGraph: ProblemDef<In> = {
     'Start with an empty map of original → copy',
     'If the node is in the map return its copy; else create the copy and store it',
     'For each neighbour call clone recursively',
-    'Add each returned copy to the new node’s neighbours and return the new node',
+    'Add each returned copy to the new node’s neighbours',
+    'Return the copy of the starting node',
   ],
   complexity: [{ label: 'Time', value: 'O(V + E)' }, { label: 'Space', value: 'O(V)' }],
   why: 'The map guarantees one copy per original node: the copy is stored before any neighbour is visited, so a cycle or shared neighbour hits the map instead of recursing again. Because every neighbour link is built from the returned copies, the new graph never points back into the old one, and each node and edge is processed once.',

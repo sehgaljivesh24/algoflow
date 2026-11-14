@@ -39,44 +39,66 @@ function build({ s, t }: In): Step[] {
     title: 'Start', desc: `Can the letters of "${s}" be consistently replaced to produce "${t}"?`,
     scene: scene(-1), aux: aux(), vars: vars('—', '—', '—'),
     logic: 'Isomorphic means a one-to-one pairing of letters: the same letter always maps to the same partner, and two different letters never share a partner. That needs a map in each direction.', logicTone: 'info',
-    javaLines: [0, 1], pyLines: [0, 1], algoStep: 0,
+    javaLines: [0, 1], pyLines: [0, 1], algoStep: 0, tag: 'READY —', note: 'st = {}, ts = {}',
   });
 
   for (let i = 0; i < n; i++) {
     const a = s[i];
     const b = t[i];
-    if (st.has(a) && st.get(a) !== b) {
+    steps.push({
+      title: `Read position ${i}: '${a}' and '${b}'`, tag: 'READ',
+      desc: `position ${i}: s[${i}]='${a}' should become t[${i}]='${b}'`,
+      scene: scene(i), aux: aux(), vars: vars(i, a, b),
+      logic: 'Each position proposes one pairing of an s-letter with a t-letter.', logicTone: 'info',
+      javaLines: [2, 3], pyLines: [2], algoStep: 1, note: `a = s.charAt(${i}) = '${a}', b = t.charAt(${i}) = '${b}'`,
+    });
+    const conflictA = st.has(a) && st.get(a) !== b;
+    const conflictB = !conflictA && ts.has(b) && ts.get(b) !== a;
+    if (conflictA || conflictB) {
+      const other = conflictA ? st.get(a)! : ts.get(b)!;
       steps.push({
-        title: `Conflict: '${a}' already maps to '${st.get(a)}'`, desc: `Position ${i} would map '${a}' → '${b}', but earlier '${a}' → '${st.get(a)}'.`,
-        scene: scene(i, true), aux: aux([...st.keys()].indexOf(a)), vars: vars(i, a, b),
-        logic: 'One letter would need two different replacements, so no valid mapping exists.', logicTone: 'warn', javaLines: [4], pyLines: [3, 4], algoStep: 2,
-        result: { title: 'false', text: `'${a}' cannot map to both '${st.get(a)}' and '${b}'` },
+        title: conflictA ? `Conflict: '${a}' already maps to '${other}'` : `Conflict: '${b}' is already taken by '${other}'`, tag: 'CONFLICT',
+        desc: conflictA
+          ? `'${a}' would map to '${b}', but earlier '${a}' → '${other}', so one letter needs two replacements`
+          : `'${a}' would map to '${b}', but '${b}' is already the image of '${other}', so two letters share one replacement`,
+        scene: scene(i, true), aux: conflictA ? aux([...st.keys()].indexOf(a)) : aux(undefined, [...ts.keys()].indexOf(b)), vars: vars(i, a, b),
+        alert: conflictA ? `'${a}' → '${other}' is already recorded, so '${a}' cannot also map to '${b}'.` : `'${b}' is already used by '${other}', so '${a}' cannot map to it as well.`,
+        logic: conflictA ? 'One letter would need two different replacements, so no valid mapping exists.' : 'Two different letters would share one replacement, breaking the one-to-one rule.', logicTone: 'warn',
+        javaLines: conflictA ? [4] : [5], pyLines: conflictA ? [3, 4] : [5, 6], algoStep: 2,
+        note: conflictA ? `st.get('${a}') = '${other}' != '${b}' → return false` : `ts.get('${b}') = '${other}' != '${a}' → return false`,
       });
-      return steps;
-    }
-    if (ts.has(b) && ts.get(b) !== a) {
       steps.push({
-        title: `Conflict: '${b}' is already taken by '${ts.get(b)}'`, desc: `Position ${i} would map '${a}' → '${b}', but '${b}' is already the image of '${ts.get(b)}'.`,
-        scene: scene(i, true), aux: aux(undefined, [...ts.keys()].indexOf(b)), vars: vars(i, a, b),
-        logic: 'Two different letters would share one replacement, breaking the one-to-one rule.', logicTone: 'warn', javaLines: [5], pyLines: [5, 6], algoStep: 2,
-        result: { title: 'false', text: `'${ts.get(b)}' and '${a}' would both map to '${b}'` },
+        title: 'Not isomorphic', tag: '✅ Done!',
+        desc: conflictA ? `the answer is false: '${a}' cannot map to both '${other}' and '${b}'` : `the answer is false: '${other}' and '${a}' would both map to '${b}'`,
+        scene: scene(i, true), aux: conflictA ? aux([...st.keys()].indexOf(a)) : aux(undefined, [...ts.keys()].indexOf(b)), vars: vars(i, a, b),
+        logic: 'The scan stops at the first conflict.', logicTone: 'warn', javaLines: conflictA ? [4] : [5], pyLines: conflictA ? [4] : [6], algoStep: 4, note: 'return false',
+        result: conflictA ? { title: 'false', text: `'${a}' cannot map to both '${other}' and '${b}'` } : { title: 'false', text: `'${other}' and '${a}' would both map to '${b}'` },
       });
       return steps;
     }
     const known = st.has(a);
+    steps.push({
+      title: known ? `'${a}' → '${b}' is consistent` : `Neither '${a}' nor '${b}' is used yet`, tag: 'CHECK',
+      desc: known ? `st already holds '${a}' → '${b}', and '${b}' belongs to '${a}', so the pairing still holds` : `'${a}' has no partner and '${b}' is not taken, so the pairing is allowed`,
+      scene: scene(i), aux: aux([...st.keys()].indexOf(a), [...ts.keys()].indexOf(b)), vars: vars(i, a, b),
+      logic: 'Check both directions before recording.', logicTone: 'info', javaLines: [4, 5], pyLines: [3, 5], algoStep: 2,
+      note: known ? `st.get('${a}') == '${b}': consistent` : `no conflict in st for '${a}' or in ts for '${b}'`,
+    });
     st.set(a, b);
     ts.set(b, a);
     steps.push({
-      title: known ? `'${a}' → '${b}' is consistent` : `New pair '${a}' ↔ '${b}'`, desc: known ? `The existing pairing '${a}' → '${b}' is repeated, so it still holds.` : `Neither letter has been paired yet; record '${a}' → '${b}' and '${b}' → '${a}'.`,
+      title: known ? `Keep '${a}' ↔ '${b}'` : `Record '${a}' ↔ '${b}'`, tag: 'RECORD',
+      desc: known ? `record again: st['${a}'] = '${b}' and ts['${b}'] = '${a}' (unchanged)` : `record both directions: st['${a}'] = '${b}' and ts['${b}'] = '${a}'`,
       scene: scene(i), aux: aux([...st.keys()].indexOf(a), [...ts.keys()].indexOf(b)), vars: vars(i, a, b),
-      logic: 'Check both directions before recording, then store both maps.', logicTone: known ? 'info' : 'success', javaLines: [3, 6, 7], pyLines: [2, 7], algoStep: 1,
+      logic: 'Store both maps so later positions are checked in both directions.', logicTone: known ? 'info' : 'success', javaLines: [6, 7], pyLines: [7], algoStep: 3,
+      note: `st.put('${a}', '${b}'); ts.put('${b}', '${a}')`,
     });
   }
 
   steps.push({
-    title: 'Isomorphic', desc: 'Every position agreed with a single one-to-one pairing.',
+    title: 'Isomorphic', tag: '✅ Done!', desc: `all ${n} positions agreed with one one-to-one pairing, so the answer is true`,
     scene: scene(n), aux: aux(), vars: vars('—', '—', '—'),
-    logic: 'No conflicts in either direction, so the pairing is a valid bijection.', logicTone: 'success', javaLines: [9], pyLines: [8], algoStep: 3,
+    logic: 'No conflicts in either direction, so the pairing is a valid bijection.', logicTone: 'success', javaLines: [9], pyLines: [8], algoStep: 4, note: 'return true',
     result: { title: 'true', text: 'The strings are isomorphic' },
   });
   return steps;
@@ -96,6 +118,14 @@ export const isomorphicStrings: ProblemDef<In> = {
   parseInput: parse, buildSteps: build, viz: 'cells',
   legend: [{ label: 'Current pair', state: 'active' }, { label: 'Checked', state: 'sorted' }, { label: 'Conflict', state: 'error' }],
   varLabels: ['i', 'a', 'b'],
+  emphasis: ['isomorphic', 'no two characters map to the same one'],
+  phases: [
+    { icon: '🗺', label: 'SETUP two maps', tone: 'blue' },
+    { icon: '👀', label: 'READ the pair', tone: 'cyan' },
+    { icon: '🔍', label: 'CHECK both maps', tone: 'gold' },
+    { icon: '📝', label: 'RECORD both ways', tone: 'green' },
+    { icon: '✅', label: 'Done', tone: 'green' },
+  ],
   approach: {
     title: 'Two maps enforce a one-to-one pairing',
     text: 'Walk both strings together. Keep a map s→t and a map t→s. If either map already holds a different partner for the current letter, the strings are not isomorphic.',
@@ -128,7 +158,8 @@ export const isomorphicStrings: ProblemDef<In> = {
     'Create two empty maps: s→t and t→s',
     'For each position read a = s[i] and b = t[i]',
     'If a is already mapped elsewhere, or b is already the image of another letter, return false',
-    'Otherwise record both directions; return true after the last position',
+    'Otherwise record both directions',
+    'Return true after the last position (or false at the first conflict)',
   ],
   complexity: [{ label: 'Time', value: 'O(n)' }, { label: 'Space', value: 'O(1) for a fixed alphabet' }],
   why: 'A valid replacement is a bijection between the letters used. One map alone only guarantees a function (each s-letter has one image); it cannot see two s-letters landing on the same t-letter, as in "badc" vs "baba". The reverse map catches exactly that.',

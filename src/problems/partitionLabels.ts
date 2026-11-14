@@ -36,9 +36,9 @@ function build({ s }: In): Step[] {
     { title: 'partition sizes', kind: 'list' as const, items: parts.map(String) },
   ];
   const vars = (i: number | string) => ({ i, start, end, parts: parts.length });
-  const add = (title: string, desc: string, logic: string, tone: LogicTone, cur: number, j: number[], p: number[], a: number) =>
+  const add = (title: string, tag: string, desc: string, note: string, logic: string, tone: LogicTone, cur: number, j: number[], p: number[], a: number) =>
     steps.push({
-      title, desc, cells: cells(cur), aux: aux(), vars: vars(cur >= 0 ? cur : '—'), logic, logicTone: tone, javaLines: j, pyLines: p, algoStep: a,
+      title, tag, note, desc, cells: cells(cur), aux: aux(), vars: vars(cur >= 0 ? cur : '—'), logic, logicTone: tone, javaLines: j, pyLines: p, algoStep: a,
       pointers: cur >= 0 ? [
         { id: 'i', label: 'i', index: cur, tone: 'blue' as const },
         { id: 'end', label: 'end', index: Math.min(end, n - 1), tone: 'orange' as const },
@@ -46,27 +46,32 @@ function build({ s }: In): Step[] {
       ] : [],
     });
 
-  add('Start', 'Cut the string into as many pieces as possible so that every letter appears in only one piece.',
-    'A piece that contains a letter must also contain that letter\'s last occurrence. First record the last index of every letter.', 'info', -1, [1, 2], [1], 0);
+  add('Start', 'START —', `cut "${s}" into as many pieces as possible so that every letter appears in only one piece; start = 0 and end = 0.`, 'parts = [], start = 0, end = 0',
+    'A piece that contains a letter must also contain that letter\'s last occurrence. First record the last index of every letter.', 'info', -1, [3, 4], [2], 0);
+  add('Record last indexes', 'LAST:', `one pass records where each letter occurs last: ${[...last].map(([k, v]) => `${k} → ${v}`).join(', ')}.`, `last['${s[n - 1]}'] = ${n - 1}`,
+    'These last indexes tell us how far a piece must stretch once it contains a letter.', 'info', -1, [1, 2], [1], 0);
 
   for (let i = 0; i < n; i++) {
     const ch = s[i];
     const old = end;
     end = Math.max(end, last.get(ch)!);
-    add(`Read '${ch}' at ${i}: last '${ch}' is at ${last.get(ch)}`, end > old ? `The current piece must reach index ${last.get(ch)}, so end moves from ${old} to ${end}.` : `'${ch}' does not extend the piece: end stays ${end}.`,
+    add(`Read '${ch}' at ${i}: last '${ch}' is at ${last.get(ch)}`, 'READ:',
+      end > old ? `s[${i}]='${ch}' has its last occurrence at ${last.get(ch)}, so the piece must reach it and end moves from ${old} to ${end}.` : `s[${i}]='${ch}' has its last occurrence at ${last.get(ch)}, which does not extend the piece: end stays ${end}.`,
+      `end = max(${old}, ${last.get(ch)}) = ${end}`,
       'end is the farthest last-occurrence of any letter inside the piece so far.', 'info', i, [6], [4], 1);
     if (i === end) {
       parts.push(end - start + 1);
       cutEnds.push(end);
       const from = start;
       start = i + 1;
-      add(`Cut after index ${i}`, `We have reached end, so no letter in [${from}, ${i}] appears later. Piece size = ${i} − ${from} + 1 = ${parts[parts.length - 1]}.`,
+      add(`Cut after index ${i}`, 'CUT:', `i = end = ${i}, so no letter in [${from}, ${i}] appears later: close the piece "${s.slice(from, i + 1)}" with size ${i} − ${from} + 1 = ${parts[parts.length - 1]}.`,
+        `size = ${i} − ${from} + 1 = ${parts[parts.length - 1]}, start = ${start}`,
         'Cutting as soon as i meets end makes this piece as short as possible, which maximises the number of pieces.', 'success', i, [7, 8, 9], [5, 6, 7], 2);
     }
   }
 
   const text = JSON.stringify(parts);
-  add('Done', `The string splits into ${parts.length} piece${parts.length === 1 ? '' : 's'}: ${parts.join(', ')}.`, `Result: ${text}`, 'success', -1, [12], [8], 3);
+  add('Done', '✅ Done!', `the string splits into ${parts.length} piece${parts.length === 1 ? '' : 's'} of sizes ${parts.join(', ')}.`, `return ${text}`, `Result: ${text}`, 'success', -1, [12], [8], 3);
   steps[steps.length - 1].result = { title: text, text: 'Sizes of the partitions' };
   return steps;
 }
@@ -116,11 +121,18 @@ export const partitionLabels: ProblemDef<In> = {
     '            start = i + 1',
     '    return parts',
   ],
+  phases: [
+    { icon: '📌', label: 'Record last indexes', tone: 'blue' },
+    { icon: '📏', label: 'Extend end', tone: 'cyan' },
+    { icon: '✂️', label: 'Cut when i = end', tone: 'gold' },
+    { icon: '✅', label: 'Done', tone: 'green' },
+  ],
+  emphasis: ['as many parts as possible', 'at most one part'],
   algorithm: [
     'Record the last index of every letter',
     'Scan i from left to right; set end = max(end, last[s[i]])',
     'When i == end, close the piece (size end − start + 1) and set start = i + 1',
-    'Return the list of piece sizes',
+    'Done: return the list of piece sizes',
   ],
   complexity: [{ label: 'Time', value: 'O(n)' }, { label: 'Space', value: 'O(1) (26 letters)' }],
   why: 'A piece may only be closed after the last occurrence of every letter inside it, so end is exactly the earliest legal cut point and it only moves right as new letters join the piece. Cutting at the first index where i equals end yields the shortest valid piece, and a shorter first piece never hurts the pieces after it, so the number of pieces is maximal.',

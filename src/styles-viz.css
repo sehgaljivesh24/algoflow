@@ -238,7 +238,7 @@
 /* ======================================================================
    Problem page  (everything below is scoped to .vp)
    ====================================================================== */
-.vp { min-height: 100vh; background: var(--bg); color: var(--text); padding-bottom: 8px; }
+.vp { --vp-accent: var(--cyan); /* the family colour of the problem is set inline (data/problemAccent.ts) */ min-height: 100vh; background: var(--bg); color: var(--text); padding-bottom: 8px; }
 .vp .card { background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; }
 .vp .card-title { font-size: .68rem; font-weight: 700; text-transform: uppercase; letter-spacing: .09em; color: var(--muted); margin-bottom: 12px; }
 .vp code { font-family: var(--mono); }
@@ -274,11 +274,11 @@
 .vp-top { display: flex; flex-direction: column; gap: 12px; padding: 16px 10px 0; }
 .embedded.vp .vp-top { padding: 0; }
 .q-stmt { font-size: .88rem; line-height: 1.75; color: var(--text); margin: 0 0 14px; }
-.q-stmt strong { font-weight: 700; }
+.q-stmt strong { font-weight: 700; color: var(--vp-accent); }
 .q-example { margin-top: 10px; padding: 10px 14px; background: var(--bg3); border-radius: 7px; border-left: 3px solid var(--border); }
 .q-ex-label { font-size: .72rem; font-weight: 700; color: var(--muted); margin-bottom: 6px; text-transform: uppercase; letter-spacing: .04em; }
 .q-io { font-size: .82rem; line-height: 1.9; display: flex; gap: 8px; flex-wrap: wrap; align-items: baseline; min-width: 0; }
-.q-label { font-weight: 600; color: var(--muted); flex-shrink: 0; }
+.q-label { font-weight: 600; color: var(--vp-accent); flex-shrink: 0; }
 .q-io code { background: var(--bg2); padding: 1px 7px; border-radius: 4px; color: var(--text); font-size: .82rem; border: 1px solid var(--border); white-space: pre-wrap; overflow-wrap: anywhere; min-width: 0; }
 .q-constraints { margin: 12px 0 0; font-size: .78rem; color: var(--muted); line-height: 1.7; font-family: var(--mono); }
 .q-constraints strong { color: var(--text); }
@@ -344,15 +344,47 @@
 /* visualization card */
 .vp-viz-title { display: flex; align-items: center; gap: 8px; }
 .vp-viz-icon { color: var(--blue); display: inline-flex; }
-.vp-legend { display: flex; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; }
-.lg { padding: 3px 12px; border-radius: 20px; font-size: .68rem; font-weight: 700; border: 1px solid transparent; }
-.lg-compare { background: var(--yellow-bg); color: var(--yellow); border-color: color-mix(in srgb, var(--yellow) 35%, transparent); }
-.lg-swap { background: var(--purple-bg); color: var(--purple); border-color: color-mix(in srgb, var(--purple) 35%, transparent); }
-.lg-active { background: var(--blue-bg); color: var(--cyan); border-color: color-mix(in srgb, var(--blue) 40%, transparent); }
-.lg-found, .lg-sorted { background: var(--green-bg); color: var(--green); border-color: color-mix(in srgb, var(--green) 35%, transparent); }
-.lg-error { background: color-mix(in srgb, var(--red) 14%, var(--bg2)); color: var(--red); border-color: color-mix(in srgb, var(--red) 35%, transparent); }
-.lg-dim { background: var(--bg3); color: var(--muted); border-color: var(--border); }
+/* tone helper: --pc is the colour of a phase chip / the narration bar (accent = the family colour of this problem) */
+.vp-tone-blue { --pc: var(--blue); } .vp-tone-cyan { --pc: var(--cyan); } .vp-tone-green { --pc: var(--green); }
+.vp-tone-orange { --pc: var(--orange); } .vp-tone-gold { --pc: var(--yellow); } .vp-tone-accent { --pc: var(--vp-accent); }
+
+/* phase chips: icon (or step number) + label, each with its own colour; only the active one is lit and pulses */
+.vp-phases { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 12px; }
+.vp-ph { display: inline-flex; align-items: center; gap: 6px; padding: 3px 11px; border-radius: 20px; font-size: .66rem; font-weight: 700; letter-spacing: .2px; line-height: 1.5; border: 1px solid var(--border); background: var(--bg3); color: var(--muted); max-width: min(100%, 340px); transition: background .3s, border-color .3s, color .3s; }
+.vp-ph-txt { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.vp-ph-ic { font-size: .76rem; line-height: 1; filter: grayscale(.7); transition: filter .3s; flex-shrink: 0; }
+.vp-ph-num { width: 16px; height: 16px; border-radius: 50%; display: grid; place-items: center; font: 700 .6rem var(--mono); background: var(--bg2); border: 1px solid var(--border); flex-shrink: 0; transition: background .3s, border-color .3s, color .3s; }
+.vp-ph.on { --pcc: var(--pc, var(--vp-accent)); background: color-mix(in srgb, var(--pcc) 15%, transparent); border-color: var(--pcc); color: var(--pcc); animation: vpPulse 1.2s ease infinite; }
+.vp-ph.on .vp-ph-ic { filter: none; }
+.vp-ph.on .vp-ph-num { background: var(--pcc); border-color: var(--pcc); color: var(--bg); }
+@keyframes vpPulse { 0%, 100% { box-shadow: 0 0 0 0 transparent; } 50% { box-shadow: 0 0 0 4px color-mix(in srgb, var(--pcc, var(--blue)) 16%, transparent); } }
+
+/* legend: one coloured dot + label per cell state the animation uses */
+.vp-legend { display: flex; flex-wrap: wrap; gap: 5px 16px; margin-bottom: 10px; }
+.vp-leg { --lc: var(--blue); display: inline-flex; align-items: center; gap: 6px; font-size: .7rem; font-weight: 600; color: var(--lc); }
+.vp-leg-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--lc); flex-shrink: 0; }
+.lgd-compare { --lc: var(--yellow); } .lgd-swap { --lc: var(--purple); } .lgd-error { --lc: var(--red); }
+.lgd-found, .lgd-sorted { --lc: var(--green); } .lgd-dim { --lc: var(--muted); }
+
+/* per-step warning banner; the slot keeps the picture from jumping while stepping */
+.vp-alert-slot { min-height: 40px; margin-bottom: 10px; }
+.vp-alert { background: color-mix(in srgb, var(--orange) 11%, transparent); border: 1px solid color-mix(in srgb, var(--orange) 40%, transparent); color: var(--orange); border-radius: 8px; padding: 8px 13px; font-size: .78rem; font-weight: 700; line-height: 1.4; animation: slideIn .3s ease; }
+.vp-alert.ok { background: var(--green-bg); border-color: color-mix(in srgb, var(--green) 45%, transparent); color: var(--green); }
+
 .vp-caption { font-size: .65rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin-bottom: 5px; }
+.vp-inputline { font: .72rem/1.5 var(--mono); color: var(--muted); margin-bottom: 4px; overflow-wrap: anywhere; white-space: pre-wrap; }
+
+/* narration under the picture (TAG: description, or title + description) and the line being executed with its live values */
+.vp-narr { display: flex; align-items: flex-start; gap: 12px; margin-top: 12px; padding: 10px 14px; min-height: 48px; background: var(--bg3); border: 1px solid var(--border); border-left: 3px solid var(--pc, var(--vp-accent)); border-radius: 0 8px 8px 0; transition: border-left-color .3s; }
+.vp-narr-text { flex: 1; min-width: 0; font-size: .85rem; line-height: 1.7; color: var(--text); white-space: pre-line; overflow-wrap: anywhere; }
+.vp-narr-tag { color: var(--pc, var(--vp-accent)); letter-spacing: .3px; }
+.vp-narr .step-title { display: block; }
+.vp-narr .step-desc { display: block; font-size: .83rem; }
+.vp-narr code { color: var(--cyan); }
+.vp-narr .step-ctr { flex-shrink: 0; margin-top: 2px; }
+.vp-exec { display: flex; align-items: flex-start; gap: 8px; margin-top: 8px; padding: 7px 14px; border-radius: 8px; font: .74rem/1.4 var(--mono); color: var(--vp-accent); background: color-mix(in srgb, var(--vp-accent) 7%, transparent); border: 1px solid color-mix(in srgb, var(--vp-accent) 22%, transparent); }
+.vp-exec::before { content: '▶'; font-size: .55rem; line-height: calc(.74rem * 1.4); flex-shrink: 0; }
+.vp-exec code { flex: 1 1 auto; min-width: 0; white-space: pre-wrap; overflow-wrap: anywhere; }
 .vp-stage { padding: 6px 0 2px; min-width: 0; }
 .vp-stage .svg-viz { max-height: 320px; }
 .split-viz { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; justify-content: flex-start; }
@@ -368,7 +400,7 @@
 .stbox { background: var(--bg3); border: 1px solid var(--border); border-radius: 8px; padding: 10px 8px; text-align: center; font-family: var(--mono); transition: all .35s; min-width: 0; }
 .stbox.flash { animation: stFlash .9s ease; }
 .st-lbl { font-size: .58rem; color: var(--muted); margin-bottom: 5px; text-transform: uppercase; letter-spacing: .06em; overflow-wrap: anywhere; }
-.st-val { font-size: 1.1rem; font-weight: 700; color: var(--cyan); overflow-wrap: anywhere; }
+.st-val { font-size: 1.1rem; font-weight: 700; color: var(--vp-accent, var(--cyan)); overflow-wrap: anywhere; }
 
 /* step logic + step card */
 .logic-box { background: var(--bg3); border-left: 3px solid var(--blue); border-radius: 0 8px 8px 0; padding: 11px 14px; font-size: .83rem; color: var(--text); line-height: 1.7; transition: border-color .3s, background .3s; min-height: 52px; }

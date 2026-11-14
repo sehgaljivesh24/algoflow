@@ -73,7 +73,7 @@ function build({ nums }: In): Step[] {
   popped = -1;
   phase = 'done';
   stack.forEach((j) => { done[j] = true; });
-  emit('Done', `Indexes still on the stack (${stack.length ? stack.map((j) => nums[j]).join(', ') : 'none'}) hold the maximum, so nothing is greater: their answer stays −1.`,
+  emit('Done', `Indexes still on the stack (values ${stack.length ? stack.map((j) => nums[j]).join(', ') : 'none'}) hold the maximum, so nothing is greater: their answer stays −1.`,
     'After two laps every index has seen all other elements in circular order.', 'success', [11], [10], 3,
     { title: `[${ans.join(', ')}]`, text: 'Next greater element for each position (circular)' });
   return steps;

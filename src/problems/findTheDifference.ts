@@ -28,18 +28,21 @@ function build({ s, t }: In): Step[] {
   const grid = (rows: Cell[][], heads: string[]) => ({ kind: 'grid' as const, rows, rowHeads: heads, colHeads: bitHeads(W) });
 
   steps.push({
-    title: 'Start', desc: `t is s shuffled with one extra letter. XOR the ASCII codes of every letter of s and t: letters appearing twice cancel.`,
+    title: 'Start', tag: 'START —', desc: `t = "${t}" is s = "${s}" shuffled plus one extra letter. XOR every ASCII code of s and t: letters that appear twice cancel.`,
     scene: grid([bitRow(0, W), blank(), blank()], ['acc = 0', 'letter', 'acc ^ letter']), vars: vars('—', '—'), aux: aux(-1),
     logic: 'Each letter of s also appears in t, so it gets XORed in twice and disappears. Only the extra letter is XORed an odd number of times.', logicTone: 'info',
-    javaLines: [0, 1], pyLines: [0, 1], algoStep: 0,
+    javaLines: [0, 1], pyLines: [0, 1], algoStep: 0, note: 'xor = 0 before any letter',
   });
 
   seq.forEach(({ c, from }, k) => {
     const code = c.charCodeAt(0);
     const before = acc;
     acc ^= code;
+    const repeat = seq.slice(0, k).some((x) => x.c === c);
     steps.push({
-      title: `XOR with '${c}' (${code}) from ${from}`, desc: `${before} ^ ${code} = ${acc}. Purple bits flipped in the accumulator.`,
+      title: `XOR with '${c}' (${code}) from ${from}`, tag: from === 's' ? 'XOR s:' : 'XOR t:',
+      desc: `${from}[${from === 's' ? k : k - s.length}]='${c}' has code ${code}: ${before} ^ ${code} = ${acc}${repeat ? ` (a '${c}' was XORed before, so its bits flip back)` : ''}.`,
+      note: `acc = ${before} ^ ${code} = ${acc}`,
       scene: grid([bitRow(before, W), bitRow(code, W, 'compare'), bitRow(acc, W, undefined, (col) => (((before ^ acc) >> (W - 1 - col)) & 1 ? 'swap' : undefined))], [`acc = ${before}`, `'${c}' = ${code}`, `acc ^ '${c}' = ${acc}`]),
       vars: vars(c, from), aux: aux(k),
       logic: seq.slice(0, k).some((x) => x.c === c) ? `A '${c}' was XORed before, so this one cancels it.` : `First '${c}' seen so far; its bits go into the accumulator.`, logicTone: 'info',
@@ -49,7 +52,7 @@ function build({ s, t }: In): Step[] {
 
   const ch = String.fromCharCode(acc);
   steps.push({
-    title: `Answer = '${ch}'`, desc: `The accumulator is ${acc} = ASCII '${ch}': the letter that t has and s lacks.`,
+    title: `Answer = '${ch}'`, tag: '✅ Done!', note: `(char) ${acc} = '${ch}'`, desc: `the accumulator is ${acc} = ASCII '${ch}': the letter that t has and s lacks.`,
     scene: grid([bitRow(acc, W, 'found'), blank(), blank()], [`acc = ${acc}`, 'letter', 'acc ^ letter']), vars: vars('—', '—'), aux: aux(-1),
     logic: 'Converting the leftover code back to a character gives the added letter.', logicTone: 'success', javaLines: [4], pyLines: [4], algoStep: 3,
     result: { title: ch, text: `'${ch}' was added to t` },
@@ -89,11 +92,18 @@ export const findTheDifference: ProblemDef<In> = {
     '        xor ^= ord(c)',
     '    return chr(xor)',
   ],
+  phases: [
+    { icon: '🏁', label: 'Start xor = 0', tone: 'blue' },
+    { icon: '🔤', label: 'XOR letters of s', tone: 'cyan' },
+    { icon: '🔡', label: 'XOR letters of t', tone: 'gold' },
+    { icon: '✅', label: 'Done', tone: 'green' },
+  ],
+  emphasis: ['shuffling string s', 'one extra lowercase letter'],
   algorithm: [
     'Start with xor = 0',
     'XOR in the code of every letter of s',
     'XOR in the code of every letter of t',
-    'Convert the leftover value back to a letter',
+    'Done: convert the leftover value back to a letter',
   ],
   complexity: [{ label: 'Time', value: 'O(n)' }, { label: 'Space', value: 'O(1)' }],
   why: 'x ^ x = 0 and XOR is order-independent. A letter occurring k times in s occurs k times in t as well (plus one more for the added letter), so its codes appear an even number of times and vanish; the added letter appears an odd number of times and remains.',

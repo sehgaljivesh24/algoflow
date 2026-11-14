@@ -54,9 +54,9 @@ function build({ points, k }: In): Step[] {
     cur = `(${x},${y})`;
     dist = p.d;
     hot = {};
-    emit(`Read (${x}, ${y})`, `Point ${i} is (${x}, ${y}): squared distance ${x}² + ${y}² = ${p.d}.`, 'Comparing squared distances gives the same order as comparing real distances, and avoids floating point.', 'info', [2, 3], [2, 3], 1,
+    emit(`Read (${x}, ${y})`, `Point ${i} is (${x}, ${y}): squared distance ${x < 0 ? `(${x})` : x}² + ${y < 0 ? `(${y})` : y}² = ${p.d}.`, 'Comparing squared distances gives the same order as comparing real distances, and avoids floating point.', 'info', [2, 3], [2, 3], 1,
       undefined, { tag: 'MEASURE', note: `${x}*${x} + ${y}*${y} = ${p.d}` });
-    heap.push(p, cb([3], [4], 2));
+    heap.push(p, cb([3], [4], 1));
     if (heap.size > k) {
       const far = heap.peek();
       hot = { 0: 'error' };

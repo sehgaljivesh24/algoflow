@@ -197,7 +197,7 @@ function morrisRules(mode: MorrisMode): TitleRule[] {
   const rec = mode === 'recover';
   const visitWord = mode === 'preorder' ? 'record' : 'visit';
   return [
-    { on: 'first', tag: 'INIT —', note: (_m, s) => `cur = root (${s.vars.cur}), res = []` },
+    { on: 'first', tag: 'INIT —', note: (_m, s) => `cur = root (${s.vars.cur}), ${rec ? 'prev = first = second = null' : 'res = []'}` },
     {
       on: /^(\S+) has no left child$/,
       tag: 'NO LEFT —',

@@ -24,45 +24,76 @@ function build(inp: In): Step[] {
   const heads = (withTail: boolean) => [`a=${signed(a)}`, `b=${signed(b)}`, withTail && typeof sum === 'number' ? `a^b=${signed(sum)}` : 'a^b', withTail && typeof carry === 'number' ? `carry=${signed(carry)}` : 'carry'];
 
   steps.push({
-    title: 'Start', desc: `Add ${inp.a} and ${inp.b} without using + or −. Numbers are shown as 12-bit two’s complement (Java uses 32 bits, the idea is identical).`,
-    scene: grid([bitRow(a, W), bitRow(b, W), blank(), blank()], heads(false)), vars: vars(),
+    title: 'Start', tag: 'START —', desc: `Add ${inp.a} and ${inp.b} without + or −, using only bit operations on 12-bit two’s complement numbers (Java uses 32 bits, same idea).`,
+    scene: grid([blank(), blank(), blank(), blank()], heads(false)), vars: vars(),
     logic: 'Binary addition = XOR (the sum of each column ignoring carries) plus AND shifted left (the carries). Repeat until no carry is left.', logicTone: 'info',
-    javaLines: [0, 1], pyLines: [0, 1, 2], algoStep: 0,
+    javaLines: [0], pyLines: [0, 1], algoStep: 0, note: `a = ${inp.a}, b = ${inp.b}`,
+  });
+  steps.push({
+    title: 'Write both numbers as bits', tag: 'ENCODE:', desc: `a = ${signed(a)} and b = ${signed(b)} are laid out as 12 bit columns, most significant bit on the left.`,
+    scene: grid([bitRow(a, W), bitRow(b, W), blank(), blank()], heads(false)), vars: vars(),
+    logic: 'Seeing the bits makes the column sums and carries visible.', logicTone: 'info',
+    javaLines: [0], pyLines: [0, 1], algoStep: 0, note: `a = ${signed(a)}, b = ${signed(b)}`,
   });
 
   let guard = 0;
+  let pass = 0;
   while (b !== 0 && guard++ < 40) {
-    sum = (a ^ b) & M;
-    carry = ((a & b) << 1) & M;
-    const both = a & b;
+    pass++;
     steps.push({
-      title: 'Partial sum and carries', desc: `a ^ b = ${signed(sum)} adds each column without carrying; (a & b) << 1 = ${signed(carry)} marks the carries moved one column left.`,
+      title: `Pass ${pass}: b is not zero`, tag: 'CHECK:', desc: `b = ${signed(b)} is not 0, so carries are still pending: run pass ${pass}.`,
+      scene: grid([bitRow(a, W), bitRow(b, W), blank(), blank()], heads(false)), vars: vars(),
+      logic: 'The loop keeps going while any carry bit is left in b.', logicTone: 'info',
+      javaLines: [1], pyLines: [2], algoStep: 1, note: `${signed(b)} ≠ 0 → loop`,
+    });
+    const both = a & b;
+    carry = ((a & b) << 1) & M;
+    steps.push({
+      title: 'Carries: (a & b) << 1', tag: 'CARRY:',
+      desc: both ? `columns where a and b are both 1 carry left: (a & b) << 1 = ${signed(carry)}.` : `no column has two 1s, so (a & b) << 1 = 0: nothing to carry.`,
       scene: grid([
         bitRow(a, W, undefined, (c) => ((both >> (W - 1 - c)) & 1 ? 'compare' : undefined)),
         bitRow(b, W, undefined, (c) => ((both >> (W - 1 - c)) & 1 ? 'compare' : undefined)),
-        bitRow(sum, W, 'found'),
+        blank(),
         bitRow(carry, W, undefined, (c) => (((carry as number) >> (W - 1 - c)) & 1 ? 'swap' : undefined)),
       ], heads(true)),
       vars: vars(), logic: both ? 'Columns where both bits are 1 (yellow) produce a carry into the next column to the left.' : 'No column has two 1s, so there is nothing to carry: the XOR is already the sum.', logicTone: 'info',
-      javaLines: [2, 3], pyLines: [3, 4], algoStep: 1,
+      javaLines: [2], pyLines: [3], algoStep: 2, note: `(${signed(a)} & ${signed(b)}) << 1 = ${signed(carry)}`,
     });
+    sum = (a ^ b) & M;
+    steps.push({
+      title: 'Sum without carry: a ^ b', tag: 'XOR:', desc: `a ^ b adds each column ignoring carries: ${signed(a)} ^ ${signed(b)} = ${signed(sum)}.`,
+      scene: grid([bitRow(a, W), bitRow(b, W), bitRow(sum, W, 'found'), bitRow(carry, W, undefined, (c) => (((carry as number) >> (W - 1 - c)) & 1 ? 'swap' : undefined))], heads(true)),
+      vars: vars(), logic: 'XOR is 1 exactly where the two bits differ, which is the column sum with the carry dropped.', logicTone: 'info',
+      javaLines: [3], pyLines: [4], algoStep: 3, note: `${signed(a)} ^ ${signed(b)} = ${signed(sum)}`,
+    });
+    const prevA = signed(a);
+    const prevB = signed(b);
     a = sum;
     b = carry;
     sum = '—';
     carry = '—';
     steps.push({
-      title: b === 0 ? 'Carry is zero: done adding' : 'Feed the carry back in', desc: b === 0 ? `a = ${signed(a)}, b = 0. No carries remain, so a holds the answer.` : `a = ${signed(a)}, b = carry = ${signed(b)}. Add them the same way.`,
+      title: b === 0 ? 'Carry is zero' : 'Feed the carry back in', tag: 'FEED:',
+      desc: b === 0 ? `a = ${signed(a)} and b = 0: no carries remain, so a already holds the sum.` : `a = ${signed(a)}, b = carry = ${signed(b)}: add these two the same way next pass.`,
       scene: grid([bitRow(a, W, b === 0 ? 'found' : undefined), bitRow(b, W), blank(), blank()], heads(false)), vars: vars(),
-      logic: b === 0 ? 'The loop condition b != 0 fails.' : 'The carry may itself create new carries, so we loop. Each pass pushes the carries at least one column left, so at most 12 passes are needed here.', logicTone: b === 0 ? 'success' : 'warn',
-      javaLines: [4, 1], pyLines: [5, 2], algoStep: 2,
+      logic: b === 0 ? 'The loop condition b != 0 is about to fail.' : 'The carry may itself create new carries, so we loop. Each pass pushes the carries at least one column left, so at most 12 passes are needed here.', logicTone: b === 0 ? 'success' : 'info',
+      javaLines: [3, 4], pyLines: [4, 5], algoStep: 4, note: `a = ${signed(a)}, b = ${signed(b)} (was ${prevA}, ${prevB})`,
     });
   }
 
   const out = signed(a);
   steps.push({
-    title: `Answer = ${out}`, desc: `${inp.a} + ${inp.b} = ${out}.`,
+    title: 'b is zero: stop', tag: 'CHECK:', desc: `b = 0, so the loop ends after ${pass} pass${pass === 1 ? '' : 'es'}; a = ${out} is the answer.`,
     scene: grid([bitRow(a, W, 'found'), bitRow(b, W), blank(), blank()], heads(false)), vars: vars(),
-    logic: 'When b is 0 the value left in a is the sum (read as a signed number).', logicTone: 'success', javaLines: [6], pyLines: [6], algoStep: 3,
+    logic: 'When b is 0 the value left in a is the sum (read as a signed number).', logicTone: 'success',
+    javaLines: [1, 5], pyLines: [2], algoStep: 1, note: '0 ≠ 0 → false, exit loop',
+  });
+  steps.push({
+    title: `Answer = ${out}`, tag: '✅ Done!', desc: `${inp.a} + ${inp.b} = ${out}, computed with XOR and AND only.`,
+    scene: grid([bitRow(a, W, 'found'), bitRow(b, W), blank(), blank()], heads(false)), vars: vars(),
+    logic: 'a + b = (a ^ b) + ((a & b) << 1) at every pass, so the final a equals the original sum.', logicTone: 'success', javaLines: [6], pyLines: [6], algoStep: 5,
+    note: `${inp.a} + ${inp.b} = ${out}`,
     result: { title: String(out), text: `${inp.a} + ${inp.b} = ${out}` },
   });
   return steps;
@@ -104,11 +135,22 @@ export const sumOfTwoIntegers: ProblemDef<In> = {
     '        b = carry',
     '    return a if a <= 0x7FFFFFFF else ~(a ^ MASK)',
   ],
+  phases: [
+    { icon: '🔢', label: 'Write a and b as bits', tone: 'blue' },
+    { icon: '🔍', label: 'Check b ≠ 0', tone: 'cyan' },
+    { icon: '🧮', label: 'Carries (a & b) << 1', tone: 'orange' },
+    { icon: '➕', label: 'XOR a ^ b', tone: 'green' },
+    { icon: '🔁', label: 'Feed carry back', tone: 'gold' },
+    { icon: '✅', label: 'Done', tone: 'green' },
+  ],
+  emphasis: ['without using the + or − operators'],
   algorithm: [
-    'While b ≠ 0, find the carries: (a & b) << 1',
-    'Add without carry: a = a ^ b',
-    'Make the carry the new b and repeat',
-    'When b is 0, a is the sum',
+    'Write a and b as bit columns',
+    'While b ≠ 0, run a pass; when b is 0 stop',
+    'Find the carries: (a & b) << 1',
+    'Add without carry: a ^ b',
+    'Make the XOR the new a and the carries the new b, then loop',
+    'Done: a holds the sum',
   ],
   complexity: [{ label: 'Time', value: 'O(bit width)' }, { label: 'Space', value: 'O(1)' }],
   why: 'a + b = (a ^ b) + ((a & b) << 1) always holds: XOR is the column sum with carries dropped, and the AND shifted left is exactly the carries. Each iteration moves every carry at least one column left, so after at most the bit width of iterations no carry remains. Two’s complement makes it work for negatives too.',

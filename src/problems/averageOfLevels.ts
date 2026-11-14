@@ -65,28 +65,29 @@ function build({ tokens }: TreeIn): Step[] {
   queue.push(0);
   states[0] = 'compare';
   add({
-    title: 'Start', desc: 'Queue the root. For each level we will add up its values and divide by how many nodes it has.',
+    title: 'Start', tag: 'START —', desc: `queue the root ${val(0)}; for each level we will add up its values and divide by how many nodes it has.`,
     logic: 'This is plain level-order traversal; the only extra state is a running sum per level.',
-    j: J.start, p: P.start, a: 0, vars: vars('—'), aux: aux(),
+    j: J.start, p: P.start, a: 0, vars: vars('—'), aux: aux(), note: `queue = [${val(0)}]`,
   });
 
   while (queue.length) {
     size = queue.length;
     sum = 0;
     add({
-      title: `Level ${depth}: size = ${size}`, desc: `${size} node${size === 1 ? '' : 's'} in this level. Reset the running sum to 0.`,
+      title: `Level ${depth}: size = ${size}`, tag: 'LEVEL:', desc: `level ${depth} holds ${size} node${size === 1 ? '' : 's'} (${queue.map(val).join(', ')}); freeze size = ${size} and reset the running sum to 0.`,
       logic: 'Freeze the size now — it is both the loop bound and the divisor for the average.',
-      j: J.size, p: P.size, a: 1, vars: vars('—'), aux: aux(),
+      j: J.size, p: P.size, a: 1, vars: vars('—'), aux: aux(), note: `size = ${size}, sum = 0`,
     });
     for (let i = 0; i < size; i++) {
       const id = queue.shift()!;
+      const before = sum;
       sum += val(id);
       states[id] = 'active';
       labels[id] = `Σ${sum}`;
       add({
-        title: `Dequeue ${val(id)}`, desc: `Add ${val(id)} to the level sum → ${sum}.`,
+        title: `Dequeue ${val(id)}`, tag: 'POLL:', desc: `dequeue ${val(id)} (node ${i + 1} of ${size} in level ${depth}) and add it to the level sum: ${before} + ${val(id)} = ${sum}.`,
         logic: 'Poll, accumulate. The label on the node shows the running sum after it was added.',
-        j: J.poll, p: P.poll, a: 2, vars: vars(val(id)), aux: aux(),
+        j: J.poll, p: P.poll, a: 2, vars: vars(val(id)), aux: aux(), note: `sum = ${before} + ${val(id)} = ${sum}`,
       });
       const kids = [nodes[id].left, nodes[id].right].filter((c): c is number => c !== null);
       for (const c of kids) {
@@ -95,9 +96,9 @@ function build({ tokens }: TreeIn): Step[] {
       }
       if (kids.length) {
         add({
-          title: `Enqueue children of ${val(id)}`, desc: `Queue ${kids.map((c) => val(c)).join(' and ')} for the next level.`,
+          title: `Enqueue children of ${val(id)}`, tag: 'PUSH:', desc: `queue the children ${kids.map((c) => val(c)).join(' and ')} of ${val(id)} behind this level, for the next level.`,
           logic: 'They go behind the current level, so they are not part of this level’s sum.', tone: 'success',
-          j: J.kids, p: P.kids, a: 2, vars: vars(val(id)), aux: aux(),
+          j: J.kids, p: P.kids, a: 2, vars: vars(val(id)), aux: aux(), note: `queue += [${kids.map((c) => val(c)).join(', ')}]`,
         });
       }
       states[id] = 'found';
@@ -105,17 +106,17 @@ function build({ tokens }: TreeIn): Step[] {
     const avg = fmtAvg(sum, size);
     avgs.push(avg);
     add({
-      title: `Level ${depth} average = ${avg}`, desc: `${sum} / ${size} = ${avg}. Append it to the result.`,
+      title: `Level ${depth} average = ${avg}`, tag: 'AVERAGE:', desc: `level ${depth} is complete: ${sum} / ${size} = ${avg}, appended to the result.`,
       logic: 'Sum divided by node count of this level.', tone: 'success',
-      j: J.done, p: P.done, a: 3, vars: vars('—'), aux: aux(),
+      j: J.done, p: P.done, a: 3, vars: vars('—'), aux: aux(), note: `res.add(${sum} / ${size} = ${avg})`,
     });
     depth++;
   }
 
   const out = `[${avgs.join(', ')}]`;
   add({
-    title: 'Done', desc: `Every level has an average: ${out}`, logic: 'Results are in top-to-bottom order.', tone: 'success',
-    j: J.ret, p: P.ret, a: 3, vars: vars('—'), aux: aux(), result: { title: out, text: 'Average of each level' },
+    title: 'Done', tag: '✅ Done!', desc: `the queue is empty, so every level has its average, listed top to bottom: ${out}.`, logic: 'Results are in top-to-bottom order.', tone: 'success',
+    j: J.ret, p: P.ret, a: 4, vars: vars('—'), aux: aux(), note: `return ${out}`, result: { title: out, text: 'Average of each level' },
   });
   return steps;
 }
@@ -139,11 +140,20 @@ export const averageOfLevels: ProblemDef<TreeIn> = {
     text: 'Run BFS one level at a time. Snapshot the queue size, add up that many dequeued values, and divide the sum by the size to get that level’s average.',
   },
   java, python,
+  phases: [
+    { icon: '🌱', label: 'Queue the root', tone: 'blue' },
+    { icon: '📏', label: 'Freeze level size', tone: 'cyan' },
+    { icon: '➕', label: 'Poll, add, push kids', tone: 'green' },
+    { icon: '📊', label: 'Level average', tone: 'gold' },
+    { icon: '✅', label: 'Done', tone: 'green' },
+  ],
+  emphasis: ['average value', 'each level'],
   algorithm: [
     'Queue the root',
     'For each level read size = q.size() and reset sum = 0',
     'Dequeue size nodes, add their values, queue their children',
     'Append sum / size to the result',
+    'Done: the queue is empty, return the list of averages',
   ],
   complexity: [{ label: 'Time', value: 'O(n)' }, { label: 'Space', value: 'O(w)' }],
   why: 'Each node is queued and dequeued once, contributing to exactly one level’s sum. Snapshotting the size guarantees the sum and the divisor describe the same level. Use a 64-bit sum: a level of many large values can overflow an int before you divide.',

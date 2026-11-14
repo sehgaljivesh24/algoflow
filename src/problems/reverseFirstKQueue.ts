@@ -34,17 +34,18 @@ function build({ queue: input, k }: In): Step[] {
     { title: 'stack (top on the right)', kind: 'stack' as const, items: stack.map((x) => String(x.v)), highlight: stack.length ? stack.length - 1 : undefined },
   ];
   const vars = (phase: string) => ({ phase, k, 'queue size': q.length, 'stack size': stack.length });
-  const add = (title: string, desc: string, logic: string, tone: 'info' | 'warn' | 'success', j: number[], p: number[], a: number, phase: string, result?: Step['result']) =>
-    steps.push({ title, desc, cells: cells(), pointers: [], aux: aux(), vars: vars(phase), logic, logicTone: tone, javaLines: j, pyLines: p, algoStep: a, result });
+  const add = (title: string, tag: string, desc: string, note: string, logic: string, tone: 'info' | 'warn' | 'success', j: number[], p: number[], a: number, phase: string, result?: Step['result']) =>
+    steps.push({ title, tag, note, desc, cells: cells(), pointers: [], aux: aux(), vars: vars(phase), logic, logicTone: tone, javaLines: j, pyLines: p, algoStep: a, result });
 
-  add('Start', `Queue = [${input.join(', ')}], k = ${k}. Reverse only the first ${k} elements.`,
+  add('Start', 'START —', `queue = [${input.join(', ')}] and k = ${k}: an empty stack will reverse only the first ${k} element${k === 1 ? '' : 's'}.`, `stack = [], k = ${k}`,
     'A queue only gives back its oldest element and a stack gives back its newest. Moving k items through a stack reverses their order.', 'info', [0, 1], [0, 1], 0, 'start');
 
   for (let i = 0; i < k; i++) {
     const x = q.shift()!;
     stack.push(x);
     moved = x.id;
-    add(`Dequeue ${x.v} → push on stack`, `Take ${x.v} from the front of the queue and push it onto the stack (${i + 1} of ${k}).`,
+    add(`Dequeue ${x.v} → push on stack`, 'PUSH:', `dequeue ${x.v} from the front of the queue and push it onto the stack (${i + 1} of ${k}); the stack now reads [${stack.map((s) => s.v).join(', ')}].`,
+      `stack.push(q.poll()) = ${x.v}`,
       'The first element ends up deepest in the stack, the k-th element on top.', 'info', [2, 3], [2, 3], 1, 'queue → stack');
   }
 
@@ -52,7 +53,8 @@ function build({ queue: input, k }: In): Step[] {
     const x = stack.pop()!;
     q.push(x);
     moved = x.id;
-    add(`Pop ${x.v} → enqueue at the back`, `Pop ${x.v} from the stack and add it to the back of the queue (${i + 1} of ${k}).`,
+    add(`Pop ${x.v} → enqueue at the back`, 'POP:', `pop ${x.v} off the top of the stack and add it to the back of the queue (${i + 1} of ${k}); the queue is [${q.map((s) => s.v).join(', ')}].`,
+      `q.add(stack.pop()) = ${x.v}`,
       'The stack returns the k-th element first, so the first k items re-enter in reversed order, behind the untouched ones.', 'success', [4, 5], [4, 5], 2, 'stack → queue');
   }
 
@@ -60,13 +62,14 @@ function build({ queue: input, k }: In): Step[] {
     const x = q.shift()!;
     q.push(x);
     moved = x.id;
-    add(`Rotate ${x.v} to the back`, `The untouched element ${x.v} is still at the front. Move it behind the reversed block (${i + 1} of ${n - k}).`,
+    add(`Rotate ${x.v} to the back`, 'ROTATE:', `the untouched element ${x.v} is still at the front, so move it behind the reversed block (${i + 1} of ${n - k}); the queue is [${q.map((s) => s.v).join(', ')}].`,
+      `q.add(q.poll()) = ${x.v}`,
       'Cycling the remaining n − k elements to the back restores their original order in front of the reversed part.', 'warn', [6, 7], [6, 7], 3, 'rotate rest');
   }
 
   moved = -1;
   const out = q.map((x) => x.v);
-  add('Done', `The first ${k} elements are reversed; the rest keep their order.`, `Result: [${out.join(', ')}]`, 'success', [8], [8], 3, 'done',
+  add('Done', '✅ Done!', `the first ${k} element${k === 1 ? ' is' : 's are'} reversed and the rest keep their order: [${out.join(', ')}].`, `return [${out.join(', ')}]`, `Result: [${out.join(', ')}]`, 'success', [8], [8], 4, 'done',
     { title: JSON.stringify(out), text: 'Queue after reversing the first k elements' });
   return steps;
 }
@@ -112,11 +115,20 @@ export const reverseFirstKQueue: ProblemDef<In> = {
     '        q.append(q.popleft())',
     '    return q',
   ],
+  phases: [
+    { icon: '🧱', label: 'Empty stack', tone: 'blue' },
+    { icon: '📥', label: 'Queue → stack (k times)', tone: 'cyan' },
+    { icon: '📤', label: 'Stack → queue (k times)', tone: 'green' },
+    { icon: '🔁', label: 'Rotate the rest', tone: 'orange' },
+    { icon: '✅', label: 'Done', tone: 'green' },
+  ],
+  emphasis: ['reverse the order of the first k elements', 'original relative order'],
   algorithm: [
     'Create an empty stack',
     'Dequeue k elements and push each onto the stack',
     'Pop the stack and enqueue each element at the back',
-    'Move the remaining n − k elements from the front to the back and return the queue',
+    'Move the remaining n − k elements from the front to the back',
+    'Done: return the queue',
   ],
   complexity: [{ label: 'Time', value: 'O(n)' }, { label: 'Space', value: 'O(k)' }],
   why: 'Pushing k items on a stack and popping them reverses their order (last in, first out). After re-enqueueing, the queue is the n − k untouched elements followed by the k reversed ones; cycling the untouched elements from front to back keeps their relative order and puts them ahead of the reversed block, which is the required final order.',

@@ -4,6 +4,8 @@ import { annotate } from './annotate.ts';
 
 interface In { vals: number[]; n: number }
 
+const ordinal = (m: number) => `${m}${m % 100 >= 11 && m % 100 <= 13 ? 'th' : ['th', 'st', 'nd', 'rd'][m % 10 > 3 ? 0 : m % 10]}`;
+
 function parse(raw: string): In {
   const [a, b] = parts(raw, 2, 'values ; n — e.g. 1 2 3 4 5 ; 2');
   const vals = parseInts(a, { max: 10, hint: '1 2 3 4 5 ; 2' });
@@ -40,7 +42,7 @@ function build({ vals, n }: In): Step[] {
     vars: { slow: show(slow, all), fast: show(fast, all), gap: `${gap}/${n}` },
   }));
 
-  emit('Start', `Add a dummy node D before the head. slow = D, fast = head. We want to delete the ${n}${n === 1 ? 'st' : n === 2 ? 'nd' : n === 3 ? 'rd' : 'th'} node from the end.`,
+  emit('Start', `Add a dummy node D before the head. slow = D, fast = head. We want to delete the ${ordinal(n)} node from the end.`,
     'The dummy node means deleting the head needs no special case: slow can always stand in front of the victim.', 'info', [1, 2], [1, 2], 0);
 
   for (let i = 0; i < n; i++) {
@@ -61,7 +63,7 @@ function build({ vals, n }: In): Step[] {
 
   const victim = next[slow as number] as number;
   hot = { 0: 'dim', [victim]: 'error', [slow as number]: 'compare' };
-  emit('fast is null: slow is just before the target', `When fast fell off the end, slow stands right before the ${n}-th node from the end (${vals[victim - 1]}).`,
+  emit('fast is null: slow is just before the target', `When fast fell off the end, slow stands right before the ${ordinal(n)} node from the end (${vals[victim - 1]}).`,
     'fast is n nodes ahead of slow; when fast is past the last node, slow.next is the n-th node from the end.', 'warn', [4, 7], [5, 6], 3);
 
   next[slow as number] = next[victim];
@@ -71,7 +73,7 @@ function build({ vals, n }: In): Step[] {
 
   slow = null;
   hot = { 0: 'dim', ...Object.fromEntries(chainKeys(next, next[0]).map((k) => [k, 'found' as CellState])) };
-  emit('Done', `Removed the ${n}-th node from the end. Result: ${arrow(out)}.`, 'One pass, no length computation.', 'success', [9], [8], 3, { title: arrow(out), text: `Node ${vals[victim - 1]} removed` });
+  emit('Done', `Removed the ${ordinal(n)} node from the end. Result: ${arrow(out)}.`, 'One pass, no length computation.', 'success', [9], [8], 3, { title: arrow(out), text: `Node ${vals[victim - 1]} removed` });
   return steps;
 }
 

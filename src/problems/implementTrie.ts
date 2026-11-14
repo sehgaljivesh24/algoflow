@@ -68,7 +68,7 @@ function build({ ops }: In): Step[] {
         path.push(id);
         at = `"${w.slice(0, k + 1)}"`;
         push({
-          title: created ? `Create node for '${ch}'` : `Follow existing '${ch}'`, desc: created ? `No child '${ch}' under "${w.slice(0, k)}", so add one.` : `Child '${ch}' already exists, so the prefix "${w.slice(0, k + 1)}" is shared.`,
+          title: created ? `Create node for '${ch}'` : `Follow existing '${ch}'`, desc: created ? `No child '${ch}' under ${k ? `"${w.slice(0, k)}"` : 'the root'}, so add one.` : `Child '${ch}' already exists, so the prefix "${w.slice(0, k + 1)}" is shared.`,
           scene: trie.scene(path, { [id]: created ? 'found' : 'active' }), logic: created ? 'New letters extend the trie by one node.' : 'Existing nodes are reused, which is how a trie saves space.', logicTone: created ? 'success' : 'info',
           javaLines: created ? [6, 7, 8, 9] : [6, 7, 9], pyLines: created ? [7, 8, 9, 10] : [7, 8, 10], algoStep: 1,
           tag: created ? 'CREATE —' : 'SHARE —',
@@ -79,10 +79,10 @@ function build({ ops }: In): Step[] {
         if (nid === null) {
           failed = true;
           push({
-            title: `No child '${ch}': stop`, desc: `"${w.slice(0, k)}" has no '${ch}' edge, so "${w.slice(0, k + 1)}" is not in the trie.`,
+            title: `No child '${ch}': stop`, desc: `${k ? `"${w.slice(0, k)}"` : 'The root'} has no '${ch}' edge, so "${w.slice(0, k + 1)}" is not in the trie.`,
             scene: trie.scene(path, { [id]: 'error' }), logic: 'A missing edge proves that nothing stored starts with this prefix.', logicTone: 'warn',
             javaLines: [26, 27], pyLines: [22, 23, 24], algoStep: 3,
-            tag: 'DEAD END —', alert: `No '${ch}' edge below "${w.slice(0, k)}": nothing stored starts with "${w.slice(0, k + 1)}"`,
+            tag: 'DEAD END —', alert: `No '${ch}' edge below ${k ? `"${w.slice(0, k)}"` : 'the root'}: nothing stored starts with "${w.slice(0, k + 1)}"`,
             note: `node = next['${ch}'] = null → return null`,
           });
         } else {

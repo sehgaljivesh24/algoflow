@@ -84,7 +84,7 @@ function build({ tokens }: TreeIn): Step[] {
     size = queue.length;
     add({
       title: `Level ${depth}: size = ${size}`, tag: `🌊 LEVEL ${depth}:`,
-      desc: `The queue holds ${size} node${size === 1 ? '' : 's'} ${q()}. Freeze that number: exactly ${size} dequeue${size === 1 ? '' : 's'} make up this level.`,
+      desc: `The queue holds ${size} node${size === 1 ? '' : 's'} ${q()}. Freeze that number: exactly ${size} dequeue${size === 1 ? ' makes' : 's make'} up this level.`,
       note: `size = q.size() = ${size}`,
       logic: 'Children we enqueue while looping belong to the NEXT level, so we must not count them in this one.',
       j: J.size, p: P.size, a: 1, vars: vars(), aux: aux(),
@@ -117,7 +117,7 @@ function build({ tokens }: TreeIn): Step[] {
         });
       } else {
         add({
-          title: `${val(id)} is a leaf`, tag: '⚙️ PROCESS —',
+          title: `${val(id)} is a leaf`, tag: '📥 NO CHILDREN —',
           desc: `${val(id)} has no children, so nothing is added to the queue (q.size stays ${queue.length}).`,
           note: `node.left == null && node.right == null → q.size = ${queue.length}`,
           logic: 'A leaf adds no work; the loop simply moves on to the next node of this level.',

@@ -109,7 +109,7 @@ function build({ expr }: In): Step[] {
       stack.pop();
       result = inner * s + r;
       steps.push({
-        title: 'Close bracket: merge', desc: `Inside value = ${inner}. Multiply by the saved sign (${sg(s)}) and add the saved outer result (${r}): ${r} ${s > 0 ? '+' : '−'} ${Math.abs(inner)} = ${result}.`,
+        title: 'Close bracket: merge', desc: `Inside value = ${inner}. Multiply by the saved sign (${sg(s)}) and add the saved outer result (${r}): ${r} ${inner * s >= 0 ? '+' : '−'} ${Math.abs(inner)} = ${result}.`,
         cells: cells(i), pointers: ptr(i), aux: aux(), vars: vars(),
         logic: 'Pop the sign first (it was pushed last), then the outer result.', logicTone: 'success', javaLines: [12, 13, 14, 15], pyLines: [11, 12, 13, 14], algoStep: 3,
       });

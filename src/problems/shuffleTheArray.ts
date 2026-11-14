@@ -17,12 +17,15 @@ function build({ nums, n }: In): Step[] {
   const out: number[] = [];
   const order: number[] = []; // source indexes in output order
 
-  const cells = (i: number, finished = false): Cell[] => {
+  // second = false: nums[i] is being placed (nums[i + n] waits); second = true: nums[i + n] is being placed (nums[i] is already in ans)
+  const cells = (i: number, finished = false, second = false): Cell[] => {
     const list = finished ? order : nums.map((_, k) => k);
     return list.map((k) => {
       let state: CellState | undefined;
       if (finished) state = 'found';
-      else if (i >= 0 && (k === i || k === i + n)) state = 'active';
+      else if (i >= 0 && k === (second ? i + n : i)) state = 'active';
+      else if (i >= 0 && !second && k === i + n) state = 'compare';
+      else if (i >= 0 && second && k === i) state = 'dim';
       else if (k < i || (k >= n && k < n + i)) state = 'dim';
       return { key: k, value: nums[k], state };
     });
@@ -34,23 +37,35 @@ function build({ nums, n }: In): Step[] {
     title: 'Start', desc: `The first half is x₁..xₙ (indexes 0..${n - 1}), the second half is y₁..yₙ (indexes ${n}..${2 * n - 1}).`,
     cells: cells(-1), pointers: [], aux: aux(), vars: vars('—'),
     logic: 'We want x₁, y₁, x₂, y₂, … so we alternate between the two halves.', logicTone: 'info', javaLines: [0, 1], pyLines: [0, 1], algoStep: 0,
+    tag: 'READY —', note: `ans = new int[${2 * n}], n = ${n}`,
   });
 
   for (let i = 0; i < n; i++) {
-    out.push(nums[i], nums[i + n]);
-    order.push(i, i + n);
+    const ptrs = [{ id: 'i', label: 'i', index: i, tone: 'blue' as const }, { id: 'j', label: 'i+n', index: i + n, tone: 'orange' as const }];
+    out.push(nums[i]);
+    order.push(i);
     steps.push({
-      title: `Take pair ${i + 1}: ${nums[i]} then ${nums[i + n]}`, desc: `nums[${i}] = ${nums[i]} (from the first half) and nums[${i} + ${n}] = ${nums[i + n]} (from the second half) go next into ans.`,
-      cells: cells(i), pointers: [{ id: 'i', label: 'i', index: i, tone: 'blue' }, { id: 'j', label: 'i+n', index: i + n, tone: 'orange' }],
-      aux: aux(), vars: vars(i),
-      logic: 'Pairing index i with index i + n interleaves the halves in one pass.', logicTone: 'info', javaLines: [2, 3, 4], pyLines: [2, 3, 4], algoStep: 1,
+      title: `Place x${i + 1} = ${nums[i]}`, tag: 'PLACE X',
+      desc: `nums[${i}] = ${nums[i]} from the first half goes into ans[${2 * i}], so ans has ${out.length} value${out.length === 1 ? '' : 's'}`,
+      cells: cells(i), pointers: ptrs, aux: aux(), vars: vars(i),
+      logic: 'Even slots 2i of the answer take the first half in order.', logicTone: 'info', javaLines: [3], pyLines: [3], algoStep: 1,
+      note: `ans[2 * ${i}] = nums[${i}] = ${nums[i]}`,
+    });
+    out.push(nums[i + n]);
+    order.push(i + n);
+    steps.push({
+      title: `Place y${i + 1} = ${nums[i + n]}`, tag: 'PLACE Y',
+      desc: `nums[${i} + ${n}] = ${nums[i + n]} from the second half goes into ans[${2 * i + 1}], so ans has ${out.length} values`,
+      cells: cells(i, false, true), pointers: ptrs, aux: aux(), vars: vars(i),
+      logic: 'Odd slots 2i + 1 of the answer take the second half in order.', logicTone: 'info', javaLines: [4], pyLines: [4], algoStep: 2,
+      note: `ans[2 * ${i} + 1] = nums[${i} + ${n}] = ${nums[i + n]}`,
     });
   }
 
   steps.push({
-    title: 'Done', desc: 'The cells slid into their interleaved positions.',
+    title: 'Done', tag: '✅ Done!', desc: `the cells slid into their interleaved positions, so the answer is [${out.join(', ')}]`,
     cells: cells(-1, true), pointers: [], aux: aux(), vars: vars('—'),
-    logic: `Result: [${out.join(', ')}]`, logicTone: 'success', javaLines: [6], pyLines: [5], algoStep: 2,
+    logic: `Result: [${out.join(', ')}]`, logicTone: 'success', javaLines: [6], pyLines: [5], algoStep: 3, note: `return ans = [${out.join(', ')}]`,
     result: { title: `[${out.join(', ')}]`, text: 'The two halves interleaved' },
   });
   return steps;
@@ -70,6 +85,13 @@ export const shuffleTheArray: ProblemDef<In> = {
   parseInput: parse, buildSteps: build, viz: 'cells',
   legend: [{ label: 'Pair being taken', state: 'active' }, { label: 'Already placed', state: 'dim' }, { label: 'Final answer', state: 'found' }],
   varLabels: ['n', 'i', 'ans size'],
+  emphasis: ['2n elements', 'interleaved'],
+  phases: [
+    { icon: '🧺', label: 'SETUP answer', tone: 'blue' },
+    { icon: '🅧', label: 'PLACE x = nums[i]', tone: 'cyan' },
+    { icon: '🅨', label: 'PLACE y = nums[i + n]', tone: 'orange' },
+    { icon: '✅', label: 'Done', tone: 'green' },
+  ],
   approach: {
     title: 'Walk both halves together',
     text: 'Index i in the first half and index i + n in the second half belong side by side in the answer. Loop i from 0 to n − 1 and append both.',
@@ -94,7 +116,8 @@ export const shuffleTheArray: ProblemDef<In> = {
   ],
   algorithm: [
     'Prepare an empty answer of size 2n',
-    'For each i in 0..n−1, place nums[i] then nums[i + n]',
+    'For each i in 0..n−1, place nums[i] at ans[2i]',
+    'Then place nums[i + n] at ans[2i + 1]',
     'Return the answer',
   ],
   complexity: [{ label: 'Time', value: 'O(n)' }, { label: 'Space', value: 'O(n) for the output' }],

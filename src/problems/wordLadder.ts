@@ -137,7 +137,7 @@ function build({ begin, end, words }: In): Step[] {
         ? `New words one letter away: ${fresh.map((v) => nodes[v]).join(', ')}. Each gets length ${depth.get(u)! + 1}; queue = ${qText}.`
         : `No unreached word is one letter from "${nodes[u]}", so nothing is queued. Queue = ${qText}.`,
       note: fresh.length ? `dict.remove + queue.add: ${fresh.map((v) => `"${nodes[v]}"`).join(', ')} → length ${depth.get(u)! + 1}` : `no dict.remove(next) succeeded → q.size = ${queue.length}`,
-      alert: seen.length ? `Skipped ${seen.map((v) => `"${nodes[v]}"`).join(', ')}: already reached by a route that is no longer.` : undefined,
+      alert: seen.length ? `Skipped ${seen.map((v) => `"${nodes[v]}"`).join(', ')}: already reached by an equal or shorter route.` : undefined,
       logic: 'A word is removed from the dictionary the moment it is queued, so it is never queued twice.', logicTone: fresh.length ? 'success' : 'info',
       javaLines: [16], pyLines: [12, 13, 14], algoStep: 3,
     });

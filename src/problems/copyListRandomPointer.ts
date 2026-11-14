@@ -52,14 +52,16 @@ function build({ vals, random }: In): Step[] {
   });
 
   emit('Start', `The list has ${n} node${n === 1 ? '' : 's'}; each also has a random pointer (shown in the side panel, since a random pointer can aim anywhere).`,
-    'The difficulty: a random pointer may point to a node whose copy does not exist yet. A map from original to copy solves that.', 'info', [1], [1], 0);
+    'The difficulty: a random pointer may point to a node whose copy does not exist yet. A map from original to copy solves that.', 'info', [1], [1], 0,
+    undefined, { tag: 'READY —', note: `map = {}, ${n} node${n === 1 ? '' : 's'} to copy` });
 
   for (let i = 0; i < n; i++) {
     cur = i;
     created++;
     hot = { [i]: 'compare', [n + i]: 'active' };
-    emit(`Pass 1: copy node [${i}] ${vals[i]}`, `Create a new node with value ${vals[i]} and record original → copy in the map.`,
-      'First create every copy (without links), so that every original has a partner in the map.', 'info', [2, 3], [3, 4, 5], 1);
+    emit(`Pass 1: copy node [${i}] ${vals[i]}`, `node [${i}] has value ${vals[i]}: create a new node ${vals[i]}′ and store original → copy in the map`,
+      'First create every copy (without links), so that every original has a partner in the map.', 'info', [2, 3], [3, 4, 5], 1,
+      undefined, { tag: 'COPY NODE', note: `map.put([${i}], new Node(${vals[i]})), map size ${created}` });
   }
 
   for (let i = 0; i < n; i++) {
@@ -67,21 +69,24 @@ function build({ vals, random }: In): Step[] {
     const nx = i + 1 < n ? i + 1 : null;
     copyNext[i] = nx;
     hot = { [i]: 'compare', [n + i]: 'active', ...(nx !== null ? { [n + nx]: 'swap' } : {}) };
-    emit(`Pass 2: wire next of copy ${i}`, `copy.next = map[orig.next] = ${nx === null ? 'null' : `the copy of [${nx}] ${vals[nx]}`}.`,
-      'Looking the original neighbour up in the map gives the neighbour’s copy.', 'info', [5, 6], [7, 8], 2);
+    emit(`Pass 2: wire next of copy ${i}`, `copy of [${i}]: next = map[orig.next] = ${nx === null ? 'null (it is the tail)' : `the copy of [${nx}] ${vals[nx]}`}`,
+      'Looking the original neighbour up in the map gives the neighbour’s copy.', 'info', [5, 6], [7, 8], 2,
+      undefined, { tag: 'WIRE NEXT', note: `map.get([${i}]).next = ${nx === null ? 'null' : `map.get([${nx}]) = ${vals[nx]}′`}` });
     const r = random[i];
     copyRand[i] = r;
     wired[i] = true;
     hot = { [i]: 'compare', [n + i]: 'active', ...(r !== null ? { [r]: 'swap', [n + r]: 'swap' } : {}) };
-    emit(`Pass 2: wire random of copy ${i}`, `orig.random is ${nm(r)}; copy.random = map[orig.random] = ${r === null ? 'null' : `the copy of ${nm(r)}`}.`,
-      'The map turns "where the original points" into "where the copy must point".', 'info', [7], [9], 2);
+    emit(`Pass 2: wire random of copy ${i}`, `orig.random is ${nm(r)}, so copy.random = map[orig.random] = ${r === null ? 'null' : `the copy of ${nm(r)}`}`,
+      'The map turns "where the original points" into "where the copy must point".', 'info', [7], [9], 2,
+      undefined, { tag: 'WIRE RANDOM', note: `map.get([${i}]).random = ${r === null ? 'null' : `map.get([${r}]) = ${vals[r]}′`}` });
   }
 
   cur = null;
   hot = {};
-  emit('Done', 'Return map.get(head): the copy list, whose next and random pointers stay entirely inside the copy.',
+  emit('Done', `return map.get(head): the copy list [${vals.join(', ')}] has next and random pointers that stay entirely inside the copy`,
     'No pointer of the new list reaches into the original list, so it is a true deep copy.', 'success', [9], [11], 3,
-    { title: arrow(vals), text: `Deep copy of ${n} node${n === 1 ? '' : 's'} with ${random.filter((r) => r !== null).length} random link${random.filter((r) => r !== null).length === 1 ? '' : 's'}` });
+    { title: arrow(vals), text: `Deep copy of ${n} node${n === 1 ? '' : 's'} with ${random.filter((r) => r !== null).length} random link${random.filter((r) => r !== null).length === 1 ? '' : 's'}` },
+    { tag: '✅ Done!', note: `return map.get([0]) = ${vals[0]}′` });
   return steps;
 }
 
@@ -99,6 +104,13 @@ export const copyListRandomPointer: ProblemDef<In> = {
   parseInput: parse, buildSteps: build, viz: 'cells',
   legend: [{ label: 'Current original', state: 'compare' }, { label: 'Copy node', state: 'sorted' }, { label: 'Current copy', state: 'active' }, { label: 'Random target / next copy', state: 'swap' }],
   varLabels: ['p', 'map size', 'copies wired'],
+  emphasis: ['random pointer', 'deep copy'],
+  phases: [
+    { icon: '🗺', label: 'EMPTY MAP', tone: 'blue' },
+    { icon: '🧬', label: 'PASS 1: copy nodes', tone: 'cyan' },
+    { icon: '🔗', label: 'PASS 2: wire next + random', tone: 'gold' },
+    { icon: '✅', label: 'Done', tone: 'green' },
+  ],
   approach: {
     title: 'Two passes with a map',
     text: 'Pass 1 creates one new node per original and stores original → copy in a hash map. Pass 2 walks the originals again and sets copy.next = map[orig.next] and copy.random = map[orig.random].',

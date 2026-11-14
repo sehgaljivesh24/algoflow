@@ -18,7 +18,7 @@ export const d3: DetailMap = {
         'Every item is an **independent yes/no decision**: include it or skip it. Letter Case Permutation (upper or lower per letter) and "take or leave" enumerations share this binary decision tree, where each level settles one element.',
         'The input is **small, about 20 items or fewer**, because the output itself has 2ⁿ entries. If the question only asks for a count or a best value, use bitmasks or dynamic programming rather than enumerating every subset.',
         'The array has **duplicates but the answers must be distinct** (Subsets II, Combination Sum II). Sort first, then inside the loop skip nums[i] when it equals nums[i-1] and i > start, so one value is never the first pick twice at a level.',
-        'You must produce **every split of a string or sequence**: Palindrome Partitioning, Restore IP Addresses, non-decreasing subsequences. Each node asks where the next piece ends, and a start index that only moves forward keeps pieces in order without repeats.',
+        'You must produce **every split of a string or sequence**: Palindrome Partitioning and Restore IP Addresses. Each node asks where the next piece ends, and a start index that only moves forward keeps pieces in order without repeats.',
       ],
       tip: 'Record the path on entry to every call, then loop from start: choose nums[i], recurse with i + 1, un-choose. Moving start forward prevents [2,1] after [1,2]; sort and skip equal siblings for duplicates.',
       practice: [

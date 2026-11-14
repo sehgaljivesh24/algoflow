@@ -86,9 +86,9 @@ function build({ eqs, queries }: In): Step[] {
   const push = (s: Omit<Step, 'vars' | 'aux' | 'scene'>) => steps.push({ ...s, scene: scene(), aux: aux(), vars: vars() });
 
   push({
-    title: 'Start', desc: `Each equation a/b = k becomes an arrow a → b weighted k, and the reverse b → a weighted 1/k. Answering x/y means multiplying the weights along a path from x to y.`,
+    title: 'Start', tag: 'BUILD —', desc: `each equation a/b = k becomes an arrow a → b weighted k plus the reverse b → a weighted 1/k, giving ${names.length} nodes and ${eqs.length * 2} arrows.`,
     logic: 'Divisions chain: (a/b) × (b/c) = a/c. So a query is a path product in a weighted graph.', logicTone: 'info',
-    javaLines: [1, 2, 3, 4, 5, 6], pyLines: [1, 2, 3, 4], algoStep: 0,
+    javaLines: [1, 2, 3, 4, 5, 6], pyLines: [1, 2, 3, 4], algoStep: 0, note: `${eqs.length} equations → ${eqs.length * 2} weighted arrows`,
   });
 
   queries.forEach(([x, y], k) => {
@@ -106,18 +106,19 @@ function build({ eqs, queries }: In): Step[] {
       const unknown = id.has(x) ? y : x;
       src = -1;
       push({
-        title: `Query ${x}/${y}: unknown variable`, desc: `${unknown} never appears in an equation, so the answer is −1.`,
+        title: `Query ${x}/${y}: unknown variable`, tag: 'UNKNOWN:', desc: `query ${k + 1} asks ${x}/${y}, but ${unknown} never appears in an equation, so the answer is −1.`,
+        alert: `Variable ${unknown} is not in any equation: ${x}/${y} cannot be determined (−1).`,
         logic: 'A variable without any equation cannot be related to anything.', logicTone: 'warn',
-        javaLines: [14], pyLines: [6, 7], algoStep: 1,
+        javaLines: [14], pyLines: [6, 7], algoStep: 1, note: `${unknown} not in graph → −1`,
       });
       return;
     }
     prod.set(src, 1);
     queue.push(src);
     push({
-      title: `Query ${x}/${y}: BFS from ${x}`, desc: `Start at ${x} with product 1 and search for ${y}.`,
+      title: `Query ${x}/${y}: BFS from ${x}`, tag: 'QUERY:', desc: `query ${k + 1} asks ${x}/${y}: start BFS at ${x} with product 1 and search for ${y}.`,
       logic: 'The product at the start is 1 (x/x = 1). Each step multiplies by the edge weight.', logicTone: 'info',
-      javaLines: [8, 9, 15, 16, 17], pyLines: [18, 8], algoStep: 1,
+      javaLines: [8, 9, 15, 16, 17], pyLines: [18, 8], algoStep: 1, note: `queue = [${x}:1], looking for ${y}`,
     });
     let found = false;
     while (queue.length) {
@@ -137,16 +138,16 @@ function build({ eqs, queries }: In): Step[] {
           pathNodes.push(n);
         }
         push({
-          title: `Reached ${y}: ${x}/${y} = ${fmtVal(prod.get(u)!)}`, desc: `Pop ${y}: the product along the path ${[...pathNodes].reverse().map((p) => names[p]).join(' → ')} is ${fmtVal(prod.get(u)!)}.`,
+          title: `Reached ${y}: ${x}/${y} = ${fmtVal(prod.get(u)!)}`, tag: 'ANSWER:', desc: `pop ${y}: the path ${[...pathNodes].reverse().map((p) => names[p]).join(' → ')} multiplies out to ${x}/${y} = ${fmtVal(prod.get(u)!)}.`,
           logic: 'The product of the weights on the path is the quotient.', logicTone: 'success',
-          javaLines: [19, 20, 21], pyLines: [10, 11, 12], algoStep: 3,
+          javaLines: [19, 20, 21], pyLines: [10, 11, 12], algoStep: 3, note: `${x}/${y} = ${fmtVal(prod.get(u)!)}`,
         });
         break;
       }
       push({
-        title: `Pop ${names[u]} (product ${fmtVal(prod.get(u)!)})`, desc: `Look at the equations that mention ${names[u]}.`,
+        title: `Pop ${names[u]} (product ${fmtVal(prod.get(u)!)})`, tag: 'POP:', desc: `pop ${names[u]} with product ${fmtVal(prod.get(u)!)}; it is not ${y}, so look at the equations that mention ${names[u]}.`,
         logic: 'Each neighbour’s product = this product × the edge factor.', logicTone: 'info',
-        javaLines: [19, 20, 22], pyLines: [10, 13], algoStep: 2,
+        javaLines: [19, 20, 22], pyLines: [10, 13], algoStep: 2, note: `${names[u]}:${fmtVal(prod.get(u)!)} ≠ ${y}`,
       });
       for (const [v, f, ei] of adj[u]) {
         if (prod.has(v)) continue;
@@ -155,10 +156,10 @@ function build({ eqs, queries }: In): Step[] {
         queue.push(v);
         eState[ei] = 'visited';
         push({
-          title: `Discover ${names[v]}: ${fmtVal(prod.get(u)!)} × ${fmtVal(f)} = ${fmtVal(prod.get(v)!)}`,
-          desc: `${eqs[ei].a}/${eqs[ei].b} = ${fmtVal(eqs[ei].v)}, so ${names[u]}/${names[v]} = ${fmtVal(prod.get(v)!)}. Queue ${names[v]}.`,
+          title: `Discover ${names[v]}: ${fmtVal(prod.get(u)!)} × ${fmtVal(f)} = ${fmtVal(prod.get(v)!)}`, tag: 'PUSH:',
+          desc: `${eqs[ei].a}/${eqs[ei].b} = ${fmtVal(eqs[ei].v)}, so ${x}/${names[v]} = ${fmtVal(prod.get(u)!)} × ${fmtVal(f)} = ${fmtVal(prod.get(v)!)}; queue ${names[v]}.`,
           logic: f === eqs[ei].v ? 'Walking along the arrow multiplies by its weight.' : 'Walking against the arrow multiplies by the reciprocal 1/k.', logicTone: 'success',
-          javaLines: [22, 23, 24], pyLines: [13, 14, 15, 16], algoStep: 2,
+          javaLines: [22, 23, 24], pyLines: [13, 14, 15, 16], algoStep: 2, note: `${names[v]}: ${fmtVal(prod.get(u)!)} × ${fmtVal(f)} = ${fmtVal(prod.get(v)!)}`,
         });
       }
       cur = null;
@@ -167,9 +168,10 @@ function build({ eqs, queries }: In): Step[] {
       answers.push(-1);
       cur = null;
       push({
-        title: `${y} not reachable: ${x}/${y} = −1`, desc: `The queue emptied without reaching ${y}: no chain of equations relates ${x} and ${y}.`,
+        title: `${y} not reachable: ${x}/${y} = −1`, tag: 'ANSWER:', desc: `the queue emptied without reaching ${y}: no chain of equations relates ${x} and ${y}, so ${x}/${y} = −1.`,
+        alert: `${x} and ${y} are in different components: no path, answer −1.`,
         logic: 'Variables in different components cannot be compared.', logicTone: 'warn',
-        javaLines: [27], pyLines: [17], algoStep: 3,
+        javaLines: [27], pyLines: [17], algoStep: 3, note: `queue empty → ${x}/${y} = −1`,
       });
     }
   });
@@ -182,10 +184,10 @@ function build({ eqs, queries }: In): Step[] {
   src = -1;
   qi = -1;
   steps.push({
-    title: 'Done', desc: `Answers: [${answers.map(fmtAns).join(', ')}].`,
-    scene: scene(), aux: aux(), vars: vars(),
+    title: 'Done', tag: '✅ Done!', desc: `all ${queries.length} quer${queries.length === 1 ? 'y is' : 'ies are'} answered, in order: [${answers.map(fmtAns).join(', ')}].`,
+    scene: scene(), aux: aux(), vars: vars(), note: `return [${answers.map(fmtAns).join(', ')}]`,
     logic: 'One BFS per query; the graph is built once.', logicTone: 'success',
-    javaLines: [10], pyLines: [18], algoStep: 3,
+    javaLines: [10], pyLines: [18], algoStep: 4,
     result: { title: `[${answers.map(fmtAns).join(', ')}]`, text: 'Results of the queries, in order' },
   });
   return steps;
@@ -266,11 +268,20 @@ export const evaluateDivision: ProblemDef<In> = {
     '        return -1.0',
     '    return [bfs(a, b) for a, b in queries]',
   ],
+  phases: [
+    { icon: '🔨', label: 'Build graph', tone: 'blue' },
+    { icon: '❓', label: 'Start query', tone: 'cyan' },
+    { icon: '🌊', label: 'BFS: pop / push', tone: 'green' },
+    { icon: '🏆', label: 'Answer or −1', tone: 'gold' },
+    { icon: '✅', label: 'Done', tone: 'green' },
+  ],
+  emphasis: ['a / b = 2.0', 'a / c', '-1.0'],
   algorithm: [
     'Build a graph: a/b = k gives a→b weight k and b→a weight 1/k',
-    'For each query x/y: if either variable is unknown, answer −1',
+    'For each query x/y: if either variable is unknown, answer −1; otherwise start BFS at x',
     'BFS from x carrying the product of weights along the path',
     'When y is popped return its product; if the queue empties return −1',
+    'Done: return the answers of all queries',
   ],
   complexity: [{ label: 'Time', value: 'O(Q · (V + E))' }, { label: 'Space', value: 'O(V + E)' }],
   why: 'If a/b = k then walking from a to b multiplies a quotient by k, and walking back multiplies by 1/k. Because the equations are consistent, every path between two variables gives the same product, so any path (BFS finds one) gives x/y. Variables with no connecting chain of equations are genuinely unrelated, hence −1.',

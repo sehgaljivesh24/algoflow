@@ -33,12 +33,13 @@ function build({ nums, k: kRaw }: In): Step[] {
     title: 'Start', desc: kRaw === k ? `Rotate right by k = ${k}: the last ${k} element${k === 1 ? '' : 's'} move to the front.` : `Rotate right by ${kRaw}. Rotating by n changes nothing, so only k = ${kRaw} mod ${n} = ${k} matters.`,
     cells: cells(1, 0), pointers: [], vars: vars('—', '—'),
     logic: 'Moving every element one by one would take O(n·k). Three reversals do the whole job in O(n) with no extra array.', logicTone: 'info',
-    javaLines: [0, 1, 2], pyLines: [0, 1, 2], algoStep: 0,
+    javaLines: [0, 1, 2], pyLines: [0, 1, 2], algoStep: 0, tag: 'READY —', note: `n = ${n}, k %= n → k = ${k}`,
   });
 
   const reverse = (lo: number, hi: number, which: number, jLine: number, pLine: number, what: string) => {
     steps.push({
-      title: what, desc: `Reverse positions ${lo}..${hi} by swapping pairs from both ends.`,
+      title: what, tag: ['REVERSE ALL', 'REVERSE FRONT', 'REVERSE BACK'][which], note: `reverse(nums, ${lo}, ${hi})`,
+      desc: `reverse positions ${lo}..${hi} (${hi - lo + 1} elements) by swapping pairs from both ends, array is ${list()}`,
       cells: cells(lo, hi), pointers: [{ id: 'l', label: 'l', index: lo, tone: 'blue' }, { id: 'r', label: 'r', index: hi, tone: 'orange' }], vars: vars(lo, hi),
       logic: ['Reversing everything puts the last k elements at the front, but in backwards order, and the first n − k at the back, also backwards.', 'The front block is in the right place but reversed; reverse it to fix its order.', 'The back block is in the right place but reversed; reverse it too.'][which],
       logicTone: 'info', javaLines: [jLine], pyLines: [pLine], algoStep: which + 1,
@@ -50,7 +51,8 @@ function build({ nums, k: kRaw }: In): Step[] {
       a[l] = a[r];
       a[r] = t;
       steps.push({
-        title: `Swap positions ${l} and ${r}`, desc: `${a[r].value} and ${a[l].value} trade places. Array is now ${list()}.`,
+        title: `Swap positions ${l} and ${r}`, tag: 'SWAP', note: `a[${l}] ↔ a[${r}]: ${a[r].value} ↔ ${a[l].value}`,
+        desc: `${a[r].value} and ${a[l].value} trade places between positions ${l} and ${r}, array is now ${list()}`,
         cells: cells(lo, hi, [l, r]), pointers: [{ id: 'l', label: 'l', index: l, tone: 'blue' }, { id: 'r', label: 'r', index: r, tone: 'orange' }], vars: vars(l, r),
         logic: 'Swapping the outermost pair and moving inward reverses the block in place.', logicTone: 'success',
         javaLines: [9, 10], pyLines: [8, 9], algoStep: which + 1,
@@ -62,8 +64,10 @@ function build({ nums, k: kRaw }: In): Step[] {
 
   if (k === 0) {
     steps.push({
-      title: 'k is a multiple of n: nothing to do', desc: 'Rotating by 0 positions leaves the array unchanged.',
+      title: 'k is a multiple of n: nothing to do', tag: 'SKIP', note: `k % n = ${kRaw} % ${n} = 0`,
+      desc: `k mod n = ${kRaw} mod ${n} = 0, so rotating by 0 positions leaves ${list()} unchanged`,
       cells: cells(1, 0), pointers: [], vars: vars('—', '—'),
+      alert: 'k mod n is 0: all three reversals are skipped because the array stays as it is.',
       logic: 'Reversing and re-reversing would cancel out; we can stop early.', logicTone: 'warn', javaLines: [2], pyLines: [2], algoStep: 0,
     });
   } else {
@@ -72,16 +76,17 @@ function build({ nums, k: kRaw }: In): Step[] {
     if (k < n - 1) reverse(k, n - 1, 2, 5, 5, `Step 3: reverse the remaining ${n - k}`);
     else
       steps.push({
-        title: 'Step 3: the remaining block has one element', desc: 'A single element is its own reverse.',
+        title: 'Step 3: the remaining block has one element', tag: 'REVERSE BACK', note: `reverse(nums, ${k}, ${n - 1}): l == r, no swap`,
+        desc: `the remaining block is position ${k} only, and a single element is its own reverse`,
         cells: cells(k, n - 1), pointers: [], vars: vars(k, n - 1),
         logic: 'Nothing to swap.', logicTone: 'info', javaLines: [5], pyLines: [5], algoStep: 3,
       });
   }
 
   steps.push({
-    title: 'Done', desc: `Rotated array: ${list()}.`,
+    title: 'Done', tag: '✅ Done!', desc: `rotated right by ${kRaw}: the array is now ${list()}`,
     cells: a.map((c) => ({ key: c.id, value: c.value, state: 'found' as const })), pointers: [], vars: vars('—', '—'),
-    logic: `Result: ${list()}`, logicTone: 'success', javaLines: [6], pyLines: [5], algoStep: 3,
+    logic: `Result: ${list()}`, logicTone: 'success', javaLines: [6], pyLines: [5], algoStep: 4, note: `nums = ${list()}`,
     result: { title: list().replace(/, /g, ','), text: `Rotated right by ${kRaw}` },
   });
   return steps;
@@ -101,6 +106,14 @@ export const rotateArray: ProblemDef<In> = {
   parseInput: parse, buildSteps: build, viz: 'cells',
   legend: [{ label: 'Block being reversed', state: 'active' }, { label: 'Pair just swapped', state: 'swap' }, { label: 'Final array', state: 'found' }],
   varLabels: ['k', 'l', 'r'],
+  emphasis: ['in place', 'right by k steps', 'O(1) extra space'],
+  phases: [
+    { icon: '🧮', label: 'k = k mod n', tone: 'blue' },
+    { icon: '🔃', label: 'REVERSE all', tone: 'cyan' },
+    { icon: '⏮', label: 'REVERSE first k', tone: 'orange' },
+    { icon: '⏭', label: 'REVERSE the rest', tone: 'gold' },
+    { icon: '✅', label: 'Done', tone: 'green' },
+  ],
   approach: {
     title: 'Reverse, reverse, reverse',
     text: 'Reverse the whole array, then reverse the first k elements, then reverse the rest. The first reversal brings the last k elements to the front (backwards); the next two reversals put each block back in order.',
@@ -137,6 +150,7 @@ export const rotateArray: ProblemDef<In> = {
     'Reverse the entire array',
     'Reverse the first k elements',
     'Reverse the remaining n − k elements',
+    'Return: the array is rotated',
   ],
   complexity: [{ label: 'Time', value: 'O(n)' }, { label: 'Space', value: 'O(1)' }],
   why: 'Write the array as A B where A holds the first n − k elements and B the last k. Reversing the whole thing gives Bᴿ Aᴿ. Reversing the first k elements turns Bᴿ into B and reversing the rest turns Aᴿ into A, giving B A, which is exactly the right rotation. Each element is swapped at most twice, so it is linear time with no extra memory.',

@@ -38,29 +38,40 @@ function build({ s }: In): Step[] {
     title: 'Start', desc: `Convert "${s}" to a number.`,
     cells: cells(-1), pointers: [], aux: aux(), vars: vars('—', '—', '—'),
     logic: 'Roman numerals normally add left to right, except when a smaller symbol sits before a larger one (IV, IX, XL…): then it is subtracted.', logicTone: 'info',
-    javaLines: [0, 1, 2], pyLines: [0, 1, 2], algoStep: 0,
+    javaLines: [0, 1, 2], pyLines: [0, 1, 2], algoStep: 0, tag: 'READY —', note: 'v = symbol table, total = 0',
   });
 
   for (let i = 0; i < n; i++) {
     const cur = VAL[s[i]];
     const nxt = i + 1 < n ? VAL[s[i + 1]] : 0;
     const sub = i + 1 < n && cur < nxt;
+    const before = total;
+    steps.push({
+      title: i + 1 < n ? `Compare ${s[i]} (${cur}) with ${s[i + 1]} (${nxt})` : `Last symbol ${s[i]} (${cur})`, tag: 'COMPARE',
+      desc: i + 1 < n ? `s[${i}]='${s[i]}' is ${cur}, next s[${i + 1}]='${s[i + 1]}' is ${nxt}: is ${cur} < ${nxt}? ${sub ? 'Yes' : 'No'}` : `s[${i}]='${s[i]}' is ${cur} and no symbol follows, so it will be added`,
+      cells: cells(i, i + 1 < n ? i + 1 : -1), pointers: [{ id: 'i', label: 'i', index: i, tone: 'blue' }], aux: aux(keys.indexOf(s[i])),
+      vars: vars(i, cur, i + 1 < n ? nxt : '—'),
+      logic: 'The value of the next symbol decides whether this one is added or subtracted.',
+      logicTone: 'info', javaLines: [4, 5], pyLines: [4, 5], algoStep: 1,
+      note: i + 1 < n ? `cur < v.get(next) → ${cur} < ${nxt} is ${sub}` : `i + 1 < s.length() is false → add`,
+    });
     total += sub ? -cur : cur;
     terms.push(`${sub ? '−' : '+'}${cur}`);
     steps.push({
-      title: sub ? `${s[i]} (${cur}) < ${s[i + 1]} (${nxt}): subtract` : `${s[i]} (${cur}): add`,
-      desc: sub ? `${s[i]} comes before a larger symbol, so subtract ${cur}. total = ${total}.` : i + 1 < n ? `${cur} ≥ ${nxt} (next symbol), so add ${cur}. total = ${total}.` : `Last symbol: add ${cur}. total = ${total}.`,
+      title: sub ? `${s[i]} (${cur}) < ${s[i + 1]} (${nxt}): subtract` : `${s[i]} (${cur}): add`, tag: sub ? 'SUBTRACT' : 'ADD',
+      desc: sub ? `'${s[i]}' sits before the larger '${s[i + 1]}', so subtract ${cur}: total ${before} − ${cur} = ${total}` : `add ${cur}: total ${before} + ${cur} = ${total}`,
       cells: cells(i, sub ? i + 1 : -1), pointers: [{ id: 'i', label: 'i', index: i, tone: 'blue' }], aux: aux(keys.indexOf(s[i])),
       vars: vars(i, cur, i + 1 < n ? nxt : '—'),
       logic: sub ? 'A smaller value in front of a bigger one is part of a subtractive pair like IV = 5 − 1.' : 'Same or larger value than what follows: it contributes positively.',
-      logicTone: sub ? 'warn' : 'info', javaLines: sub ? [4, 5, 6] : [4, 5, 7, 8], pyLines: sub ? [4, 5, 6] : [4, 5, 7, 8], algoStep: sub ? 2 : 1,
+      logicTone: sub ? 'warn' : 'info', javaLines: sub ? [6] : [8], pyLines: sub ? [6] : [8], algoStep: sub ? 2 : 3,
+      note: sub ? `total -= ${cur} → ${before} − ${cur} = ${total}` : `total += ${cur} → ${before} + ${cur} = ${total}`,
     });
   }
 
   steps.push({
-    title: 'Done', desc: `${terms.join(' ')} = ${total}`,
+    title: 'Done', tag: '✅ Done!', desc: `${terms.join(' ')} = ${total}, so "${s}" is ${total}`,
     cells: cells(n), pointers: [], aux: aux(), vars: vars('—', '—', '—'),
-    logic: 'All symbols consumed; the running total is the value.', logicTone: 'success', javaLines: [10], pyLines: [9], algoStep: 3,
+    logic: 'All symbols consumed; the running total is the value.', logicTone: 'success', javaLines: [10], pyLines: [9], algoStep: 4, note: `return ${total}`,
     result: { title: String(total), text: `${s} = ${total}` },
   });
   return steps;
@@ -80,6 +91,14 @@ export const romanToInteger: ProblemDef<In> = {
   parseInput: parse, buildSteps: build, viz: 'cells',
   legend: [{ label: 'Current symbol', state: 'active' }, { label: 'Next symbol (compared)', state: 'compare' }, { label: 'Already converted', state: 'sorted' }],
   varLabels: ['i', 'cur', 'next', 'total'],
+  emphasis: ['Roman numeral', 'subtracted', 'added'],
+  phases: [
+    { icon: '📋', label: 'SETUP table', tone: 'blue' },
+    { icon: '🔍', label: 'COMPARE with next', tone: 'cyan' },
+    { icon: '➖', label: 'SUBTRACT (cur < next)', tone: 'orange' },
+    { icon: '➕', label: 'ADD', tone: 'gold' },
+    { icon: '✅', label: 'Done', tone: 'green' },
+  ],
   approach: {
     title: 'Add, unless a bigger symbol follows',
     text: 'Look up each symbol\'s value. If it is smaller than the value of the next symbol, subtract it from the total; otherwise add it. One left-to-right pass is enough.',
@@ -112,9 +131,10 @@ export const romanToInteger: ProblemDef<In> = {
   ],
   algorithm: [
     'Prepare a table of symbol values and a total of 0',
-    'For each symbol, read its value and the value of the next symbol',
+    'For each symbol, compare its value with the value of the next symbol',
     'If the value is smaller than the next one, subtract it from the total',
-    'Otherwise add it; return the total at the end',
+    'Otherwise add it to the total',
+    'Return the total',
   ],
   complexity: [{ label: 'Time', value: 'O(n)' }, { label: 'Space', value: 'O(1)' }],
   why: 'Every subtractive pair (IV, IX, XL, XC, CD, CM) is a small symbol directly before a larger one, and its value is larger − smaller. Subtracting the small symbol when we see it, then adding the larger one next, produces exactly that. Every other symbol is simply added.',

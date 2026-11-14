@@ -71,12 +71,12 @@ function build({ pts }: In): Step[] {
         const right = c < 0;
         push({
           title: right ? `cross = ${c}: right turn, pop ${fmtPt(pts[b])}` : c === 0 ? `cross = 0: straight, keep ${fmtPt(pts[b])}` : `cross = ${c}: left turn, keep ${fmtPt(pts[b])}`,
-          desc: right ? `${fmtPt(pts[a])} to ${fmtPt(pts[b])} to ${fmtPt(pts[id])} bends right, so ${fmtPt(pts[b])} lies inside the fence and is removed.` : c === 0 ? `The three points are collinear. The fence must include boundary points, so the middle one stays.` : `The turn is counter-clockwise, so ${fmtPt(pts[b])} is still a boundary candidate.`,
-          logic: right ? 'A right turn means the chain bulges inward there: that point cannot be on the outer fence.' : 'Zero or positive cross product: the point stays (this problem keeps collinear boundary points).',
+          desc: right ? `${fmtPt(pts[a])} to ${fmtPt(pts[b])} to ${fmtPt(pts[id])} bends right, so ${fmtPt(pts[b])} cannot stay on this ${pass} chain and is removed from it.` : c === 0 ? `The three points are collinear. The fence must include boundary points, so the middle one stays.` : `The turn is counter-clockwise, so ${fmtPt(pts[b])} is still a boundary candidate.`,
+          logic: right ? 'A right turn means the chain bulges inward there: that point cannot be on this side of the hull (it may still appear on the other chain).' : 'Zero or positive cross product: the point stays (this problem keeps collinear boundary points).',
           tone: right ? 'warn' : 'info', java: [7, 8], py: [7, 8], algo: 3,
           tag: right ? 'POP:' : c === 0 ? 'KEEP (straight):' : 'KEEP (left):',
           note: `cross = (${pts[b][0] - pts[a][0]})(${pts[id][1] - pts[a][1]}) − (${pts[b][1] - pts[a][1]})(${pts[id][0] - pts[a][0]}) = ${c}${right ? ' < 0 → pop' : c === 0 ? ' = 0 → keep' : ' > 0 → keep'}`,
-          alert: right ? `Right turn at ${fmtPt(pts[b])}: it lies inside the fence, so it is popped.` : undefined,
+          alert: right ? `Right turn at ${fmtPt(pts[b])}: it cannot be on this ${pass} chain, so it is popped.` : undefined,
           focus: { [id]: 'active', [b]: right ? 'error' : 'compare', [a]: 'compare' },
           segs: [{ from: a, to: b, state: 'visited' }, { from: b, to: id, state: right ? 'error' : 'chosen', label: right ? 'right' : c === 0 ? 'straight' : 'left' }],
         });

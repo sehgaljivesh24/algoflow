@@ -90,7 +90,7 @@ function build({ n, cables }: In): Step[] {
   cur = -1; hot = [];
   answer = comps - 1;
   steps.push({
-    title: `Groups: ${comps}, answer ${answer}`, desc: `${comps} separate group${comps === 1 ? '' : 's'} remain, so ${answer} extra link${answer === 1 ? ' is' : 's are'} needed. There are ${spare} spare cables, enough because ${cables.length} ≥ ${need}.`,
+    title: `Groups: ${comps}, answer ${answer}`, desc: `${comps} separate group${comps === 1 ? '' : 's'} remain, so ${answer} extra link${answer === 1 ? ' is' : 's are'} needed. There ${spare === 1 ? 'is 1 spare cable' : `are ${spare} spare cables`}, enough because ${cables.length} ≥ ${need}.`,
     scene: scene(), aux: aux(), vars: { cable: '—', spare, components: comps, answer },
     logic: 'Joining c groups needs c − 1 links and we have at least that many spare cables, so each link costs exactly one move.', logicTone: 'success',
     tag: '✅ Done!', note: `components − 1 = ${comps} − 1 = ${answer}`,

@@ -271,7 +271,7 @@ static int removeDuplicates(int[] nums) {
         '128-longest-consecutive-sequence',
         '347-top-k-frequent-elements',
         lc('387', 'First Unique Character in a String', 'Easy', 'first-unique-character-in-a-string', 'count, then find the first count of 1'),
-        lc('454', '4Sum II', 'Medium', '4sum-ii', 'two pair-sum maps meet in the middle'),
+        lc('454', '4Sum II', 'Medium', '4sum-ii', 'one map of A + B sums, look up −(C + D)'),
       ],
     },
     meta: {

@@ -112,7 +112,7 @@ function build({ grid }: In): Step[] {
   phase = 3;
   const out = b.map((row) => row.join('')).join(' ');
   say({
-    title: 'Restore the safe cells', tag: '♻ RESTORE —', desc: `The ${nSafe} safe cell${nSafe === 1 ? '' : 's'} (marked #) turn back into plain O.`,
+    title: 'Restore the safe cells', tag: '♻ RESTORE —', desc: `The ${nSafe} safe cell${nSafe === 1 ? '' : 's'} (marked #) ${nSafe === 1 ? 'turns' : 'turn'} back into plain O.`,
     note: `board[r][c] = 'O' for ${nSafe} cell${nSafe === 1 ? '' : 's'}`,
     logic: 'One last pass over the board finishes the job.', tone: 'success', java: [7], py: [15], algo: 4,
   });

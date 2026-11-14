@@ -34,7 +34,7 @@ function build({ vals, left, right }: In): Step[] {
   for (let i = 1; i < left; i++) {
     prev = next[prev as number];
     hot = { 0: 'dim', [prev as number]: 'compare' };
-    emit(`Walk prev to position ${i}`, `prev = ${all[prev as number]}. We need prev to stop at position ${left - 1}, just before the part to reverse.`, 'Nodes before `left` are not touched.', 'info', [3], [3, 4], 1);
+    emit(`Walk prev to position ${i}`, `prev = ${all[prev as number]}. We need prev to stop at position ${left - 1}, just before the part to reverse.`, 'Nodes before `left` are not touched.', 'info', [3], [3, 4], 0);
   }
 
   curr = next[prev as number];

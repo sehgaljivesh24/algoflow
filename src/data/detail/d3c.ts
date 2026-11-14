@@ -4,12 +4,17 @@ import type { DetailMap } from './types.ts';
 export const d3c: DetailMap = {
   'greedy-intervals': {
     tags: ['Sort first', 'Merge / insert', 'Earliest end wins'],
+    examples: [
+      { slug: '56-merge-intervals', why: 'Sort by start and keep extending one running interval: the greedy choice is to absorb every interval that begins at or before the current end.' },
+      { slug: '435-non-overlapping-intervals', why: 'The sort key flips to the end time: finishing earliest leaves the most room, so you count how many intervals must be thrown away to keep a conflict-free set.' },
+      { slug: '57-insert-interval', why: 'The list is already sorted, so no sorting is needed: a three-phase linear scan (before, overlapping, after) shows the same merge rule without a sort.' },
+    ],
     content: {
       whenToUse: [
         'The input is a list of **ranges [start, end]** and the task is to **merge overlapping ranges**, insert one more range into a sorted list, or report what remains. Calendars, bookings, number-line segments and ranges that touch at an endpoint are the usual disguises.',
         'You must find the **fewest ranges to remove** so that the rest do not overlap, or the most ranges you can keep. This is interval scheduling: sort by **end time** and always keep the one that finishes earliest, because it leaves the most room for the others.',
         'You need the **minimum number of resources** to cover everything: arrows through balloons, platforms for trains, rooms for meetings. Sort by start (or by end), then keep one running boundary or a heap of end times instead of comparing every pair.',
-        'Sorting turns **"does anything overlap?"** into a comparison with only the previous block, because after sorting by start any overlap must be with the neighbour. Without the sort you would test all n² pairs; with it one linear pass is enough.',
+        'Sorting turns **"does anything overlap?"** into a comparison with only the previous block, because after sorting by start a new range can only overlap the block built just before it. Without the sort you would test all n² pairs; with it one linear pass is enough.',
         'The statement lets you pick the **earliest finishing** (or earliest starting) option, and a short exchange argument shows that choice never hurts. Decide first whether **touching endpoints** such as [1, 4] and [4, 5] count as overlap, since that flips a ≤ into a <.',
       ],
       tip: 'Pick the sort key from the question: sort by start to merge or insert, sort by end to keep the maximum number of non-overlapping intervals. Decide up front whether touching endpoints count as overlap.',
@@ -47,7 +52,7 @@ export const d3c: DetailMap = {
         { slug: '45-jump-game-ii', note: 'fewest jumps, window by window' },
         { slug: '134-gas-station', note: 'restart after the tank goes negative' },
         { slug: '135-candy', note: 'two greedy passes' },
-        { slug: '1696-jump-game-vi', note: 'greedy plus a monotonic deque' },
+        { slug: '1696-jump-game-vi', note: 'DP over positions, window max via a monotonic deque' },
         { id: '1306', title: 'Jump Game III', difficulty: 'Medium', note: 'jump by plus or minus nums[i], search', href: 'https://leetcode.com/problems/jump-game-iii/' },
         { id: '860', title: 'Lemonade Change', difficulty: 'Easy', note: 'which bills to give back', href: 'https://leetcode.com/problems/lemonade-change/' },
         { slug: '763-partition-labels', note: 'extend the window to the last occurrence' },

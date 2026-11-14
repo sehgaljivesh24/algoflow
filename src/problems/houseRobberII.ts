@@ -44,17 +44,19 @@ function build({ nums }: In): Step[] {
   const say = recorder(steps, snap);
 
   say({
-    title: 'The street is a circle', desc: 'The first and last houses are neighbours, so they cannot both be robbed. Solve two straight streets and take the better one.',
+    title: 'The street is a circle', tag: 'SETUP',
+    desc: `houses 0 and ${n - 1} are neighbours on the circle, so solve two straight streets (0..${n - 2} and 1..${n - 1}) and take the better one`,
+    alert: n > 1 ? `Houses 0 (${nums[0]}) and ${n - 1} (${nums[n - 1]}) touch, so they cannot both be robbed.` : undefined,
     logic: 'Any valid plan leaves out house 0 or leaves out house n−1 (or both). Plan A drops the last house, plan B drops the first.',
-    java: [0, 1, 2], py: [0, 1, 2, 3], algo: 0,
+    java: [0, 1, 2], py: [0, 1, 2, 3], algo: 0, note: `n = ${n}, houses = [${nums.join(', ')}]`,
   });
 
   if (n === 1) {
     target = 0;
     done = true;
     say({
-      title: 'One house', desc: `A single house has no neighbour: rob it for ${nums[0]}.`,
-      logic: 'The circular rule only matters with two or more houses.', tone: 'success', java: [2], py: [2, 3], algo: 3,
+      title: 'One house', tag: '✅ Done!', desc: `a single house has no neighbour, so rob it for ${nums[0]}`,
+      logic: 'The circular rule only matters with two or more houses.', tone: 'success', java: [2], py: [2, 3], algo: 3, note: `n == 1 → return nums[0] = ${nums[0]}`,
       result: { title: String(nums[0]), text: 'Maximum amount you can rob' },
     });
     return steps;
@@ -73,10 +75,11 @@ function build({ nums }: In): Step[] {
       dp[i] = Math.max(rob, skip);
       done = true;
       say({
-        title: `Plan ${which}: dp[${i}] = max(${skip}, ${rob}) = ${dp[i]}`,
-        desc: `House ${i} (${nums[i]}): skip it → ${skip}, rob it → ${p2} + ${nums[i]} = ${rob}. Keep ${dp[i]}.`,
+        title: `Plan ${which}: dp[${i}] = max(${skip}, ${rob}) = ${dp[i]}`, tag: `PLAN ${which}`,
+        desc: `house ${i} (${nums[i]}): skip it → ${skip}, rob it → ${p2} + ${nums[i]} = ${rob}, so keep ${dp[i]}`,
+        alert: Number(skip) > Number(rob) ? `Robbing house ${i} gives ${rob}, less than skipping (${skip}), so the house is passed over.` : undefined,
         logic: 'Same rob-or-skip rule as the straight street, but only inside this plan\'s range of houses.',
-        java: [7, 8, 9], py: [6, 7, 8], algo: which === 'A' ? 1 : 2,
+        java: [7, 8, 9], py: [6, 7, 8], algo: which === 'A' ? 1 : 2, note: `cur = max(prev1 = ${skip}, prev2 + ${nums[i]} = ${rob}) = ${dp[i]}`,
       });
     }
     const best = dp[hi]!;
@@ -84,8 +87,8 @@ function build({ nums }: In): Step[] {
     src = [];
     target = hi;
     say({
-      title: `Plan ${which} total = ${best}`, desc: `The last cell of plan ${which} holds its best haul: ${best}.`,
-      logic: 'Plan results are compared at the end.', tone: 'success', java: [11], py: [9], algo: which === 'A' ? 1 : 2,
+      title: `Plan ${which} total = ${best}`, tag: `PLAN ${which}`, desc: `the last cell of plan ${which} (houses ${lo}..${hi}) holds its best haul: ${best}`,
+      logic: 'Plan results are compared at the end.', tone: 'success', java: [11], py: [9], algo: which === 'A' ? 1 : 2, note: `robLine(${lo}, ${hi}) = ${best}`,
     });
   };
   runLine('A', 0, n - 2);
@@ -100,8 +103,8 @@ function build({ nums }: In): Step[] {
   const ans = Math.max(bestA, bestB);
   target = -1;
   say({
-    title: 'Done', desc: `max(plan A, plan B) = max(${bestA}, ${bestB}) = ${ans}.`,
-    logic: 'The better of the two straight streets is the best circular plan.', tone: 'success', java: [3], py: [3],
+    title: 'Done', tag: '✅ Done!', desc: `max(plan A, plan B) = max(${bestA}, ${bestB}) = ${ans}, the most you can rob`,
+    logic: 'The better of the two straight streets is the best circular plan.', tone: 'success', java: [3], py: [3], note: `max(${bestA}, ${bestB}) = ${ans}`,
     algo: 3, result: { title: String(ans), text: 'Maximum amount you can rob (circular street)' },
   });
   return steps;
@@ -121,6 +124,13 @@ export const houseRobberII: ProblemDef<In> = {
   parseInput: parse, buildSteps: build, viz: 'cells',
   legend: [{ label: 'Current house', state: 'active' }, { label: 'Sources (i−1, i−2)', state: 'compare' }, { label: 'Computed', state: 'found' }, { label: 'Not in this plan / not yet', state: 'dim' }],
   varLabels: ['i', 'rob it', 'skip it', 'best A', 'best B'],
+  emphasis: ['first and last houses are adjacent', 'maximum you can rob'],
+  phases: [
+    { icon: '⭕', label: 'SETUP break the circle', tone: 'blue' },
+    { icon: '🅰', label: 'PLAN A (skip last)', tone: 'cyan' },
+    { icon: '🅱', label: 'PLAN B (skip first)', tone: 'gold' },
+    { icon: '✅', label: 'Done', tone: 'green' },
+  ],
   approach: {
     title: 'Break the circle, solve two lines',
     text: 'Run the straight-street House Robber DP twice: once on houses 0..n−2 and once on 1..n−1. The answer is the larger of the two. (A single house is a special case.)',

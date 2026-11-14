@@ -42,7 +42,7 @@ function buildCounting({ nums }: NIn): Step[] {
     rec.push({ t: `Write ${count[s]} × ${s + lo}`, d: `Slot ${s + lo} holds ${count[s]}, so write ${s + lo} ${count[s]} time${count[s] === 1 ? '' : 's'} into the output.`, scene: scene(-1, s, wrote), v: vars('—', s + lo), why: 'Walking the slots in increasing order emits values in increasing order, so the output is sorted by construction.', tone: 'success', j: [5, 6], p: [6, 7], a: 2, tag: `WRITE ${s + lo} —`, note: `count[${s}] = ${count[s]} → nums[${w - count[s]}..${w - 1}] = ${s + lo}` });
   });
   const sorted = out as number[];
-  rec.push({ t: `Sorted: ${arr(sorted)}`, d: `All ${n} values written in ${n + k} basic operations.`, scene: scene(-1, -1), v: vars('—', '—'), why: 'Total work is n (counting) + k (scanning slots) + n (writing): linear when k is O(n).', tone: 'success', j: [8], p: [8], a: 3, tag: '✅ Done!', note: `return nums = ${arr(sorted)}`, result: { title: arr(sorted), text: `Sorted array: ${arr(sorted)}` } });
+  rec.push({ t: `Sorted: ${arr(sorted)}`, d: `All ${n} values written in ${2 * n + k} basic operations (${n} counts + ${k} slots scanned + ${n} writes).`, scene: scene(-1, -1), v: vars('—', '—'), why: 'Total work is n (counting) + k (scanning slots) + n (writing): linear when k is O(n).', tone: 'success', j: [8], p: [8], a: 3, tag: '✅ Done!', note: `return nums = ${arr(sorted)}`, result: { title: arr(sorted), text: `Sorted array: ${arr(sorted)}` } });
   return rec.steps;
 }
 

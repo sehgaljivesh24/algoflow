@@ -150,7 +150,7 @@ function buildDna({ s, L }: DIn): Step[] {
   const cells = (i: number, prior = -1): Cell[] => [...s].map((ch, k) => ({ key: k, value: ch, state: i >= L - 1 && k > i - L && k <= i ? (prior >= 0 ? 'found' : 'compare') : prior >= 0 && k >= prior && k < prior + L ? 'swap' : i < 0 || k <= i ? undefined : 'dim' }));
   const aux = () => [
     { title: 'seen: hash → first start', kind: 'map' as const, items: [...seen.entries()].map(([k, v]) => `${k} → ${v}`) },
-    { title: 'repeated', kind: 'list' as const, items: added },
+    { title: 'repeated', kind: 'list' as const, items: [...added] },
   ];
   const vars = (i: number | string, w: string, hv: number | string, b: string) => ({ i, window: w, hash: hv, bits: b });
   rec.push({ t: 'Start', d: `Slide a ${L}-letter window over the DNA. Each letter is 2 bits (A=00, C=01, G=10, T=11), so a window is an exact ${2 * L}-bit number: no collisions.`, cells: cells(-1), pointers: [], aux: aux(), v: vars('—', '—', 0, '—'), why: 'Packing a small alphabet into bits gives an exact, O(1)-updatable key, so we can use a hash set of integers instead of storing substrings.', j: [0, 1, 2, 3], p: [0, 1, 2, 3], a: 0, tag: 'ENCODE —', note: `mask = (1 << ${2 * L}) - 1 = ${mask}; h = 0` });
@@ -174,7 +174,7 @@ function buildDna({ s, L }: DIn): Step[] {
     }
   }
   const res = `[${added.map((x) => `"${x}"`).join(',')}]`;
-  rec.push({ t: `Repeated sequences: ${res}`, d: `${added.length} sequence${added.length === 1 ? '' : 's'} of length ${L} occur more than once.`, cells: cells(n - 1), pointers: [], aux: aux(), v: vars('—', '—', '—', '—'), why: 'One pass over the string, O(1) per window: O(n) overall.', tone: 'success', j: [9], p: [12], a: 4, tag: '✅ Done!', note: `return ${res}`, result: { title: res, text: added.length ? `Repeated ${L}-letter sequences: ${res}` : `No ${L}-letter sequence repeats` } });
+  rec.push({ t: `Repeated sequences: ${res}`, d: `${added.length} sequence${added.length === 1 ? '' : 's'} of length ${L} ${added.length === 1 ? 'occurs' : 'occur'} more than once.`, cells: cells(n - 1), pointers: [], aux: aux(), v: vars('—', '—', '—', '—'), why: 'One pass over the string, O(1) per window: O(n) overall.', tone: 'success', j: [9], p: [12], a: 4, tag: '✅ Done!', note: `return ${res}`, result: { title: res, text: added.length ? `Repeated ${L}-letter sequences: ${res}` : `No ${L}-letter sequence repeats` } });
   return rec.steps;
 }
 
@@ -290,6 +290,8 @@ function buildDup({ s }: WIn): Step[] {
     }
   }
   L = best.length;
+  seen.clear();
+  hash = '—';
   rec.push({ t: `Longest duplicate substring: "${best}"`, d: best ? `Binary search converged: the longest repeated substring has length ${best.length}.` : 'No substring occurs twice.', cells: cells(-1), pointers: [], aux: aux(), v: vars(), why: 'O(n log n) expected: log n lengths, each tested in one linear hash pass.', tone: 'success', j: [9], p: [9], a: 4, tag: '✅ Done!', note: `return "${best}"`, result: { title: `"${best}"`, text: best ? `Longest duplicate substring: "${best}"` : 'No duplicated substring (empty string)' } });
   return rec.steps;
 }

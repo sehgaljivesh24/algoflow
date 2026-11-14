@@ -34,10 +34,10 @@ function build({ s }: In): Step[] {
   const vars = (i: number | string, j: number | string, skip: string) => ({ l, r, i, j, skipped: skip });
 
   steps.push({
-    title: 'Start', desc: `Can "${s}" become a palindrome after deleting at most one character?`,
+    title: 'Start', tag: 'START —', desc: `can "${s}" become a palindrome after deleting at most one character? l starts at 0 and r at ${n - 1}.`,
     cells: cells(), pointers: mainPtrs(), vars: vars('—', '—', 'none'),
     logic: 'Walk two pointers inward as in a normal palindrome check. The first mismatch is the only place a deletion can help, and the culprit is either the left or the right character.', logicTone: 'info',
-    javaLines: [0, 1], pyLines: [0, 1], algoStep: 0,
+    javaLines: [0, 1], pyLines: [0, 1], algoStep: 0, note: `l = 0, r = ${n - 1}`,
   });
 
   // palindrome test of s[i..j] with a step per pair; returns the verdict
@@ -46,18 +46,20 @@ function build({ s }: In): Step[] {
     const hi = j;
     deleted = which === 'left' ? i - 1 : j + 1;
     steps.push({
-      title: `Try deleting the ${which} character '${s[deleted]}'`, desc: `Delete index ${deleted}, then check whether s[${lo}..${hi}] = "${s.slice(lo, hi + 1)}" is a palindrome.`,
+      title: `Try deleting the ${which} character '${s[deleted]}'`, tag: 'TRY:', desc: `delete s[${deleted}]='${s[deleted]}' (the ${which} one), then check whether s[${lo}..${hi}] = "${s.slice(lo, hi + 1)}" is a palindrome.`,
       cells: cells([], 'compare', lo, hi), pointers: [{ id: 'i', label: 'i', index: i, tone: 'purple' }, { id: 'j', label: 'j', index: j, tone: 'yellow' }], vars: vars(i, j, `s[${deleted}]`),
       logic: 'With one character removed, the rest must be a perfect palindrome — no more deletions allowed.', logicTone: 'info',
-      javaLines: [4, 8], pyLines: [6, 9], algoStep: 2,
+      javaLines: [4, 8], pyLines: [6, 9], algoStep: 3, note: which === 'left' ? `isPal(s, ${lo}, ${hi})` : `isPal(s, ${lo}, ${hi}) after the left try failed`,
     });
     while (i < j) {
       const eq = s[i] === s[j];
       steps.push({
-        title: eq ? `'${s[i]}' = '${s[j]}'` : `Mismatch: '${s[i]}' ≠ '${s[j]}'`, desc: eq ? `s[${i}] and s[${j}] agree; move inward.` : `s[${i}] and s[${j}] differ, so deleting the ${which} character does not work.`,
+        title: eq ? `'${s[i]}' = '${s[j]}'` : `Mismatch: '${s[i]}' ≠ '${s[j]}'`, tag: eq ? 'PAIR:' : 'FAIL:',
+        desc: eq ? `s[${i}]='${s[i]}' and s[${j}]='${s[j]}' agree, so i and j move inward.` : `s[${i}]='${s[i]}' and s[${j}]='${s[j]}' differ, so deleting the ${which} character does not work.`,
         cells: cells([i, j], eq ? 'found' : 'error', lo, hi), pointers: [{ id: 'i', label: 'i', index: i, tone: 'purple' }, { id: 'j', label: 'j', index: j, tone: 'yellow' }], vars: vars(i, j, `s[${deleted}]`),
+        alert: eq ? undefined : `Second mismatch inside the ${which}-deletion trial: it would need another deletion.`,
         logic: eq ? 'Still a palindrome so far.' : 'A second mismatch would need a second deletion, which is not allowed.', logicTone: eq ? 'success' : 'warn',
-        javaLines: eq ? [9] : [9, 10], pyLines: eq ? [10, 11, 12] : [10, 11], algoStep: 2,
+        javaLines: eq ? [9] : [9, 10], pyLines: eq ? [10, 11, 12] : [10, 11], algoStep: 3, note: eq ? `'${s[i]}' == '${s[j]}' → i = ${i + 1}, j = ${j - 1}` : `'${s[i]}' != '${s[j]}' → return false`,
       });
       if (!eq) { deleted = -1; return false; }
       i++;
@@ -69,35 +71,37 @@ function build({ s }: In): Step[] {
   while (l < r) {
     if (s[l] === s[r]) {
       steps.push({
-        title: `Match: '${s[l]}' = '${s[r]}'`, desc: `s[${l}] and s[${r}] agree; move both inward.`,
+        title: `Match: '${s[l]}' = '${s[r]}'`, tag: 'MATCH:', desc: `s[${l}]='${s[l]}' and s[${r}]='${s[r]}' agree, so l moves to ${l + 1} and r to ${r - 1} with no deletion used.`,
         cells: cells([l, r], 'found'), pointers: mainPtrs(), vars: vars('—', '—', 'none'),
-        logic: 'No deletion needed for this pair.', logicTone: 'success', javaLines: [3], pyLines: [3, 4], algoStep: 1,
+        logic: 'No deletion needed for this pair.', logicTone: 'success', javaLines: [3], pyLines: [3, 4], algoStep: 1, note: `'${s[l]}' == '${s[r]}' → l = ${l + 1}, r = ${r - 1}`,
       });
       l++;
       r--;
       continue;
     }
     steps.push({
-      title: `Mismatch: '${s[l]}' ≠ '${s[r]}'`, desc: `First disagreement at l = ${l}, r = ${r}. We may delete one of these two characters.`,
+      title: `Mismatch: '${s[l]}' ≠ '${s[r]}'`, tag: 'MISMATCH:', desc: `first disagreement at l = ${l}, r = ${r}: '${s[l]}' ≠ '${s[r]}'. The one allowed deletion must be s[${l}] or s[${r}].`,
       cells: cells([l, r], 'error'), pointers: mainPtrs(), vars: vars('—', '—', 'none'),
-      logic: 'Delete either s[l] or s[r]; if either choice leaves a palindrome the answer is true.', logicTone: 'warn', javaLines: [4], pyLines: [5, 6], algoStep: 2,
+      alert: `Mismatch at l = ${l}, r = ${r}: spend the single deletion on s[${l}] or s[${r}].`,
+      logic: 'Delete either s[l] or s[r]; if either choice leaves a palindrome the answer is true.', logicTone: 'warn', javaLines: [4], pyLines: [5, 6], algoStep: 2, note: `'${s[l]}' != '${s[r]}' → try isPal(${l + 1}, ${r}) || isPal(${l}, ${r - 1})`,
     });
     const ok = trial(l + 1, r, 'left') || (deleted = -1, trial(l, r - 1, 'right'));
     const dropped = deleted;
     steps.push({
-      title: ok ? 'One deletion fixes it' : 'No single deletion works', desc: ok ? 'The remaining characters form a palindrome after one deletion.' : 'Both choices leave a mismatch, so more than one deletion would be needed.',
+      title: ok ? 'One deletion fixes it' : 'No single deletion works', tag: '✅ Done!',
+      desc: ok ? `deleting s[${dropped >= 0 ? dropped : l}]='${s[dropped >= 0 ? dropped : l]}' leaves a palindrome, so the answer is true.` : 'both deletions leave another mismatch, so more than one deletion would be needed: the answer is false.',
       cells: cells([], 'compare', -1, -1, ok ? 'found' : 'error'), pointers: [], vars: vars('—', '—', ok ? `s[${dropped >= 0 ? dropped : l}]` : 'none'),
       logic: ok ? 'At most one deletion was enough.' : 'Neither the left nor the right candidate yields a palindrome.', logicTone: ok ? 'success' : 'warn',
-      javaLines: [4], pyLines: [6], algoStep: 3,
+      javaLines: [4], pyLines: [6], algoStep: 4, note: `return ${ok}`,
       result: { title: String(ok), text: ok ? 'Palindrome after deleting one character' : 'Cannot be fixed with one deletion' },
     });
     return steps;
   }
 
   steps.push({
-    title: 'Already a palindrome', desc: 'No mismatch was found, so no deletion is needed.',
+    title: 'Already a palindrome', tag: '✅ Done!', desc: `l and r met without a single mismatch, so "${s}" is already a palindrome and needs no deletion.`,
     cells: cells([], 'found', -1, -1, 'found'), pointers: [], vars: vars('—', '—', 'none'),
-    logic: 'Zero deletions is within the allowance of one.', logicTone: 'success', javaLines: [6], pyLines: [7], algoStep: 3,
+    logic: 'Zero deletions is within the allowance of one.', logicTone: 'success', javaLines: [6], pyLines: [7], algoStep: 4, note: 'loop ends → return true',
     result: { title: 'true', text: 'Already a palindrome' },
   });
   return steps;
@@ -109,6 +113,7 @@ export const validPalindromeII: ProblemDef<In> = {
   statement: 'Given a string, return true if it can become a palindrome by deleting at most one character.',
   constraints: '1 ≤ length ≤ 10⁵, lowercase letters (animation: up to 12 letters)',
   examples: [
+    { label: '"cuppucu"', input: { s: 'cuppucu' }, output: 'true', answer: 'true (deleting the last "u" leaves "cuppuc")' },
     { label: '"aba"', input: { s: 'aba' }, output: 'true' },
     { label: '"abca"', input: { s: 'abca' }, output: 'true' },
     { label: '"abc"', input: { s: 'abc' }, output: 'false' },
@@ -152,11 +157,20 @@ export const validPalindromeII: ProblemDef<In> = {
     '        i += 1; j -= 1',
     '    return True',
   ],
+  phases: [
+    { icon: '🎯', label: 'Place l and r', tone: 'blue' },
+    { icon: '🟢', label: 'Match: move inward', tone: 'green' },
+    { icon: '⚠️', label: 'First mismatch', tone: 'orange' },
+    { icon: '🔍', label: 'Re-check without one char', tone: 'cyan' },
+    { icon: '✅', label: 'Done', tone: 'green' },
+  ],
+  emphasis: ['at most one character', 'palindrome'],
   algorithm: [
     'Place l and r at the two ends of the string',
     'While s[l] == s[r], move both pointers inward',
-    'On a mismatch, test whether s[l+1..r] or s[l..r−1] is a palindrome',
-    'Return true if either test passes (or no mismatch ever occurred), otherwise false',
+    'At the first mismatch the one deletion must be s[l] or s[r]',
+    'Test whether s[l+1..r] or s[l..r−1] is a palindrome',
+    'Done: true if either test passes (or no mismatch ever occurred), otherwise false',
   ],
   complexity: [{ label: 'Time', value: 'O(n)' }, { label: 'Space', value: 'O(1)' }],
   why: 'Everything before the first mismatch already mirrors, so the single deletion must remove s[l] or s[r] — any other deletion leaves that same pair facing each other. Each of the two candidates is checked with one linear scan, giving at most 2n comparisons overall.',

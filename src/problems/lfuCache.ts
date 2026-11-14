@@ -151,7 +151,7 @@ export const lfuCache: ProblemDef<In> = {
   constraints: '1 ≤ capacity ≤ 10⁴, up to 2 × 10⁵ calls (animation: capacity 1–3, up to 12 operations, keys 0–9, values 0–99)',
   examples: [
     { label: 'cap 2: put 1 1, put 2 2, get 1, put 3 3, get 2, get 3', input: { cap: 2, ops: [{ t: 'put', k: 1, v: 1 }, { t: 'put', k: 2, v: 2 }, { t: 'get', k: 1 }, { t: 'put', k: 3, v: 3 }, { t: 'get', k: 2 }, { t: 'get', k: 3 }] }, output: '1, -1, 3' },
-    { label: 'cap 2: tie on frequency (LRU breaks it)', input: { cap: 2, ops: [{ t: 'put', k: 1, v: 10 }, { t: 'put', k: 2, v: 20 }, { t: 'get', k: 1 }, { t: 'get', k: 2 }, { t: 'put', k: 3, v: 30 }, { t: 'get', k: 1 }, { t: 'get', k: 3 }] }, output: '10, 20, 30' },
+    { label: 'cap 2: tie on frequency (LRU breaks it)', input: { cap: 2, ops: [{ t: 'put', k: 1, v: 10 }, { t: 'put', k: 2, v: 20 }, { t: 'get', k: 1 }, { t: 'get', k: 2 }, { t: 'put', k: 3, v: 30 }, { t: 'get', k: 1 }, { t: 'get', k: 3 }] }, output: '10, 20, -1, 30' },
     { label: 'cap 1: put 0 0, get 0, put 1 1, get 0, get 1', input: { cap: 1, ops: [{ t: 'put', k: 0, v: 0 }, { t: 'get', k: 0 }, { t: 'put', k: 1, v: 1 }, { t: 'get', k: 0 }, { t: 'get', k: 1 }] }, output: '0, -1, 1' },
   ],
   inputPlaceholder: 'capacity ; ops — e.g. 2 ; put 1 1, put 2 2, get 1, put 3 3, get 2, get 3',

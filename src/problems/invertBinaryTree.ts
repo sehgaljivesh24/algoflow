@@ -38,7 +38,7 @@ function build({ tokens }: TreeIn): Step[] {
   add({
     title: 'Start', desc: 'Invert the tree: every node swaps its left and right children, all the way down.',
     logic: 'Invert each subtree first, then swap the two (already inverted) subtrees at the current node.',
-    j: J.start, p: P.start, a: 0, vars: vars('—', '—', '—'), aux: aux(),
+    j: J.start, p: P.start, a: 0, vars: vars('—', '—', '—'), aux: aux(), tag: 'CALL', note: `invertTree(${val(0)}), ${nodes.length} node${nodes.length === 1 ? '' : 's'}`,
   });
 
   const invert = (id: number) => {
@@ -47,9 +47,11 @@ function build({ tokens }: TreeIn): Step[] {
     const n = nodes[id];
     const leaf = n.left === null && n.right === null;
     add({
-      title: `Visit node ${val(id)}`, desc: leaf ? `${val(id)} is a leaf: both children are null, so there is nothing to swap.` : `Call invertTree(${val(id)}). Invert the left subtree, then the right subtree.`,
+      title: `Visit node ${val(id)}`, tag: leaf ? 'LEAF' : 'VISIT',
+      desc: leaf ? `node ${val(id)} is a leaf: both children are null, so there is nothing to swap` : `call invertTree(${val(id)}) with left = ${nm(n.left)} and right = ${nm(n.right)}: invert the left subtree, then the right`,
       logic: leaf ? 'A leaf (or a null) is already its own mirror image.' : 'Go to the bottom first — swapping happens on the way back up.',
       j: J.visit, p: P.visit, a: 1, vars: vars(val(id), nm(n.left), nm(n.right)), aux: aux(),
+      note: leaf ? `left = right = null → return node ${val(id)}` : `invertTree(${nm(n.left)}), invertTree(${nm(n.right)}), depth ${stack.length}`,
     });
     if (n.left !== null) invert(n.left);
     if (n.right !== null) invert(n.right);
@@ -59,9 +61,10 @@ function build({ tokens }: TreeIn): Step[] {
       n.right = oldL;
       states[id] = 'swap';
       add({
-        title: `Swap children of ${val(id)}`, desc: `left was ${nm(oldL)}, right was ${nm(oldR)}. After the swap left = ${nm(n.left)}, right = ${nm(n.right)}.`,
+        title: `Swap children of ${val(id)}`, tag: 'SWAP', desc: `node ${val(id)}: left was ${nm(oldL)} and right was ${nm(oldR)}, so after the swap left = ${nm(n.left)} and right = ${nm(n.right)}`,
         logic: 'Both subtrees are already inverted, so swapping the pointers finishes this node.', tone: 'success',
         j: J.swap, p: P.swap, a: 2, vars: vars(val(id), nm(n.left), nm(n.right)), aux: aux(),
+        note: `${val(id)}.left = ${nm(n.left)}; ${val(id)}.right = ${nm(n.right)}`,
       });
     }
     states[id] = 'found';
@@ -71,8 +74,8 @@ function build({ tokens }: TreeIn): Step[] {
 
   const out = toLevelOrder(nodes, 0);
   add({
-    title: 'Done', desc: `The tree is mirrored. Level order of the result: ${out}`, logic: 'Every node was visited once and swapped once.', tone: 'success',
-    j: J.ret, p: P.ret, a: 3, vars: vars('—', '—', '—'), aux: aux(), result: { title: out, text: 'Inverted tree (level order)' },
+    title: 'Done', tag: '✅ Done!', desc: `the tree is mirrored and the root ${val(0)} is returned, level order of the result is ${out}`, logic: 'Every node was visited once and swapped once.', tone: 'success',
+    j: J.ret, p: P.ret, a: 3, vars: vars('—', '—', '—'), aux: aux(), note: `return root = ${val(0)}`, result: { title: out, text: 'Inverted tree (level order)' },
   });
   return steps;
 }
@@ -91,14 +94,21 @@ export const invertBinaryTree: ProblemDef<TreeIn> = {
   parseInput: parseTree, buildSteps: build, viz: 'cells',
   legend: [{ label: 'Visiting', state: 'active' }, { label: 'Just swapped', state: 'swap' }, { label: 'Inverted', state: 'found' }],
   varLabels: ['node', 'left', 'right'],
+  emphasis: ['swapping the left and right child', 'every node'],
+  phases: [
+    { icon: '🚩', label: 'CALL invertTree(root)', tone: 'blue' },
+    { icon: '⬇', label: 'VISIT: recurse left, right', tone: 'cyan' },
+    { icon: '🔁', label: 'SWAP children', tone: 'gold' },
+    { icon: '✅', label: 'Done', tone: 'green' },
+  ],
   approach: {
     title: 'Recurse, then swap',
     text: 'Invert the left and right subtrees recursively, then exchange the two child pointers of the current node. A null node is returned as-is.',
   },
   java, python,
   algorithm: [
-    'If the node is null, return null',
-    'Recursively invert the left subtree and the right subtree',
+    'Call invertTree(root); a null node returns null',
+    'Visit a node: recursively invert the left subtree and the right subtree',
     'Swap root.left and root.right',
     'Return the node',
   ],

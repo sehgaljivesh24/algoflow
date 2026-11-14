@@ -51,7 +51,7 @@ function build({ nums }: In): Step[] {
           title: `nums[${i}] = ${x} is out of range`, tag: 'SKIP:', desc: `nums[${i}] = ${x} is not in 1..${n}, so it has no home slot. Leave it and move on to i = ${i + 1}`,
           cells: cells(i), pointers: ptr(i), aux: aux(), vars: vars(i),
           logic: 'Only values 1..n can ever matter for the answer.', logicTone: 'warn', javaLines: [3], pyLines: [3], algoStep: 1,
-          note: `${x} ∉ [1, ${n}] → skip`, alert: `${x} is outside 1..${n}: it cannot be the answer's neighbour, so it is ignored.`,
+          note: `${x} ∉ [1, ${n}] → skip`, alert: `${x} is outside 1..${n}: it has no home slot and cannot change the answer, so it is ignored.`,
         });
         break;
       }

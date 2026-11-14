@@ -48,15 +48,15 @@ function build({ s, words }: In): Step[] {
   say({
     title: 'Define the table', desc: `dp[i] = can the first i letters of "${s}" be split into dictionary words? T means yes.`,
     logic: 'A prefix is breakable if some word ends exactly at i and everything before that word is already breakable.',
-    java: [0, 1, 2], py: [0, 1, 2], algo: 0,
+    java: [0, 1, 2], py: [0, 1, 2], algo: 0, tag: 'DEFINE', note: `dp = boolean[${n + 1}], dictionary = [${words.join(', ')}]`,
   });
 
   dp[0] = true;
   at = 0;
   done = true;
   say({
-    title: 'Base case dp[0] = T', desc: 'The empty prefix is trivially breakable.',
-    logic: 'A word that starts at position 0 needs this to be true.', tone: 'success', java: [3], py: [3], algo: 1,
+    title: 'Base case dp[0] = T', desc: 'dp[0] = T: the empty prefix is trivially breakable, so a word starting at position 0 can be accepted',
+    logic: 'A word that starts at position 0 needs this to be true.', tone: 'success', java: [3], py: [3], algo: 1, tag: 'BASE', note: 'dp[0] = true',
   });
 
   for (let i = 1; i <= n; i++) {
@@ -84,10 +84,13 @@ function build({ s, words }: In): Step[] {
       say({
         title: `i = ${i}: does "${w}" end here?`,
         desc: hit
-          ? `"${w}" matches s[${from}..${i}) and dp[${from}] is T, so dp[${i}] = T.`
-          : !match ? `s[${from}..${i}) is "${s.slice(from, i)}", not "${w}".` : `"${w}" matches, but dp[${from}] is F: the part before it cannot be split.`,
+          ? `"${w}" matches s[${from}..${i}) and dp[${from}] is T, so dp[${i}] = T`
+          : !match ? `s[${from}..${i}) is "${s.slice(from, i)}", not "${w}", so this word does not end here` : `"${w}" matches s[${from}..${i}), but dp[${from}] is F: the part before it cannot be split`,
         logic: 'Both conditions must hold: the word fits the text AND the text before it is breakable.',
         tone: hit ? 'success' : 'info', java: [5, 6, 7, 8, 9], py: [5, 6, 7, 8, 9], algo: 2,
+        tag: hit ? 'MATCH' : 'TRY WORD',
+        note: hit ? `dp[${from}] && startsWith("${w}", ${from}) → dp[${i}] = true` : !match ? `startsWith("${w}", ${from}) is false` : `dp[${from}] is false`,
+        alert: hit ? undefined : !match ? `"${w}" does not fit: s[${from}..${i}) is "${s.slice(from, i)}".` : `"${w}" fits, but dp[${from}] is F, so the text before it is not breakable.`,
       });
       if (hit) break;
     }
@@ -98,8 +101,9 @@ function build({ s, words }: In): Step[] {
       word = '—';
       done = true;
       say({
-        title: `dp[${i}] = F`, desc: `No dictionary word ends at position ${i} with a breakable prefix before it.`,
+        title: `dp[${i}] = F`, desc: `no dictionary word ends at position ${i} with a breakable prefix before it, so dp[${i}] = F`,
         logic: 'Nothing works, so this prefix cannot be split.', tone: 'warn', java: [11], py: [5], algo: 3,
+        tag: 'NO WORD FITS', note: `dp[${i}] stays false`, alert: `Every word failed at position ${i}: the prefix "${s.slice(0, i)}" cannot be split.`,
       });
     }
   }
@@ -110,8 +114,8 @@ function build({ s, words }: In): Step[] {
   hit = null;
   done = true;
   say({
-    title: 'Done', desc: dp[n] ? `"${s}" can be segmented into dictionary words.` : `"${s}" cannot be segmented.`,
-    logic: 'dp[n] answers for the whole string.', tone: dp[n] ? 'success' : 'warn', java: [13], py: [10],
+    title: 'Done', tag: '✅ Done!', desc: dp[n] ? `dp[${n}] = T, so "${s}" can be segmented into dictionary words` : `dp[${n}] = F, so "${s}" cannot be segmented`,
+    logic: 'dp[n] answers for the whole string.', tone: dp[n] ? 'success' : 'warn', java: [13], py: [10], note: `return dp[${n}] = ${!!dp[n]}`,
     algo: 4, result: { title: String(!!dp[n]), text: dp[n] ? 'Segmentation exists' : 'No segmentation' },
   });
   return steps;
@@ -131,6 +135,14 @@ export const wordBreak: ProblemDef<In> = {
   parseInput: parse, buildSteps: build, viz: 'cells',
   legend: [{ label: 'Prefix being decided', state: 'active' }, { label: 'Word window / dp[i−len]', state: 'compare' }, { label: 'Word does not fit', state: 'error' }, { label: 'Decided', state: 'found' }, { label: 'Not yet', state: 'dim' }],
   varLabels: ['i', 'word', 'dp[i-len]'],
+  emphasis: ['dictionary', 'words may be reused'],
+  phases: [
+    { icon: '📋', label: 'DEFINE dp', tone: 'blue' },
+    { icon: '🌱', label: 'BASE dp[0] = T', tone: 'cyan' },
+    { icon: '🔍', label: 'TRY each word', tone: 'gold' },
+    { icon: '🚫', label: 'NO WORD FITS', tone: 'orange' },
+    { icon: '✅', label: 'Done', tone: 'green' },
+  ],
   approach: {
     title: 'Which prefixes can be split?',
     text: 'dp[0] = true. For each i, try every word w: if w ends at i (s[i−len..i) == w) and dp[i−len] is true, set dp[i] = true. The answer is dp[n].',

@@ -22,27 +22,31 @@ function build({ n }: In): Step[] {
       key: `${i},${j}`, value: v === 0 ? '·' : v,
       state: cur && cur[0] === i && cur[1] === j ? 'active' : v === 0 ? 'dim' : 'sorted',
     })));
-  const push = (title: string, desc: string, logic: string, tone: LogicTone, j: number[], p: number[], a: number, result?: Step['result']) =>
+  const push = (title: string, tag: string, desc: string, note: string, logic: string, tone: LogicTone, j: number[], p: number[], a: number, extra: { result?: Step['result']; alert?: string } = {}) =>
     steps.push({
-      title, desc, scene: { kind: 'grid', rows: rows(), rowHeads: g.map((_, i) => String(i)), colHeads: g.map((_, i) => String(i)) },
-      vars: { k, row: cur ? cur[0] : '—', col: cur ? cur[1] : '—', direction: NAMES[d] }, logic, logicTone: tone, javaLines: j, pyLines: p, algoStep: a, result,
+      title, tag, desc, note, alert: extra.alert, scene: { kind: 'grid', rows: rows(), rowHeads: g.map((_, i) => String(i)), colHeads: g.map((_, i) => String(i)) },
+      vars: { k, row: cur ? cur[0] : '—', col: cur ? cur[1] : '—', direction: NAMES[d] }, logic, logicTone: tone, javaLines: j, pyLines: p, algoStep: a, result: extra.result,
     });
 
-  push('Start', `An empty ${n}×${n} grid. We will write 1, 2, …, ${n * n} along a clockwise spiral.`,
-    'Instead of walls we use one direction vector and turn right whenever the next cell is off the grid or already filled.', 'info', [1, 2], [1, 2], 0);
+  push('Start', 'START —', `an empty ${n}×${n} grid: write 1, 2, …, ${n * n} along a clockwise spiral, starting at (0, 0) heading right.`, `r = 0, c = 0, d = right`,
+    'Instead of walls we use one direction vector and turn right whenever the next cell is off the grid or already filled.', 'info', [1, 2, 3], [1, 2, 3], 0);
 
   for (k = 1; k <= n * n; k++) {
     cur = [r, c];
     g[r][c] = k;
-    push(`Write ${k}`, `Put ${k} at (${r}, ${c}), heading ${NAMES[d]}.`, 'Fill the current cell, then look at where one more step would land.', 'info', [4, 5], [4, 5], 1);
+    push(`Write ${k}`, 'WRITE:', `put ${k} into cell (${r}, ${c}) while heading ${NAMES[d]}; ${n * n - k} cell${n * n - k === 1 ? '' : 's'} still to fill.`, `g[${r}][${c}] = ${k}`,
+      'Fill the current cell, then look at where one more step would land.', 'info', [5], [5], 1);
     if (k === n * n) break;
     const nr = r + DR[d];
     const nc = c + DC[d];
     if (nr < 0 || nc < 0 || nr >= n || nc >= n || g[nr][nc] !== 0) {
       const old = NAMES[d];
+      const outside = nr < 0 || nc < 0 || nr >= n || nc >= n;
       d = (d + 1) % 4;
-      push(`Turn ${old} → ${NAMES[d]}`, `The next cell (${nr}, ${nc}) is ${nr < 0 || nc < 0 || nr >= n || nc >= n ? 'outside the grid' : 'already filled'}, so rotate clockwise.`,
-        'A turn happens exactly at the edge of the grid or at the edge of the filled region.', 'warn', [6, 7], [6, 7], 2);
+      push(`Turn ${old} → ${NAMES[d]}`, 'TURN:', `the next cell (${nr}, ${nc}) is ${outside ? 'outside the grid' : 'already filled'}, so rotate clockwise from ${old} to ${NAMES[d]}.`,
+        `(${nr}, ${nc}) ${outside ? 'off grid' : `holds ${g[nr][nc]}`} → d = ${NAMES[d]}`,
+        'A turn happens exactly at the edge of the grid or at the edge of the filled region.', 'warn', [6, 7], [6, 7, 8], 2,
+        { alert: `Blocked: (${nr}, ${nc}) is ${outside ? 'outside the grid' : `already filled with ${g[nr][nc]}`}, so the walk turns ${NAMES[d]}.` });
     }
     r += DR[d];
     c += DC[d];
@@ -50,8 +54,8 @@ function build({ n }: In): Step[] {
 
   cur = null;
   k = n * n;
-  push('Done', `All ${n * n} numbers are placed.`, 'Every cell was filled exactly once.', 'success', [10], [10], 3,
-    { title: JSON.stringify(g), text: `${n} × ${n} spiral matrix` });
+  push('Done', '✅ Done!', `all ${n * n} numbers are placed in a spiral and every cell was filled exactly once.`, `return g (${n} × ${n})`, 'Every cell was filled exactly once.', 'success', [10], [10], 3,
+    { result: { title: JSON.stringify(g), text: `${n} × ${n} spiral matrix` } });
   return steps;
 }
 
@@ -100,11 +104,18 @@ export const spiralMatrixII: ProblemDef<In> = {
     '        r += dr[d]; c += dc[d]',
     '    return g',
   ],
+  phases: [
+    { icon: '🧱', label: 'Empty grid, head right', tone: 'blue' },
+    { icon: '✏️', label: 'Write next number', tone: 'green' },
+    { icon: '↩️', label: 'Blocked: turn clockwise', tone: 'orange' },
+    { icon: '✅', label: 'Done', tone: 'green' },
+  ],
+  emphasis: ['n × n matrix', 'clockwise spiral order'],
   algorithm: [
     'Create an empty n × n grid and start at (0, 0) heading right',
     'Write the next number into the current cell',
-    'If the next cell is off the grid or filled, turn clockwise',
-    'Step forward; after n² numbers return the grid',
+    'If the next cell is off the grid or filled, turn clockwise; then step forward',
+    'Done: after n² numbers return the grid',
   ],
   complexity: [{ label: 'Time', value: 'O(n²)' }, { label: 'Space', value: 'O(1) extra (besides the output)' }],
   why: 'The spiral only turns when blocked, and a blocked cell is always either the grid edge or a cell already written, so the path never overlaps itself and never skips an empty cell. After each number we move exactly one step, so n² numbers visit n² cells exactly once.',

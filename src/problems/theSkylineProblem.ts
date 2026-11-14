@@ -91,7 +91,7 @@ function build({ b }: In): Step[] {
       title: `x = ${e.x}: building ${e.s < 0 ? 'starts' : 'ends'} (h=${h})`,
       desc: changed ? `x=${e.x}: ${e.s < 0 ? 'add' : 'remove'} ${h} ${e.s < 0 ? 'to' : 'from'} the active heights. The tallest changes ${was} → ${top}, so [${e.x}, ${top}] is a key point.` : `x=${e.x}: ${e.s < 0 ? 'add' : 'remove'} ${h} ${e.s < 0 ? 'to' : 'from'} the active heights. The tallest stays ${top}, so the outline does not change and nothing is recorded.`,
       note: changed ? `top = ${top} ≠ prev = ${was} → out.add([${e.x},${top}])` : `top = ${top} = prev → no key point`,
-      ...(changed ? {} : { alert: e.s < 0 ? `Height ${h} is hidden behind the taller ${top}: no new key point.` : `Building ${h} ends but a taller one (${top}) still covers x = ${e.x}: skipped.` }),
+      ...(changed ? {} : { alert: e.s < 0 ? `Height ${h} is hidden behind ${top > h ? 'the taller' : 'an equally tall'} ${top}: no new key point.` : `Building ${h} ends but ${top > h ? 'a taller one' : 'another one as tall'} (${top}) still covers x = ${e.x}: skipped.` }),
       logic: 'Only a change of the tallest active building alters the outline; hidden or duplicate heights are ignored.', tone: changed ? 'success' : 'info',
       java: changed ? [15] : e.s < 0 ? [12, 14] : [13, 14], py: changed ? [13, 14, 15, 16] : e.s < 0 ? [9, 10, 13] : [11, 12, 13], algo: changed ? 3 : 2,
     });

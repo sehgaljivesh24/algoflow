@@ -66,26 +66,18 @@ export function TemplateCard({ code, title = 'Complete Java template', lang = 'J
   );
 }
 
-interface Props {
-  title: string;
-  java: string[];
-  python: string[];
-  javaActive: number[];
-  pyActive: number[];
-  done?: boolean;
-}
+export type CodeLang = 'java' | 'python';
 
-export function CodePanel({ title, java, python, javaActive, pyActive, done }: Props) {
-  const [lang, setLang] = useState<'java' | 'python'>(() => {
+/** The learner's chosen language (remembered in this browser). A page that shows code elsewhere can share it with CodePanel. */
+export function useCodeLang(): [CodeLang, (l: CodeLang) => void] {
+  const [lang, setLang] = useState<CodeLang>(() => {
     try {
       return localStorage.getItem('algoflow.lang') === 'python' ? 'python' : 'java';
     } catch {
       return 'java';
     }
   });
-  const [copied, setCopied] = useState(false);
-
-  const pick = (l: 'java' | 'python') => {
+  const pick = (l: CodeLang) => {
     setLang(l);
     try {
       localStorage.setItem('algoflow.lang', l);
@@ -93,6 +85,27 @@ export function CodePanel({ title, java, python, javaActive, pyActive, done }: P
       /* ignore */
     }
   };
+  return [lang, pick];
+}
+
+interface Props {
+  title: string;
+  java: string[];
+  python: string[];
+  javaActive: number[];
+  pyActive: number[];
+  done?: boolean;
+  /** Optional: controlled language (from `useCodeLang`), so other parts of the page can follow the tab. */
+  lang?: CodeLang;
+  onLang?: (l: CodeLang) => void;
+}
+
+export function CodePanel({ title, java, python, javaActive, pyActive, done, lang: langProp, onLang }: Props) {
+  const [own, pickOwn] = useCodeLang();
+  const lang = langProp ?? own;
+  const [copied, setCopied] = useState(false);
+
+  const pick = (l: CodeLang) => (onLang ?? pickOwn)(l);
 
   const lines = lang === 'java' ? java : python;
   const active = lang === 'java' ? javaActive : pyActive;

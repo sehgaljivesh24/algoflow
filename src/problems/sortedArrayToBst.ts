@@ -77,7 +77,7 @@ function build({ nums }: In): Step[] {
     states[id] = 'active';
     add({
       title: `Middle of [${lo}..${hi}] is ${nums[mid]}`, desc: `mid = ${lo} + (${hi} − ${lo}) / 2 = ${mid}. Create a node with nums[${mid}] = ${nums[mid]}${parent === null ? ' — the root' : ` as the ${side} child of ${nodes[parent].value}`}.`,
-      logic: `${mid - lo} element${mid - lo === 1 ? '' : 's'} go left, ${hi - mid} go right — their counts differ by at most 1.`, tone: 'success',
+      logic: `${mid - lo} element${mid - lo === 1 ? ' goes' : 's go'} left, ${hi - mid} ${hi - mid === 1 ? 'goes' : 'go'} right — their counts differ by at most 1.`, tone: 'success',
       j: J.mid, p: P.mid, a: 2, vars: vars(lo, hi, mid), aux: aux(),
     });
     states[id] = 'compare';

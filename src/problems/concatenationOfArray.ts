@@ -23,27 +23,34 @@ function build({ nums }: In): Step[] {
     title: 'Start', desc: `nums has n = ${n} numbers, so ans needs 2n = ${2 * n} slots.`,
     cells: cells(), pointers: [], aux: aux(), vars: vars('—'),
     logic: 'The answer is nums followed by nums again: slot i and slot i + n always hold the same value.', logicTone: 'info',
-    javaLines: [1, 2], pyLines: [1, 2], algoStep: 0,
+    javaLines: [1, 2], pyLines: [1, 2], algoStep: 0, tag: 'READY —', note: `n = ${n}, ans = new int[${2 * n}]`,
   });
 
   for (let i = 0; i < n; i++) {
+    const ptrs = [{ id: 'i', label: 'i', index: i, tone: 'blue' as const }, { id: 'in', label: 'i+n', index: i + n, tone: 'orange' as const }];
     ans[i] = nums[i];
+    steps.push({
+      title: `Write ans[${i}] = ${nums[i]}`, tag: 'WRITE FIRST',
+      desc: `nums[${i}] = ${nums[i]} is copied into the first half, so ans[${i}] = ${nums[i]}`,
+      cells: cells([i]), pointers: ptrs, aux: aux(), vars: vars(i),
+      logic: 'Slot i of the answer repeats nums[i] exactly.', logicTone: 'info',
+      javaLines: [4], pyLines: [4], algoStep: 1, note: `ans[${i}] = nums[${i}] = ${nums[i]}`,
+    });
     ans[i + n] = nums[i];
     steps.push({
-      title: `Copy nums[${i}] = ${nums[i]} twice`, desc: `ans[${i}] = ${nums[i]} and ans[${i} + ${n}] = ans[${i + n}] = ${nums[i]}.`,
-      cells: cells([i, i + n]),
-      pointers: [{ id: 'i', label: 'i', index: i, tone: 'blue' }, { id: 'in', label: 'i+n', index: i + n, tone: 'orange' }],
-      aux: aux(), vars: vars(i),
+      title: `Write ans[${i} + ${n}] = ${nums[i]}`, tag: 'WRITE SECOND',
+      desc: `the same ${nums[i]} is copied into the second half, so ans[${i} + ${n}] = ans[${i + n}] = ${nums[i]}`,
+      cells: cells([i + n]), pointers: ptrs, aux: aux(), vars: vars(i),
       logic: 'One read of nums[i] fills both halves, so a single loop of n iterations builds the whole answer.', logicTone: 'info',
-      javaLines: [3, 4, 5], pyLines: [3, 4, 5], algoStep: 1,
+      javaLines: [5], pyLines: [5], algoStep: 2, note: `ans[${i} + ${n}] = nums[${i}] = ${nums[i]}`,
     });
   }
 
   const out = ans.map(Number);
   steps.push({
-    title: 'Done', desc: `All ${2 * n} slots are filled.`,
+    title: 'Done', tag: '✅ Done!', desc: `all ${2 * n} slots are filled, so the answer is [${out.join(', ')}]`,
     cells: out.map((v, i) => ({ key: i, value: v, state: 'found' as const })), pointers: [], aux: aux(), vars: vars('—'),
-    logic: `Result: [${out.join(', ')}]`, logicTone: 'success', javaLines: [7], pyLines: [6], algoStep: 2,
+    logic: `Result: [${out.join(', ')}]`, logicTone: 'success', javaLines: [7], pyLines: [6], algoStep: 3, note: `return ans = [${out.join(', ')}]`,
     result: { title: `[${out.join(', ')}]`, text: 'nums concatenated with itself' },
   });
   return steps;
@@ -63,6 +70,13 @@ export const concatenationOfArray: ProblemDef<In> = {
   parseInput: parse, buildSteps: build, viz: 'cells',
   legend: [{ label: 'Being written', state: 'active' }, { label: 'Filled', state: 'sorted' }, { label: 'Empty slot', state: 'dim' }, { label: 'Final answer', state: 'found' }],
   varLabels: ['n', 'i'],
+  emphasis: ['length 2n', 'nums written twice'],
+  phases: [
+    { icon: '🧺', label: 'SETUP ans (2n slots)', tone: 'blue' },
+    { icon: '✍', label: 'WRITE ans[i]', tone: 'cyan' },
+    { icon: '📑', label: 'WRITE ans[i + n]', tone: 'orange' },
+    { icon: '✅', label: 'Done', tone: 'green' },
+  ],
   approach: {
     title: 'Write each value into both halves',
     text: 'Allocate an array of size 2n. For every index i, copy nums[i] into ans[i] and again into ans[i + n]. One pass, no tricks.',
@@ -89,7 +103,8 @@ export const concatenationOfArray: ProblemDef<In> = {
   ],
   algorithm: [
     'Let n = len(nums) and create ans with 2n slots',
-    'For each i, set ans[i] and ans[i + n] to nums[i]',
+    'For each i, set ans[i] = nums[i]',
+    'Then set ans[i + n] = nums[i]',
     'Return ans',
   ],
   complexity: [{ label: 'Time', value: 'O(n)' }, { label: 'Space', value: 'O(n) for the output' }],

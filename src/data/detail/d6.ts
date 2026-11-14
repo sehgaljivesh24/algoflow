@@ -15,7 +15,7 @@ export const d6: DetailMap = {
         'A **dictionary is queried many times**, or many words are matched letter by letter at once, as in autocomplete, search suggestions or a stream of characters. A hash set of whole words cannot share work between words that begin alike; a trie stores every common prefix once.',
         'The pattern contains **wildcards** such as ".", or a board search must stop as soon as the current path is no prefix of any wanted word. The trie lets you fan out over children, or prune a branch, at exactly the letter where it fails.',
         'The "letters" are **bits**: insert every number as a 32-step path of 0s and 1s, then walk each number against the opposite bit at every level to build the **maximum XOR** or to find the closest value without comparing all pairs.',
-        'You need to **replace or compress by root**: swap each word for its shortest dictionary root, count distinct prefixes, or find the longest common prefix of many strings. The first node flagged as a word end on the walk is the answer, so the loop can stop early.',
+        'You need to **replace or compress by root**: swap each word for its shortest dictionary root, count distinct prefixes, or find the longest common prefix of many strings. For the shortest-root replacement, the first node flagged as a word end on the walk is the answer, so the loop can stop early.',
       ],
       tip: 'Fix what a node means (the prefix spelled by its path) and what the end flag means (a word stops here). search needs the flag, startsWith does not; shortest-root lookups stop at the first flag.',
       practice: [

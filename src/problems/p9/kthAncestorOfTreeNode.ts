@@ -4,6 +4,7 @@ import { bitLen, liftGrid, liftTable, ntScene, parList, parseParents, parsePairs
 interface In { par: number[]; queries: [number, number][] }
 
 const USAGE = '0 0 1 1 2 | 4:3 5:2   (parents of nodes 1,2,3,... | node:k queries)';
+const ord = (m: number) => `${m}${m % 100 >= 11 && m % 100 <= 13 ? 'th' : ['th', 'st', 'nd', 'rd'][m % 10 > 3 ? 0 : m % 10]}`;
 
 function parse(raw: string): In {
   const [t, q] = splitParts(raw, 2, USAGE);
@@ -79,7 +80,7 @@ function build({ par, queries }: In): Step[] {
     }
     up[j].forEach((x, v) => { table[j][v] = x; });
     push({
-      title: `Row 2^${j} complete`, desc: `Every node now knows its ${1 << j}-th ancestor (or – when that is above the root).`,
+      title: `Row 2^${j} complete`, desc: `Every node now knows its ${ord(1 << j)} ancestor (or – when that is above the root).`,
       scene: split(ntScene({ par })),
       logic: 'Once an ancestor is missing it stays missing: –  propagates to the higher rows.', logicTone: 'info',
       javaLines: [8, 9, 12], pyLines: [4, 5, 6], algoStep: 1,
@@ -112,11 +113,11 @@ function build({ par, queries }: In): Step[] {
       if (nxt < 0) {
         dead = true;
         push({
-          title: `up[${j}][${cur}] is –: fell off the root`, desc: `${cur} has no ${1 << j}-th ancestor, so the k-th ancestor does not exist.`,
+          title: `up[${j}][${cur}] is –: fell off the root`, desc: `${cur} has no ${ord(1 << j)} ancestor, so the k-th ancestor does not exist.`,
           scene: split(ntScene({ par, states: { [cur]: 'error' }, extra }), { [`${j},${cur}`]: 'error' }),
           logic: 'The table already knows when a jump leaves the tree, so we can stop at once.', logicTone: 'warn',
           javaLines: [17, 18, 20], pyLines: [9, 10, 11, 14], algoStep: 4,
-          tag: 'FELL OFF', alert: `Node ${cur} has no ${1 << j}-th ancestor: the tree is not tall enough, answer -1.`, note: `up[${j}][${cur}] = −1 → return −1`,
+          tag: 'FELL OFF', alert: `Node ${cur} has no ${ord(1 << j)} ancestor: the tree is not tall enough, answer -1.`, note: `up[${j}][${cur}] = −1 → return −1`,
         });
         break;
       }
@@ -137,7 +138,7 @@ function build({ par, queries }: In): Step[] {
     const ans = dead ? -1 : cur;
     answers.push(String(ans));
     push({
-      title: `Answer: ${ans}`, desc: dead ? 'The ancestor does not exist, so the answer is -1.' : `All set bits used; the node we stand on, ${cur}, is the ${k}-th ancestor of ${node}.`,
+      title: `Answer: ${ans}`, desc: dead ? 'The ancestor does not exist, so the answer is -1.' : `All set bits used; the node we stand on, ${cur}, is the ${ord(k)} ancestor of ${node}.`,
       scene: split(ntScene({ par, states: dead ? { [node]: 'error' } : { [node]: 'compare', [cur]: 'found' }, extra: dead ? [] : extra })),
       logic: dead ? 'Return -1 when the walk leaves the tree.' : 'The jumps add up to exactly k steps, so this is the k-th ancestor.', logicTone: dead ? 'warn' : 'success',
       javaLines: [20], pyLines: [14], algoStep: 4,

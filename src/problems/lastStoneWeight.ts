@@ -1,5 +1,5 @@
 import type { CellState, ProblemDef, Step } from '../engine/types.ts';
-import { Heap, emitter, parseInts } from './listheapKit.ts';
+import { Heap, emitter, heapExtra, parseInts } from './listheapKit.ts';
 import type { HeapEvent } from './listheapKit.ts';
 
 interface In { stones: number[] }
@@ -13,10 +13,11 @@ function build({ stones }: In): Step[] {
   let round = 0;
   const steps: Step[] = [];
   const emit = emitter(steps, () => ({ scene: heap.scene(hot), aux: [heap.aux('max-heap as array')], vars: { y, x, 'heap size': heap.size } }));
-  const cb = (java: number[], py: number[], algo: number) => (e: HeapEvent) => { hot = e.hot; emit(e.title, e.desc, e.logic, e.tone, java, py, algo); };
+  const cb = (java: number[], py: number[], algo: number) => (e: HeapEvent) => { hot = e.hot; emit(e.title, e.desc, e.logic, e.tone, java, py, algo, undefined, heapExtra(e)); };
 
   emit('Start', `Put all ${stones.length} stones into a max-heap, so the heaviest stone is always at the root.`,
-    'Each round needs the two heaviest stones; a max-heap hands them over in O(log n).', 'info', [1, 2], [1, 2], 0);
+    'Each round needs the two heaviest stones; a max-heap hands them over in O(log n).', 'info', [1, 2], [1, 2], 0,
+    undefined, { tag: 'INIT', note: `pq = max-heap of [${stones.join(', ')}], size ${stones.length}` });
 
   while (heap.size > 1) {
     round++;
@@ -25,18 +26,28 @@ function build({ stones }: In): Step[] {
     x = heap.pop(cb([5], [5], 1));
     hot = {};
     const diff = (y as number) - (x as number);
-    emit(`Round ${round}: smash ${y} and ${x}`, diff === 0 ? `Equal weights: both stones are destroyed, nothing goes back.` : `The lighter stone (${x}) is destroyed and the heavier one shrinks to ${y} − ${x} = ${diff}.`,
-      diff === 0 ? 'Equal stones cancel completely.' : 'Only the difference survives and returns to the pile.', diff === 0 ? 'warn' : 'info', [6], [6, 7], 2);
+    emit(`Round ${round}: smash ${y} and ${x}`, diff === 0 ? `Round ${round}: ${y} and ${x} are equal, so both stones are destroyed and nothing goes back.` : `Round ${round}: the lighter stone (${x}) is destroyed and the heavier one shrinks to ${y} − ${x} = ${diff}.`,
+      diff === 0 ? 'Equal stones cancel completely.' : 'Only the difference survives and returns to the pile.', diff === 0 ? 'warn' : 'info', [6], [6, 7], 2,
+      undefined, {
+        tag: 'SMASH',
+        note: diff === 0 ? `y == x == ${y}: nothing is offered back` : `y != x: offer(${y} − ${x} = ${diff})`,
+        alert: diff === 0 ? `${y} = ${x}: both stones vanish, nothing is pushed back.` : undefined,
+      });
     if (diff !== 0) {
       heap.push(diff, cb([6], [7], 2));
       hot = {};
     }
   }
 
+  hot = {};
+  emit('Loop ends', heap.size ? `Only ${heap.size} stone is left in the heap, so no pair can be smashed any more.` : 'The heap is empty: the last two stones destroyed each other.',
+    'The loop runs while at least two stones remain.', 'info', [3], [3], 1,
+    undefined, { tag: 'CHECK', note: `pq.size() = ${heap.size}, not > 1: stop` });
   const left = heap.size ? heap.peek() : 0;
   hot = heap.size ? { 0: 'found' } : {};
-  emit('Done', heap.size ? `One stone is left: ${left}.` : 'No stones are left, so the answer is 0.', 'The loop runs while at least two stones remain.', 'success', [8], [8], 3,
-    { title: String(left), text: heap.size ? 'Weight of the last stone' : 'No stone remains' });
+  emit('Done', heap.size ? `One stone is left with weight ${left}, so the answer is ${left}.` : 'No stones are left, so the answer is 0.', 'The loop runs while at least two stones remain.', 'success', [8], [8], 3,
+    { title: String(left), text: heap.size ? 'Weight of the last stone' : 'No stone remains' },
+    { tag: '✅ Done!', note: heap.size ? `return pq.peek() = ${left}` : 'heap is empty, return 0' });
   return steps;
 }
 
@@ -55,6 +66,13 @@ export const lastStoneWeight: ProblemDef<In> = {
   buildSteps: build, viz: 'cells',
   legend: [{ label: 'Being compared / moved', state: 'active' }, { label: 'Swapping', state: 'swap' }, { label: 'Settled / root', state: 'found' }],
   varLabels: ['y', 'x', 'heap size'],
+  emphasis: ['two heaviest stones', 'y ≥ x', 'y − x'],
+  phases: [
+    { icon: '🌱', label: 'Build max-heap', tone: 'blue' },
+    { icon: '⬆', label: 'Pop two heaviest (y ≥ x)', tone: 'cyan' },
+    { icon: '💥', label: 'Smash → push y − x', tone: 'orange' },
+    { icon: '✅', label: 'Done', tone: 'green' },
+  ],
   approach: {
     title: 'A max-heap gives the two heaviest',
     text: 'Keep the stones in a max-heap. Pop twice to get y ≥ x, push y − x back if it is non-zero, and repeat until at most one stone remains.',

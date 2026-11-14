@@ -4,6 +4,8 @@ import { annotate, auxItems } from './annotate.ts';
 interface In { tokens: string[] }
 
 const OPS = ['+', '-', '*', '/'];
+/** Java line (0-based) of the `case` that handles each operator. */
+const CASE_LINE: Record<string, number> = { '+': 4, '*': 5, '-': 6, '/': 7 };
 const apply = (op: string, a: number, b: number): number => {
   if (op === '+') return a + b;
   if (op === '-') return a - b;
@@ -70,14 +72,14 @@ function build({ tokens }: In): Step[] {
     steps.push({
       title: `Operator ${t}: pop ${b} and ${a}`, desc: `Pop b = ${b} (top) first, then a = ${a}. The result is a ${t} b.`,
       cells: cells(i), pointers: ptr(i), aux: aux(), vars: vars(i),
-      logic: 'The first pop is the right operand b; it matters for − and ÷.', logicTone: 'warn', javaLines: [2, 3], pyLines: [2, 3, 4], algoStep: 2,
+      logic: 'The first pop is the right operand b; it matters for − and ÷.', logicTone: 'warn', javaLines: [CASE_LINE[t]], pyLines: [2, 3, 4], algoStep: 2,
     });
     const v = apply(t, a, b);
     stack.push(v);
     steps.push({
       title: `${a} ${t} ${b} = ${v}`, desc: t === '/' ? `Integer division truncates toward zero: ${a} / ${b} = ${v}. Push ${v}.` : `Push the result ${v} back.`,
       cells: cells(i), pointers: ptr(i), aux: aux(stack.length - 1), vars: vars(i),
-      logic: 'The result is a single number again, ready for the next operator.', logicTone: 'success', javaLines: [4, 5, 6, 7], pyLines: [5, 6, 7, 8], algoStep: 3,
+      logic: 'The result is a single number again, ready for the next operator.', logicTone: 'success', javaLines: [CASE_LINE[t]], pyLines: [5, 6, 7, 8], algoStep: 3,
     });
   });
 

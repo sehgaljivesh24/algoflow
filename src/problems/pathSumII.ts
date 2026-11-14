@@ -102,7 +102,7 @@ function build({ tokens, target }: In): Step[] {
 
   const out = fmtLists(res);
   add({
-    title: 'Done', desc: res.length ? `${res.length} path${res.length === 1 ? '' : 's'} sum to ${target}: ${out}` : `No root-to-leaf path sums to ${target}, so the result is empty.`,
+    title: 'Done', desc: res.length ? `${res.length} path${res.length === 1 ? ' sums' : 's sum'} to ${target}: ${out}` : `No root-to-leaf path sums to ${target}, so the result is empty.`,
     logic: 'Every root-to-leaf path was examined once.', tone: res.length ? 'success' : 'warn',
     j: J.ret, p: P.ret, a: 3, vars: vars('—', target), aux: aux(), result: { title: out, text: `Paths with sum ${target}` },
   });
