@@ -260,4 +260,7 @@ a.side-item.active[class*='nt-'] { color: var(--tone); border-left-color: var(--
   .ppill { min-height: 38px; font-size: .76rem; }
   .pat-open { display: inline-flex; align-items: center; min-height: 38px; font-size: .84rem; }
   .pat-cta { min-height: 44px; }
+  .pat-jump-btn { display: inline-flex; align-items: center; min-height: 38px; }
+  .free-banner button { min-width: 38px; min-height: 38px; }
+  .search-wrap input, .filter-status-wrap select { min-height: 30px; }
 }

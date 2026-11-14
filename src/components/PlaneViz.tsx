@@ -1,3 +1,4 @@
+import { useId } from 'react';
 import type { EdgeState, PlaneScene } from '../engine/types';
 
 const NODE_CLASS: Record<string, string> = {
@@ -14,6 +15,8 @@ const POLY_CLASS: Record<string, string> = { active: 'st-active', error: 'st-err
 
 /** 2-D coordinate plane: points, segments, a tinted polygon outline and a sweep line. Uniform scale so geometry is not distorted. */
 export function PlaneViz({ scene }: { scene: PlaneScene }) {
+  // the page can hold several copies of this picture (height probe): arrow markers need distinct ids
+  const uid = useId().replace(/:/g, '');
   const pts = scene.points;
   if (pts.length === 0) {
     return (
@@ -59,7 +62,7 @@ export function PlaneViz({ scene }: { scene: PlaneScene }) {
       <svg className="svg-viz pl" viewBox={`0 0 ${W} ${H}`} style={{ maxWidth: Math.round(W * 1.1) }} role="img" aria-label={`Plane with ${pts.length} points`}>
         <defs>
           {SEG_STATES.filter((st) => markers.has(st)).map((st) => (
-            <marker key={st} id={`pl-arr-${st}`} className={`gv-mk st-${st}`} viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" markerUnits="userSpaceOnUse" orient="auto">
+            <marker key={st} id={`pl-arr-${uid}-${st}`} className={`gv-mk st-${st}`} viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" markerUnits="userSpaceOnUse" orient="auto">
               <path d="M0 0L10 5L0 10z" />
             </marker>
           ))}
@@ -107,7 +110,7 @@ export function PlaneViz({ scene }: { scene: PlaneScene }) {
           const w = e.label ? Math.max(16, e.label.length * 6.4 + 8) : 0;
           return (
             <g key={i} className={`gv-edge st-${st}`}>
-              <line x1={px(a.x)} y1={py(a.y)} x2={x2} y2={y2} className="gv-line" markerEnd={e.arrow ? `url(#pl-arr-${st})` : undefined} />
+              <line x1={px(a.x)} y1={py(a.y)} x2={x2} y2={y2} className="gv-line" markerEnd={e.arrow ? `url(#pl-arr-${uid}-${st})` : undefined} />
               {e.label && (
                 <g>
                   <rect x={mx - w / 2} y={my - 8} width={w} height="16" rx="8" className="gv-wbox" />

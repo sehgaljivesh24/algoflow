@@ -212,6 +212,8 @@
   .gv-wrap { overflow-x: auto; overflow-y: hidden; }
   .svg-viz.gv { min-width: calc(var(--gv-w, 380px) * .85); }
   .gv-ntext { font-size: 14px; }
+  /* wide recursion / segment trees: up to ~900px wide inside a sideways-scrolling card instead of 2-6px text */
+  .svg-viz.nt { min-width: min(calc(var(--nt-w, 300px) * .8), 900px); }
 }
 
 @media (prefers-reduced-motion: reduce) {

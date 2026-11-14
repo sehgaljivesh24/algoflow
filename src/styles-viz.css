@@ -290,6 +290,8 @@
 .ex-input { color: var(--text); } .vp-ex.active .ex-input { color: var(--cyan); }
 .ex-arrow { color: var(--muted); margin: 0 5px; font-size: .75rem; }
 .ex-output { color: var(--green); font-weight: 700; font-family: var(--mono); }
+/* a long unbroken example output (a 20-number array) wraps inside its button instead of widening the page */
+.vp-ex { overflow-wrap: anywhere; }
 .vp-custom { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); }
 .vp-custom-label { font-size: .75rem; font-weight: 600; color: var(--muted); flex-shrink: 0; }
 .vp-custom-input { flex: 1; min-width: 160px; max-width: 400px; background: var(--bg3); border: 1px solid var(--border); border-radius: 6px; color: var(--text); font: .82rem var(--mono); padding: 5px 10px; outline: none; transition: border-color .2s; }
@@ -385,7 +387,9 @@
 .vp-exec { display: flex; align-items: flex-start; gap: 8px; margin-top: 8px; padding: 7px 14px; border-radius: 8px; font: .74rem/1.4 var(--mono); color: var(--vp-accent); background: color-mix(in srgb, var(--vp-accent) 7%, transparent); border: 1px solid color-mix(in srgb, var(--vp-accent) 22%, transparent); }
 .vp-exec::before { content: '▶'; font-size: .55rem; line-height: calc(.74rem * 1.4); flex-shrink: 0; }
 .vp-exec code { flex: 1 1 auto; min-width: 0; white-space: pre-wrap; overflow-wrap: anywhere; }
-.vp-stage { padding: 6px 0 2px; min-width: 0; }
+.vp-stage { padding: 6px 0 2px; min-width: 0; position: relative; }
+/* invisible one-time render of every step's picture, only to measure the tallest one (see ProblemPage) */
+.vp-probe { position: absolute; left: 0; right: 0; top: 0; height: 0; overflow: hidden; visibility: hidden; pointer-events: none; }
 .vp-stage .svg-viz { max-height: 320px; }
 .split-viz { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; justify-content: flex-start; }
 .split-part { flex: 1 1 280px; min-width: 0; }
@@ -511,6 +515,16 @@
 .tv-xedge text { fill: var(--orange); font: 700 10px var(--mono); }
 .tv-xarrow { fill: var(--orange); }
 
+/* touch screens of any width (tablets): finger-sized controls */
+@media (pointer: coarse) {
+  .vp-crumbs a { display: inline-flex; align-items: center; min-height: 34px; }
+  .vp-practice, .vp-status select, .vp .vbtn, .vp-speed { min-height: 40px; }
+  .vp-speed input[type=range] { box-sizing: content-box; height: 4px; padding: 15px 0; background-clip: content-box; }
+  .vp-speed input[type=range]::-webkit-slider-thumb { width: 20px; height: 20px; }
+  .vp-scrub { padding: 16px 0 14px; margin-top: 0; }
+  .vp-ex, .vp-run { min-height: 38px; }
+  .cp-copy-btn, .cp-lang-btn { min-height: 34px; padding: 5px 12px; }
+}
 /* phone (≤ 600px): finger-sized controls (36-40px) and no text under 11px; the desktop look is untouched */
 @media (max-width: 600px) {
   .vp-crumbs a { display: inline-flex; align-items: center; min-height: 34px; }
@@ -525,6 +539,7 @@
   .vp-ex, .vp-run { min-height: 38px; }
   .cp-copy-btn, .cp-lang-btn { min-height: 34px; padding: 5px 12px; font-size: .7rem; }
   .vp .card-title, .vp-ph, .vp-hint, .vp-appr-label, .al-num, .st-lbl, .cplx-l, .vp-pill, .step-ctr, .av-idx { font-size: .7rem; }
+  .aux-title, .aux-count, .vp-caption, .mat-ch, .mat-rh, .av-ptr-lbl { font-size: .7rem; }
   .vp-narr .step-ctr { padding: 4px 10px; }
   /* small / medium binary trees (up to ~8 nodes) scale down to the card instead of scrolling sideways */
   .svg-viz.tv.tv-fit { min-width: 0 !important; }

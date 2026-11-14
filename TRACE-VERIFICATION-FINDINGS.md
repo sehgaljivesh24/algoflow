@@ -35,3 +35,22 @@ Representation: hash map / set panels list insertion order, not Java HashMap ord
 - Large inputs beyond the animation's own caps (trees about 12 nodes, graphs 12 nodes, Sudoku up to 20 empty cells, N-Queens up to n = 6); Word Search drops steps after 360 and the oracle mirrors that cap.
 - A state that is wrong in BOTH the animation and the oracle (the oracles were written from the textbook definition without importing any problem module or kit, to make that unlikely).
 - Scene sizes: the oracle files are not type-checked by `npm run typecheck` (tsconfig includes only `src`); they run correctly under Node.
+
+---
+
+# Code-panel verification (Java executed, Python audited)
+
+## Java (all 354 problems): `node scripts/java-check.mts`
+The Java shown on each code panel is wrapped in `class Solution`, compiled with javac (JDK 25) and run on the declared examples plus random inputs (5,337 inputs); results must equal the animation's verified final answer or an independent TS reference. Cases: `scripts/javacheck/cases-*.mts` (contract in `scripts/javacheck/types.ts`). Final run: 0 failing problems.
+No snippet that compiled returned a wrong answer. 31 snippets did NOT compile for a reader who pasted them; each was fixed without moving any line (missing code was appended after the last line, so `Step.javaLines` indexes stay valid):
+- missing `swap`: 442 Find All Duplicates, 75 Sort Colors, Heap Sort, Quick Sort, Next Permutation (`swap`, `reverse`)
+- missing helper methods: Valid Parentheses (`matches`), Palindrome Partitioning (`isPalindrome`), Sliding Window Median (`peek`, `pop`), Reverse Pairs (`merge`), N-Queens (`draw`), Triangle (`copy`), Count Special Integers (`perm`), Strange Printer (`compress`), Critical Connections (`buildAdjacency`), Network Connected (`find`), Possible Bipartition (`buildGraph`), partition-into-two-arrays (`bySize`), 187 Repeated DNA (`code`), Rabin-Karp (`val`), Stream of Characters (`insert`, `build`), Word Search II (`TrieNode`, `buildTrie`)
+- missing declarations: LRU Cache `Node` constructors, TSP `INF`, HLD path-max/LCA fields, Replace Words (`Trie` made `static`)
+- missing geometry helpers: Graham scan, Jarvis march, rotating calipers (`cross`, `dist2`, `area`, `convexHull`), multi-keyword search (`AhoCorasick` class)
+- placeholder line: 1514 Path with Maximum Probability (`{ /* add {v, p} both ways */ }` replaced by real code)
+
+## Python (all 354 panels): `node scripts/check-python-panels.mts`
+Python is not installed on this machine, so Python was not executed. A static scanner (undefined calls/names incl. `self.`, syntax, Java-isms) found 18 real defects, all fixed (missing helpers/classes in 15 panels, bare `inf` in 2, and a logic bug in 137 Single Number II where Python ints do not wrap, so negatives came back as 4294967294-style values). All 354 panels also compile under Pyodide (a Python build that runs in Node, installed in a scratch folder only): 0 syntax errors. About 85 panels were read against the verified Java. NOT done: executing the Python on inputs (needs about 354 call adapters; Pyodide makes it feasible). About 58 panels use `deque`/`heapq`/`Counter`/`math` without imports, like LeetCode's preloaded environment; the Java panels likewise omit `import java.util.*`.
+
+## Other checks added
+`scripts/smoke-ssr.mts` (server-renders 4,178 page/step combinations in Node; one real defect found: duplicate SVG marker ids), `scripts/check-seo.mts`, `scripts/check-python-panels.mts`, `scripts/gen-pattern-text.mts --check`. Motion/phone QA by scripted iframe harness: see `PHONE-TEST-CHECKLIST.md` for what only a real phone can verify.

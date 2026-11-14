@@ -1,3 +1,4 @@
+import { useId } from 'react';
 import type { CSSProperties } from 'react';
 import type { TrieNodeVM, TrieScene } from '../engine/types';
 import { linkArc } from './linkCurve';
@@ -15,6 +16,8 @@ const LINK_TONE: Record<string, string> = { active: 'blue', found: 'green', erro
 const LINK_TONES = ['orange', 'blue', 'green', 'red', 'dim'];
 
 export function TrieViz({ scene }: { scene: TrieScene }) {
+  // the page can hold several copies of this picture (height probe, split scenes): arrow markers need distinct ids
+  const uid = useId().replace(/:/g, '');
   const byId = new Map<number, TrieNodeVM>(scene.nodes.map((n) => [n.id, n]));
   const pos = new Map<number, { x: number; y: number }>();
   let leaf = 0;
@@ -63,7 +66,7 @@ export function TrieViz({ scene }: { scene: TrieScene }) {
       >
         <defs>
           {LINK_TONES.map((tn) => (
-            <marker key={tn} id={`tr-xa-${tn}`} className={`nt-mk tone-${tn}`} viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" markerUnits="userSpaceOnUse" orient="auto">
+            <marker key={tn} id={`tr-xa-${uid}-${tn}`} className={`nt-mk tone-${tn}`} viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" markerUnits="userSpaceOnUse" orient="auto">
               <path d="M0 0L10 5L0 10z" />
             </marker>
           ))}
@@ -108,7 +111,7 @@ export function TrieViz({ scene }: { scene: TrieScene }) {
           const { d, mx, my } = linkArc(A, B, R, R, true, B.x >= A.x ? 1 : -1, (i % 3) * 8);
           return (
             <g key={`l${i}-${l.from}-${l.to}`} className={`tr-link tone-${tn}`}>
-              <path d={d} fill="none" markerEnd={`url(#tr-xa-${tn})`} />
+              <path d={d} fill="none" markerEnd={`url(#tr-xa-${uid}-${tn})`} />
               {l.label && <text x={mx} y={my - 4} textAnchor="middle">{l.label}</text>}
             </g>
           );

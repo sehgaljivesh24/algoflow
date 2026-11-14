@@ -1,3 +1,4 @@
+import { useId } from 'react';
 import type { CSSProperties } from 'react';
 import type { NTreeNodeVM, NTreeScene, Tone } from '../engine/types';
 import { clipDist, linkArc } from './linkCurve';
@@ -17,6 +18,8 @@ interface Pos { x: number; y: number }
 
 /** n-ary tree / DAG: tidy layout (or fixed x/y), circles or boxes, optional edge labels, heavy edges and dashed link arrows. */
 export function NTreeViz({ scene }: { scene: NTreeScene }) {
+  // the page can hold several copies of this picture (height probe, split scenes): arrow markers need distinct ids
+  const uid = useId().replace(/:/g, '');
   const byId = new Map<number, NTreeNodeVM>(scene.nodes.map((n) => [n.id, n]));
   const box = scene.shape === 'box';
   const anySub = scene.nodes.some((n) => n.sub);
@@ -79,13 +82,13 @@ export function NTreeViz({ scene }: { scene: NTreeScene }) {
       <svg
         className="svg-viz nt"
         viewBox={`0 0 ${width} ${height}`}
-        style={{ maxWidth: Math.round(width * 1.15) }}
+        style={{ maxWidth: Math.round(width * 1.15), ['--nt-w' as string]: `${Math.round(width)}px` }}
         role="img"
         aria-label={`Tree with ${scene.nodes.length} nodes`}
       >
         <defs>
           {TONES.filter((t) => tones.has(t)).map((t) => (
-            <marker key={t} id={`nt-xa-${t}`} className={`nt-mk tone-${t}`} viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" markerUnits="userSpaceOnUse" orient="auto">
+            <marker key={t} id={`nt-xa-${uid}-${t}`} className={`nt-mk tone-${t}`} viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" markerUnits="userSpaceOnUse" orient="auto">
               <path d="M0 0L10 5L0 10z" />
             </marker>
           ))}
@@ -134,7 +137,7 @@ export function NTreeViz({ scene }: { scene: NTreeScene }) {
           const { d, mx, my } = linkArc(a, b, hw, hh, !box, b.x >= a.x ? 1 : -1, (i % 3) * 8);
           return (
             <g key={`x${i}-${e.from}-${e.to}`} className={`nt-xedge tone-${tone}`}>
-              <path d={d} fill="none" markerEnd={`url(#nt-xa-${tone})`} />
+              <path d={d} fill="none" markerEnd={`url(#nt-xa-${uid}-${tone})`} />
               {e.label && <text x={mx} y={my - 4} textAnchor="middle">{e.label}</text>}
             </g>
           );

@@ -174,10 +174,6 @@ export function PatternAnimation({ problem, heading, windowed, fixedWindow, sear
     const inner = innerRef.current;
     const ov = overlayRef.current;
     if (!inner || !ov) return;
-    // keep the picture from jumping in height while it plays
-    const h = inner.offsetHeight;
-    const min = parseFloat(inner.style.minHeight || '0');
-    if (h > min) inner.style.minHeight = `${h}px`;
     let nodes = inner.querySelectorAll<HTMLElement>('[data-cell-index]');
     if (nodes.length === 0) nodes = inner.querySelectorAll<HTMLElement>('.viz-box');
     const a = lo >= 0 ? nodes[lo] : undefined;
@@ -206,16 +202,53 @@ export function PatternAnimation({ problem, heading, windowed, fixedWindow, sear
     }
     shown.current = true;
   }, [lo, hi, frameTone]);
+  /* The picture never gets shorter than the tallest state seen so far (grow-only, so the stats / narration below stay put while
+     it plays; every picture, not just framed ones). The last step releases it so the final picture is not followed by a blank band. */
+  const tallest = useRef({ h: 0, w: 0 });
+  /* Before the first paint (and again when the width changes) every step's picture is rendered once, invisibly, to find the
+     tallest one, so the page does not grow while it plays. */
+  const [probing, setProbing] = useState(true);
+  const probeRef = useRef<HTMLDivElement>(null);
+  const probeSteps = useMemo(() => {
+    if (steps.length <= 80) return steps;
+    return Array.from({ length: 80 }, (_, i) => steps[Math.round((i * (steps.length - 1)) / 79)]);
+  }, [steps]);
+  const keepHeight = useCallback(() => {
+    const inner = innerRef.current;
+    if (!inner) return;
+    const w = inner.parentElement?.clientWidth ?? 0;
+    if (Math.abs(w - tallest.current.w) > 2) {
+      tallest.current = { h: 0, w };
+      if (!probeRef.current) setProbing(true);
+    }
+    inner.style.minHeight = '';
+    const natural = inner.offsetHeight;
+    if (natural > tallest.current.h) tallest.current.h = natural;
+    inner.style.minHeight = final ? '' : `${tallest.current.h}px`;
+  }, [final]);
   useLayoutEffect(() => {
+    const probe = probeRef.current;
+    if (probe) {
+      let h = 0;
+      for (const c of Array.from(probe.children) as HTMLElement[]) h = Math.max(h, c.offsetHeight);
+      tallest.current = { h, w: innerRef.current?.parentElement?.clientWidth ?? 0 };
+      setProbing(false);
+    }
+    keepHeight();
     place();
-  }, [place, cur]);
+  }, [probing, keepHeight, place, cur]);
   useEffect(() => {
     const inner = innerRef.current;
     if (!inner || typeof ResizeObserver === 'undefined') return;
-    const ro = new ResizeObserver(() => place());
+    // re-measure in the next frame: changing the height inside the callback would trigger "ResizeObserver loop" errors
+    let raf = 0;
+    const ro = new ResizeObserver(() => {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => { keepHeight(); place(); });
+    });
     ro.observe(inner);
-    return () => ro.disconnect();
-  }, [place]);
+    return () => { ro.disconnect(); cancelAnimationFrame(raf); };
+  }, [keepHeight, place]);
 
   /* ---- derived text ---- */
   /* Live values on the code line: an authored `note`, otherwise the variables that changed on this step (up to 3). */
@@ -312,6 +345,11 @@ export function PatternAnimation({ problem, heading, windowed, fixedWindow, sear
             </div>
           )}
         </div>
+        {probing && (
+          <div className="pp-probe" ref={probeRef} aria-hidden="true">
+            {probeSteps.map((s, i) => <div key={i}><SceneView step={s} bars={problem.viz === 'bars'} layout="pattern" /></div>)}
+          </div>
+        )}
       </div>
       <div className="pp-stats">
         {problem.varLabels.map((k: string) => {

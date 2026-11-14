@@ -140,22 +140,47 @@ export function Player({ problem, embedded = false }: { problem: AnyProblem; emb
      code line never get shorter than the tallest state seen so far (grow-only, reset for a new example or a new width). */
   const vizRef = useRef<HTMLElement>(null);
   const steady = useRef<{ steps: Step[]; max: Record<string, number>; width: number }>({ steps, max: {}, width: 0 });
+  /* Before the first paint of each step list (and when the width changes) every step's picture is rendered once, invisibly,
+     to find the tallest one, so the picture area does not grow while it plays. */
+  const [probed, setProbed] = useState<Step[] | null>(null);
+  const probing = probed !== steps;
+  const probeRef = useRef<HTMLDivElement>(null);
+  const probeAuxRef = useRef<HTMLDivElement>(null);
+  const probeSteps = useMemo(() => {
+    if (steps.length <= 80) return steps;
+    return Array.from({ length: 80 }, (_, i) => steps[Math.round((i * (steps.length - 1)) / 79)]);
+  }, [steps]);
   useLayoutEffect(() => {
     const root = vizRef.current;
     if (!root) return;
     const s = steady.current;
     const width = root.clientWidth;
     const fresh = s.steps !== steps || (s.width !== 0 && Math.abs(s.width - width) > 2);
-    if (fresh) { s.steps = steps; s.max = {}; }
+    if (fresh) { s.steps = steps; s.max = {}; if (!probeRef.current) setProbed(null); }
     s.width = width;
+    const probe = probeRef.current;
+    if (probe) {
+      const stage = probe.parentElement as HTMLElement;
+      const cs = getComputedStyle(stage);
+      let h = 0;
+      for (const c of Array.from(probe.children) as HTMLElement[]) h = Math.max(h, c.offsetHeight);
+      s.max['.vp-stage'] = h + parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom);
+      const auxProbe = probeAuxRef.current;
+      if (auxProbe) {
+        let ah = 0;
+        for (const c of Array.from(auxProbe.children) as HTMLElement[]) ah = Math.max(ah, c.offsetHeight);
+        s.max['.aux-row'] = ah;
+      }
+      setProbed(steps);
+    }
     for (const sel of STEADY_PARTS) {
       const el = root.querySelector<HTMLElement>(`:scope > ${sel}`);
       if (!el) continue;
-      if (fresh) el.style.minHeight = '';
-      const have = s.max[sel] ?? 0;
-      if (have && parseFloat(el.style.minHeight || '0') < have) el.style.minHeight = `${have}px`;
+      el.style.minHeight = '';
       const h = el.offsetHeight;
-      if (h > have) { s.max[sel] = h; el.style.minHeight = `${h}px`; }
+      if (h > (s.max[sel] ?? 0)) s.max[sel] = h;
+      // the final picture is released so it is not followed by a blank band
+      el.style.minHeight = sel === '.vp-stage' && final ? '' : `${s.max[sel] ?? 0}px`;
     }
   });
   const hint = execLine(problem, step, before, p.index, lang);
@@ -265,6 +290,16 @@ export function Player({ problem, embedded = false }: { problem: AnyProblem; emb
             {inputLine && <div className="vp-inputline">{inputLine}</div>}
             <div className="vp-stage">
               <SceneView step={step} bars={problem.viz === 'bars'} legend={problem.legend} />
+              {probing && (
+                <div className="vp-probe" ref={probeRef} aria-hidden="true">
+                  {probeSteps.map((s, i) => <div key={i}><SceneView step={s} bars={problem.viz === 'bars'} legend={problem.legend} /></div>)}
+                </div>
+              )}
+              {probing && hasAux && (
+                <div className="vp-probe" ref={probeAuxRef} aria-hidden="true">
+                  {probeSteps.map((s, i) => <div key={i}><AuxPanels aux={s.aux} tone={s.logicTone} /></div>)}
+                </div>
+              )}
             </div>
             <AuxPanels aux={step.aux} tone={step.logicTone} />
             {hasAux && !step.aux?.length && <div className="aux-row" aria-hidden />}

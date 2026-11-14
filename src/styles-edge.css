@@ -81,3 +81,9 @@
 }
 
 @media (max-width: 600px) { .edge-pane .code-block { padding-top: 44px; } }
+/* phone: topic strip links and view toggles are finger-sized */
+@media (max-width: 600px) {
+  .edge-nav a { min-height: 38px; }
+  .edge-toolbar .seg button, .edge-toolbar button { min-height: 38px; }
+  .edge-rule-label { font-size: .7rem; }
+}
