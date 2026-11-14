@@ -1,4 +1,5 @@
 import type { Cell, ProblemDef, Step } from '../engine/types.ts';
+import { plural } from './text.ts';
 import { capSteps, heads, recorder } from './stepKit.ts';
 import { CallTree } from './dpCoreKit.ts';
 
@@ -51,10 +52,10 @@ function build({ rows: R, cols: C }: In): Step[] {
   const say = recorder(steps, snap);
 
   say({
-    title: 'Plain recursion makes many repeats', desc: `paths(r, c) = paths(r+1, c) + paths(r, c+1) counts routes from (r, c) to the bottom-right corner. On a ${R}×${C} grid plain recursion would make ${plain} calls, but only ${(R - 1) * (C - 1)} cells ever need the formula; the others are straight lines of 1 path.`,
+    title: 'Plain recursion makes many repeats', desc: `paths(r, c) = paths(r+1, c) + paths(r, c+1) counts routes from (r, c) to the bottom-right corner. On a ${R}×${C} grid plain recursion would make ${plain} calls, but only ${plural((R - 1) * (C - 1), 'cell')} ever ${(R - 1) * (C - 1) === 1 ? 'needs' : 'need'} the formula; the others are straight lines of 1 path.`,
     logic: 'Different move orders reach the same cell, so the same (r, c) is asked for repeatedly. The state is the pair (r, c) — two numbers instead of one.', tone: 'warn', java: [0, 1, 3, 4], py: [0, 5], algo: 0,
     tag: 'STATE (r, c) —', note: `plain recursion = ${plain} calls on a ${R}×${C} grid`,
-    alert: `Plain recursion would make ${plain} calls, but only ${(R - 1) * (C - 1)} cells need the formula: most calls repeat.`,
+    alert: `Plain recursion would make ${plain} calls, but only ${plural((R - 1) * (C - 1), 'cell')} ${(R - 1) * (C - 1) === 1 ? 'needs' : 'need'} the formula: most calls repeat.`,
   });
 
   const waiting: number[] = [];

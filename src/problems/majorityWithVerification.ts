@@ -1,4 +1,5 @@
 import type { Cell, CellState, ProblemDef, Step } from '../engine/types.ts';
+import { plural } from './text.ts';
 import { parseInts } from './stepKit.ts';
 
 interface In { nums: number[] }
@@ -35,7 +36,7 @@ function build({ nums }: In): Step[] {
   const ptr = (i: number) => [{ id: 'i', label: 'i', index: i, tone: 'blue' as const }];
 
   steps.push({
-    title: 'Start', tag: 'START —', desc: `n = ${n}, so a majority needs more than ${n / 2} copies. Nothing guarantees one exists, so pass 1 only picks a suspect.`,
+    title: 'Start', tag: 'START —', desc: `n = ${n}, so a majority needs more than ${plural(n / 2, 'copy', 'copies')}. Nothing guarantees one exists, so pass 1 only picks a suspect.`,
     cells: cells(-1), pointers: [], aux: aux(), vars: vars('—'),
     logic: 'Nothing guarantees a majority exists. Boyer-Moore always ends with a candidate, but that candidate is only a suspect. It needs a second pass to be confirmed.', logicTone: 'info',
     javaLines: [1], pyLines: [1], algoStep: 0, note: 'candidate = none, votes = 0',
@@ -89,7 +90,7 @@ function build({ nums }: In): Step[] {
     steps.push({
       title: copy ? `nums[${i}] = ${nums[i]} is a copy: count = ${count}` : `nums[${i}] = ${nums[i]} is a different value`,
       tag: 'VERIFY:',
-      desc: copy ? `nums[${i}] = ${nums[i]} is a copy of ${candidate} → count = ${count} of the first ${i + 1} numbers` : `nums[${i}] = ${nums[i]} is not ${candidate} → count stays ${count} after ${i + 1} numbers`,
+      desc: copy ? `nums[${i}] = ${nums[i]} is a copy of ${candidate} → count = ${count} of the first ${plural(i + 1, 'number')}` : `nums[${i}] = ${nums[i]} is not ${candidate} → count stays ${count} after ${plural(i + 1, 'number')}`,
       cells: cells(i), pointers: ptr(i), aux: aux(), vars: vars(i),
       logic: 'A plain counting scan, no cleverness needed.', logicTone: copy ? 'success' : 'info',
       javaLines: [8], pyLines: [6], algoStep: 3, note: copy ? `${nums[i]} == ${candidate} → count = ${count}` : `${nums[i]} != ${candidate} → count = ${count}`,

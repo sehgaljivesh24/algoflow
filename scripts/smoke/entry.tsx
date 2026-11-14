@@ -11,12 +11,13 @@ import { StaticRouter } from 'react-router-dom/server';
 import { Writable } from 'node:stream';
 import App from '../../src/App';
 import { ALL_ENTRIES } from '../../src/data/catalog';
-import { ALL_PATTERNS, CONTENT, examplesFor } from '../../src/data/patterns';
+import { ALL_PATTERNS, CONTENT, examplesFor } from '../../src/data/patternsFull';
+import { loadPatternText } from '../../src/data/patternText/load';
 import { loadProblem, isAnimated } from '../../src/problems/lazy';
 import { MANIFEST } from '../../src/problems/manifest';
 import { flatGuides, loadMeta } from '../../src/pages/cheatsheets/the-only/content';
 
-export { ALL_ENTRIES, ALL_PATTERNS, CONTENT, examplesFor, loadProblem, isAnimated, MANIFEST };
+export { ALL_ENTRIES, ALL_PATTERNS, CONTENT, examplesFor, loadProblem, loadPatternText, isAnimated, MANIFEST };
 
 export async function theOnlySlugs(): Promise<string[]> {
   return flatGuides(await loadMeta()).map((g) => g.slug);

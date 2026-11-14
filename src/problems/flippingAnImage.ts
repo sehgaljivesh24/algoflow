@@ -1,4 +1,5 @@
 import type { Cell, CellState, ProblemDef, Step } from '../engine/types.ts';
+import { plural } from './text.ts';
 
 interface In { image: number[][] }
 
@@ -37,7 +38,7 @@ function build({ image }: In): Step[] {
     title: 'Start', tag: 'START —', desc: `a ${n}×${n} binary image: for every row reverse it, then flip each bit (0 ↔ 1), all in one two-pointer sweep.`,
     scene: scene(-1, [], 'active'), vars: vars('—', '—', '—'),
     logic: 'Both operations can be done in one sweep: the new left value is the flipped old right value, and vice versa.', logicTone: 'info',
-    javaLines: [0, 1], pyLines: [0, 1], algoStep: 0, note: `${n} rows to process`,
+    javaLines: [0, 1], pyLines: [0, 1], algoStep: 0, note: `${plural(n, 'row')} to process`,
   });
 
   for (let row = 0; row < n; row++) {

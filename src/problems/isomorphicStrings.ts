@@ -1,4 +1,5 @@
 import type { Cell, CellState, ProblemDef, Step } from '../engine/types.ts';
+import { plural } from './text.ts';
 
 interface In { s: string; t: string }
 
@@ -96,7 +97,7 @@ function build({ s, t }: In): Step[] {
   }
 
   steps.push({
-    title: 'Isomorphic', tag: '✅ Done!', desc: `all ${n} positions agreed with one one-to-one pairing, so the answer is true`,
+    title: 'Isomorphic', tag: '✅ Done!', desc: `all ${plural(n, 'position')} agreed with one one-to-one pairing, so the answer is true`,
     scene: scene(n), aux: aux(), vars: vars('—', '—', '—'),
     logic: 'No conflicts in either direction, so the pairing is a valid bijection.', logicTone: 'success', javaLines: [9], pyLines: [8], algoStep: 4, note: 'return true',
     result: { title: 'true', text: 'The strings are isomorphic' },

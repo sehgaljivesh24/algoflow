@@ -1,4 +1,5 @@
 import type { Aux, CellState, EdgeState, GraphEdgeVM, ProblemDef, Step } from '../engine/types';
+import { plural, verb } from './text.ts';
 import { parseEdges, tokens } from './graphKit.ts';
 import type { EdgeIn } from './graphKit.ts';
 
@@ -40,9 +41,9 @@ function build({ n, edges }: In): Step[] {
   const push = (s: Omit<Step, 'vars' | 'aux' | 'scene'>) => steps.push({ ...s, scene: scene(), aux: aux(), vars: vars() });
 
   push({
-    title: 'Start', desc: `${n} courses, ${edges.length} prerequisites. Each node shows its in-degree: how many prerequisites are still unmet.`,
+    title: 'Start', desc: `${plural(n, 'course')}, ${plural(edges.length, 'prerequisite')}. Each node shows its in-degree: how many prerequisites are still unmet.`,
     logic: 'A course can be taken only when its in-degree is 0 — every prerequisite is already done.', logicTone: 'info',
-    tag: 'INIT —', note: `indeg = [${indeg.join(', ')}] from ${edges.length} edges`,
+    tag: 'INIT —', note: `indeg = [${indeg.join(', ')}] from ${plural(edges.length, 'edge')}`,
     javaLines: [1, 2, 3, 4, 5, 6], pyLines: [1, 2, 3, 4, 5], algoStep: 0,
   });
   for (let i = 0; i < n; i++) if (indeg[i] === 0) { queue.push(i); state[i] = 'compare'; }
@@ -87,7 +88,7 @@ function build({ n, edges }: In): Step[] {
   if (!ok) for (let i = 0; i < n; i++) if (state[i] === undefined) state[i] = 'error';
   push({
     title: ok ? 'Done: valid order' : 'Cycle detected',
-    desc: ok ? `All ${n} courses were taken: ${order.join(' → ')}.` : `Only ${order.length} of ${n} courses could be taken; the red courses wait on each other in a cycle.`,
+    desc: ok ? `All ${plural(n, 'course')} ${verb(n, 'was', 'were')} taken: ${order.join(' → ')}.` : `Only ${order.length} of ${n} courses could be taken; the red courses wait on each other in a cycle.`,
     logic: ok ? 'Taking every course proves no cycle exists.' : 'A cycle never reaches in-degree 0, so Kahn’s algorithm stalls. No valid order exists.', logicTone: ok ? 'success' : 'warn',
     tag: ok ? '✅ Done!' : '⚠ Stuck!', note: ok ? `order.length = ${n} → return [${order.join(', ')}]` : `count = ${order.length} < n = ${n} → return []`,
     alert: ok ? undefined : `Cycle: ${n - order.length} course${n - order.length === 1 ? '' : 's'} never reached in-degree 0, so no valid order exists.`,

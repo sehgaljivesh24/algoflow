@@ -1,4 +1,5 @@
 import type { Cell, ProblemDef, Step } from '../engine/types.ts';
+import { plural } from './text.ts';
 import { rng } from './graphKit.ts';
 import { recorder } from './stepKit.ts';
 import { intIn, intList, semis } from './p4Kit.ts';
@@ -62,7 +63,7 @@ function build({ stream, k, seed }: In): Step[] {
   }));
 
   say({
-    title: 'Start', desc: `A stream of ${stream.length} values arrives one at a time and its length is unknown. Keep a sample of ${k} values, each seen element equally likely to be in it.`,
+    title: 'Start', desc: `A stream of ${plural(stream.length, 'value')} arrives one at a time and its length is unknown. Keep a sample of ${plural(k, 'value')}, each seen element equally likely to be in it.`,
     logic: 'Fill a reservoir with the first k items, then let each later item compete for a random slot with probability k / seen.', java: [1, 2, 3], py: [1, 2], algo: 0,
     tag: 'READY —', note: `reservoir = new int[${k}], seen = 0`,
   });
@@ -100,8 +101,8 @@ function build({ stream, k, seed }: In): Step[] {
       slot = -1;
       say({
         title: `Item ${seen} (${x}): draw ${j} ≥ ${k}`, tag: `ITEM ${seen} — SKIP`, note: `j = ${j} ≥ ${k} → reservoir unchanged`,
-        alert: `Draw ${j} falls outside the ${k} slots: item ${x} is discarded.`,
-        desc: `j = ${j} is outside the ${k} slots (chance ${seen - k}/${seen}) → ${x} is discarded.`,
+        alert: `Draw ${j} falls outside the ${plural(k, 'slot')}: item ${x} is discarded.`,
+        desc: `j = ${j} is outside the ${plural(k, 'slot')} (chance ${seen - k}/${seen}) → ${x} is discarded.`,
         logic: 'Most items are dropped once the stream is long: the sample stays small and uniform.', java: [10, 11], py: [6, 7], algo: 2,
       });
     }
@@ -110,8 +111,8 @@ function build({ stream, k, seed }: In): Step[] {
   i = stream.length - 1;
   const final = res.map((v) => v as number);
   say({
-    title: 'Done', tag: '✅ Done!', note: `return [${final.join(', ')}]`, desc: `The stream ended after ${stream.length} items. The sample is [${final.join(', ')}] (each item had chance ${k}/${stream.length}).`,
-    logic: `Every one of the ${stream.length} items had the same probability ${k}/${stream.length} of being in the sample.`, tone: 'success', java: [14], py: [9], algo: 3,
+    title: 'Done', tag: '✅ Done!', note: `return [${final.join(', ')}]`, desc: `The stream ended after ${plural(stream.length, 'item')}. The sample is [${final.join(', ')}] (each item had chance ${k}/${stream.length}).`,
+    logic: `Every one of the ${plural(stream.length, 'item')} had the same probability ${k}/${stream.length} of being in the sample.`, tone: 'success', java: [14], py: [9], algo: 3,
     result: { title: `[${final.join(',')}]`, text: `Uniform sample of ${k}` },
   });
   return steps;

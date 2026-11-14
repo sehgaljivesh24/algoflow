@@ -1,6 +1,7 @@
 /** Pack p8 math / number theory problems: Count Primes (#204, sieve), Pow(x, n) (#50, fast exponentiation), Euclid's GCD & LCM. */
 import type { Cell, ProblemDef, Step } from '../engine/types.ts';
 import { Rec, blank, int, parts } from './p8Kit.ts';
+import { plural } from './text.ts';
 
 /* ------------------------------------------------------------------ #204 Count Primes */
 interface NIn { n: number }
@@ -49,7 +50,7 @@ function build204({ n }: NIn): Step[] {
   const last = p;
   p = 0;
   rec.push({ t: `p² ≥ ${n}: stop sieving`, d: `The next candidate is ${last}, and ${last}² = ${last * last} is not below ${n}, so nothing new can be crossed. Whatever is unmarked is prime.`, scene: grid(-1, [], true), v: vars('—'), why: 'Every composite below n has a prime factor ≤ √n, so after all primes ≤ √n have been processed no composite remains.', tone: 'success', j: [3, 7, 8], p: [4, 9], a: 2, tag: 'STOP —', note: `${last}² = ${last * last} ≥ ${n} → loop ends` });
-  rec.push({ t: `Primes below ${n}: ${primes.length}`, d: primes.length ? `They are ${primes.join(', ')}.` : 'There are none.', scene: grid(-1, [], true), v: vars('—'), why: 'Counting the unmarked cells gives the answer.', tone: 'success', j: [9], p: [9], a: 3, tag: '✅ Done!', note: `count = ${primes.length}`, result: { title: String(primes.length), text: `${primes.length} primes less than ${n}` } });
+  rec.push({ t: `Primes below ${n}: ${primes.length}`, d: primes.length ? `They are ${primes.join(', ')}.` : 'There are none.', scene: grid(-1, [], true), v: vars('—'), why: 'Counting the unmarked cells gives the answer.', tone: 'success', j: [9], p: [9], a: 3, tag: '✅ Done!', note: `count = ${primes.length}`, result: { title: String(primes.length), text: `${plural(primes.length, 'prime')} less than ${n}` } });
   return rec.steps;
 }
 

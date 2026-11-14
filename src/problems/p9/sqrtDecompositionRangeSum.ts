@@ -1,4 +1,5 @@
 import type { Aux, CellState, ProblemDef, Step } from '../../engine/types.ts';
+import { plural } from '../text.ts';
 import { blockGrid, ceilSqrt, lineOf, parseNums, splitBar } from './kitC.ts';
 
 type Op = { k: 'sum'; l: number; r: number } | { k: 'set'; i: number; v: number };
@@ -187,7 +188,7 @@ function build({ a: input, ops }: In): Step[] {
       title: `sum(${l}, ${r})`, desc: `Index ${l} is in block ${bl}, index ${r} is in block ${br}. ${bl === br ? 'Both ends are in one block, so scan the elements directly.' : 'The two ends sit in different blocks: scan the ragged ends, take whole blocks from the stored sums.'}`,
       logic: 'Classify the range into partial blocks (scan) and whole blocks (look up).', logicTone: 'info',
       javaLines: J.query, pyLines: P.query, algoStep: 2,
-      tag: 'QUERY —', note: `bl = ${l} / ${B} = ${bl}, br = ${r} / ${B} = ${br}${bl === br ? ' → same block' : ` → ${Math.max(0, br - bl - 1)} whole block(s) between`}`,
+      tag: 'QUERY —', note: `bl = ${l} / ${B} = ${bl}, br = ${r} / ${B} = ${br}${bl === br ? ' → same block' : ` → ${plural(Math.max(0, br - bl - 1), 'whole block')} between`}`,
     });
     const addElem = (i: number, lines: number[], pl: number[], algo: number) => {
       st.set(i, 'compare');
@@ -210,7 +211,7 @@ function build({ a: input, ops }: In): Step[] {
         const before = s;
         s += block[b];
         total = s;
-        push({ title: `Take whole block ${b}: +${block[b]}`, desc: `Block ${b} lies completely inside the range, so its stored sum ${block[b]} is added without looking at its ${idx.length} elements: ${before} + ${block[b]} = ${s}.`, logic: 'This is the saving: B elements are replaced by one number.', logicTone: 'success', javaLines: J.mid, pyLines: P.mid, algoStep: 3,
+        push({ title: `Take whole block ${b}: +${block[b]}`, desc: `Block ${b} lies completely inside the range, so its stored sum ${block[b]} is added without looking at its ${plural(idx.length, 'element')}: ${before} + ${block[b]} = ${s}.`, logic: 'This is the saving: B elements are replaced by one number.', logicTone: 'success', javaLines: J.mid, pyLines: P.mid, algoStep: 3,
           tag: 'WHOLE BLOCK —', note: `s += block[${b}] → ${before} + ${block[b]} = ${s} (skipped ${idx.length} reads)` });
         idx.forEach((i) => st.set(i, 'found'));
         hot = -1;
@@ -218,7 +219,7 @@ function build({ a: input, ops }: In): Step[] {
       for (let i = br * B; i <= r; i++) addElem(i, J.right, P.right, 2);
     }
     answers.push(s);
-    push({ title: `sum(${l}, ${r}) = ${s}`, desc: `sum(${l}, ${r}) = ${s}: read ${scanned} single element${scanned === 1 ? '' : 's'} and ${Math.max(0, br - bl - 1)} block sum${br - bl - 1 === 1 ? '' : 's'} instead of ${r - l + 1} elements.`, logic: 'Two ragged ends cost at most 2(B-1) reads and the middle at most n/B reads: O(sqrt n).', logicTone: 'success', javaLines: J.ret, pyLines: P.ret, algoStep: 3,
+    push({ title: `sum(${l}, ${r}) = ${s}`, desc: `sum(${l}, ${r}) = ${s}: read ${scanned} single element${scanned === 1 ? '' : 's'} and ${Math.max(0, br - bl - 1)} block sum${br - bl - 1 === 1 ? '' : 's'} instead of ${plural(r - l + 1, 'element')}.`, logic: 'Two ragged ends cost at most 2(B-1) reads and the middle at most n/B reads: O(sqrt n).', logicTone: 'success', javaLines: J.ret, pyLines: P.ret, algoStep: 3,
       tag: 'ANSWER —', note: `return s = ${s}` });
   }
   st = new Map();

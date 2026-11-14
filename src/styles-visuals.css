@@ -206,6 +206,14 @@
   .svg-viz.iv { min-width: 540px; }
 }
 
+/* Phone: a graph drawn 564 units wide would shrink to ~23px nodes and 6px labels. Keep it at ~85% of its natural size
+   (about 34px nodes, 12px node labels) and let the picture scroll sideways inside its card. */
+@media (max-width: 600px) {
+  .gv-wrap { overflow-x: auto; overflow-y: hidden; }
+  .svg-viz.gv { min-width: calc(var(--gv-w, 380px) * .85); }
+  .gv-ntext { font-size: 14px; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .nt-shape, .pl-dot, .nt-line, .nt-node, .pl-pt, .pl-sweep, .pl-poly, .tr-link path, .nt-xedge path { transition: none !important; }
   .nt-shape.vz-current, .pl-dot.vz-current { animation: none !important; stroke-width: 3; }

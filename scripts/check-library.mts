@@ -6,7 +6,7 @@
  */
 import { ALL_ENTRIES, CATALOG } from '../src/data/catalog.ts';
 import { P1_SLUGS, P3_SLUGS, PRIORITY } from '../src/data/priorities.ts';
-import { ALL_PATTERNS, CONTENT, examplesFor, PATTERN_GROUPS } from '../src/data/patterns.ts';
+import { ALL_PATTERNS, CONTENT, examplesFor, PATTERN_GROUPS } from '../src/data/patternsFull.ts';
 import { familyId, familyMeta } from '../src/components/shell/familyMeta.ts';
 import { TOPIC_META, topicTitle } from '../src/components/shell/topicMeta.ts';
 

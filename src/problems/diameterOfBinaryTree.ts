@@ -1,4 +1,5 @@
 import type { CellState, ProblemDef, Step } from '../engine/types.ts';
+import { plural } from './text.ts';
 import { annotateRules } from './annotate.ts';
 import { buildTree, emitter, find, parseTree, stackAux, treeScene } from './treeKit.ts';
 import type { TreeIn } from './treeKit.ts';
@@ -80,7 +81,7 @@ function build({ tokens }: TreeIn): Step[] {
     states[id] = improved ? 'swap' : 'found';
     labels[id] = `h=${h}`;
     add({
-      title: `Node ${val(id)}: path through it = ${through}`, desc: `left = ${l}, right = ${r}. A path bending here has ${l} + ${r} = ${through} edges. ${improved ? `New best diameter: ${best}.` : `Best stays ${best}.`} Return height 1 + max(${l}, ${r}) = ${h}.`,
+      title: `Node ${val(id)}: path through it = ${through}`, desc: `left = ${l}, right = ${r}. A path bending here has ${l} + ${r} = ${plural(through, 'edge')}. ${improved ? `New best diameter: ${best}.` : `Best stays ${best}.`} Return height 1 + max(${l}, ${r}) = ${h}.`,
       logic: improved ? 'This bend beats every earlier candidate, so it is highlighted.' : 'Not better than the best bend seen so far.', tone: improved ? 'success' : 'info',
       j: [...J.cand, ...J.ret], p: [...P.cand, ...P.ret], a: 2, vars: vars(val(id), l, r), aux: aux(),
     });

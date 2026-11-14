@@ -1,4 +1,5 @@
 import type { Aux, ProblemDef, Step } from '../../engine/types.ts';
+import { plural } from '../text.ts';
 import { TrieModel } from '../trieKit.ts';
 import { recorder } from '../stepKit.ts';
 
@@ -35,7 +36,7 @@ function build({ roots, words }: In): Step[] {
   ];
   const say = recorder(steps, () => ({ scene, aux: aux(), vars: { word, at, 'sentence out': out.join(' ') || '—' } }));
 
-  say({ title: 'Start', desc: `An empty trie. First every root goes in (${roots.join(', ')}); then each sentence word walks down looking for the shortest root that is a prefix of it.`, logic: 'Roots share prefixes in a trie, so one walk per word replaces a scan over every root.', java: [6], py: [1], algo: 0, tag: 'START —', note: `root = new Trie(); ${roots.length} roots, ${words.length} words to rewrite` });
+  say({ title: 'Start', desc: `An empty trie. First every root goes in (${roots.join(', ')}); then each sentence word walks down looking for the shortest root that is a prefix of it.`, logic: 'Roots share prefixes in a trie, so one walk per word replaces a scan over every root.', java: [6], py: [1], algo: 0, tag: 'START —', note: `root = new Trie(); ${plural(roots.length, 'root')}, ${plural(words.length, 'word')} to rewrite` });
 
   for (const r of roots) {
     trie.insert(r);
@@ -90,7 +91,7 @@ function build({ roots, words }: In): Step[] {
   word = '—';
   at = 'root';
   scene = trie.scene();
-  say({ title: 'Done', desc: `All ${words.length} words rewritten: "${out.join(' ')}".`, logic: 'One walk per word, bounded by its length, replaced a scan over every root.', tone: 'success', java: [26], py: [18], algo: 5, tag: '✅ Done!', note: `return "${out.join(' ')}"` });
+  say({ title: 'Done', desc: `All ${plural(words.length, 'word')} rewritten: "${out.join(' ')}".`, logic: 'One walk per word, bounded by its length, replaced a scan over every root.', tone: 'success', java: [26], py: [18], algo: 5, tag: '✅ Done!', note: `return "${out.join(' ')}"` });
   steps[steps.length - 1].result = { title: `"${out.join(' ')}"`, text: 'The rewritten sentence' };
   return steps;
 }

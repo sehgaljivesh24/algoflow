@@ -1,4 +1,5 @@
 import type { Cell, CellState, Pointer, ProblemDef, Step, Tone } from '../engine/types.ts';
+import { plural } from './text.ts';
 import { capSteps, recorder } from './stepKit.ts';
 import { find } from './treeKit.ts';
 import { ptr } from './ssbShared.ts';
@@ -103,7 +104,7 @@ function run({ s }: In, tree: RecTree): Step[] {
 
   say({
     title: 'Start', tag: 'INIT', desc: `Cut "${s}" into pieces so that every piece is a palindrome. start = 0, path is empty.`,
-    note: `dfs(s, 0, [ ]) → ${n} letters`,
+    note: `dfs(s, 0, [ ]) → ${plural(n, 'letter')}`,
     logic: 'At each position we choose how long the next piece is. A piece that is not a palindrome can never be part of an answer, so that branch is cut immediately.',
     java: J.start, py: P.start, algo: 0,
   });

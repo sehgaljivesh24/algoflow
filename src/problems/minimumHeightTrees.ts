@@ -1,4 +1,5 @@
 import type { Aux, CellState, EdgeState, GraphEdgeVM, ProblemDef, Step } from '../engine/types';
+import { plural, verb } from './text.ts';
 import { parseEdges, tokens } from './graphKit.ts';
 import type { EdgeIn } from './graphKit.ts';
 
@@ -120,7 +121,7 @@ function build({ n, edges }: In): Step[] {
   const roots: number[] = [];
   for (let i = 0; i < n; i++) if (removedAt[i] === 0) roots.push(i);
   steps.push({
-    title: `Roots: ${roots.join(', ')}`, desc: `Only ${remaining} node${remaining === 1 ? '' : 's'} remain, so no more peeling is needed. ${roots.length === 1 ? 'The centre of the tree' : 'The two centres of the tree'} give${roots.length === 1 ? 's' : ''} the minimum height.`,
+    title: `Roots: ${roots.join(', ')}`, desc: `Only ${plural(remaining, 'node')} ${verb(remaining, 'remains', 'remain')}, so no more peeling is needed. ${roots.length === 1 ? 'The centre of the tree' : 'The two centres of the tree'} give${roots.length === 1 ? 's' : ''} the minimum height.`,
     scene: scene(), aux: aux(), vars: vars(),
     logic: 'The middle of a longest path is the best root; a tree has one centre or two adjacent ones.', logicTone: 'success',
     tag: '✅ Done!', note: `remaining = ${remaining} → return [${roots.join(', ')}]`,

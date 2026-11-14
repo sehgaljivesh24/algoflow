@@ -1,4 +1,5 @@
 import type { Aux, CellState, EdgeState, GraphEdgeVM, Pointer, ProblemDef, Step, Tone } from '../engine/types';
+import { plural } from './text.ts';
 import { adjacency, mkEdges, parseGraph } from './p5dKit.ts';
 import type { GIn } from './p5dKit.ts';
 
@@ -31,13 +32,13 @@ function build({ n, edges }: GIn): Step[] {
   });
   const aux = (): Aux[] => [
     { title: 'recursion stack: assign(person, group)', kind: 'stack', items: [...calls] },
-    { title: 'group[ ]  (1 = blue, 2 = orange)', kind: 'list', items: Array.from({ length: n }, (_, k) => `${k + 1}: ${group[k + 1] || '·'}`) },
+    { title: 'group[ ] (1 = blue, 2 = orange)', kind: 'list', items: Array.from({ length: n }, (_, k) => `${k + 1}: ${group[k + 1] || '·'}`) },
   ];
   const vars = () => ({ person: cur ?? '—', group: cur === null ? '—' : group[cur], 'stack depth': calls.length, possible: verdict });
   const push = (s: Omit<Step, 'vars' | 'aux' | 'scene'>) => steps.push({ ...s, scene: scene(), aux: aux(), vars: vars() });
 
   push({
-    title: 'Start', desc: `${n} people, ${edges.length} dislike pair${edges.length === 1 ? '' : 's'}. Put everyone in group 1 (blue) or group 2 (orange) so no pair that dislikes each other shares a group.`,
+    title: 'Start', desc: `${plural(n, 'person', 'people')}, ${plural(edges.length, 'dislike pair')}. Put everyone in group 1 (blue) or group 2 (orange) so no pair that dislikes each other shares a group.`,
     logic: 'Dislike is symmetric, so this is the same as 2-colouring the "dislike graph". We will assign groups with a depth-first search.', logicTone: 'info',
     tag: 'INIT —', note: `group[1..${n}] = 0 (unassigned), ${edges.length} dislike pairs`,
     javaLines: [1, 2], pyLines: [1, 2, 3, 4], algoStep: 0,

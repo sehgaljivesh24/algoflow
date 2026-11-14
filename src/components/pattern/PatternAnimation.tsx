@@ -303,7 +303,7 @@ export function PatternAnimation({ problem, heading, windowed, fixedWindow, sear
 
       <div className="pp-caption">{caption}</div>
 
-      <div className="pp-picture">
+      <div className={`pp-picture${framed ? ' framed' : ''}`}>
         <div className="pp-picture-inner" ref={innerRef}>
           <SceneView step={step} bars={problem.viz === 'bars'} layout="pattern" />
           {framed && (

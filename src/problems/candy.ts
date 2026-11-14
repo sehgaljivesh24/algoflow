@@ -1,4 +1,5 @@
 import type { Cell, LogicTone, ProblemDef, Step } from '../engine/types.ts';
+import { plural } from './text.ts';
 
 interface In { ratings: number[] }
 
@@ -32,7 +33,7 @@ function build({ ratings: r }: In): Step[] {
   const add = (title: string, desc: string, logic: string, tone: LogicTone, hi: number, other: number, changed: number, j: number[], p: number[], a: number, extra: { tag: string; note: string; alert?: string }, result?: Step['result']) =>
     steps.push({ title, desc, scene: scene(hi, other, changed), vars: vars(hi >= 0 ? hi : '—'), logic, logicTone: tone, javaLines: j, pyLines: p, algoStep: a, result, ...extra });
 
-  add('Start', `${n} children in a line with ratings [${r.join(', ')}]. Everyone gets at least 1 candy; a child with a higher rating than a neighbour must get more than that neighbour.`,
+  add('Start', `${plural(n, 'child', 'children')} in a line with ratings [${r.join(', ')}]. Everyone gets at least 1 candy; a child with a higher rating than a neighbour must get more than that neighbour.`,
     'Two kinds of constraints (left neighbour, right neighbour) are easier one at a time: one pass for each direction.', 'info', -1, -1, -1, [1], [1], 0,
     { tag: 'READY —', note: `n = ${n}, ratings = [${r.join(', ')}]` });
   add('Everyone starts with 1 candy', `every child gets 1 candy first, so candies = [${c.join(', ')}] and the total is ${n}`,

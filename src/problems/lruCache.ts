@@ -1,4 +1,5 @@
 import type { CellState, ProblemDef, Step } from '../engine/types.ts';
+import { plural, verb } from './text.ts';
 import { annotateRules } from './annotate.ts';
 import { emitter, listScene, parseOne, parts } from './listheapKit.ts';
 
@@ -89,7 +90,7 @@ function build({ cap, ops }: In): Step[] {
       const lru = list[list.length - 1];
       hl = mapIndex(info[lru].k);
       hot = { [lru]: 'error' };
-      emit(`${label}: cache is full`, `${list.length} of ${cap} slots are used, so the least recently used node ${text(lru)} (next to TAIL) must go first.`, 'TAIL.prev is always the least recently used entry — no search needed.', 'warn', [18, 19], [24, 25], 2);
+      emit(`${label}: cache is full`, `${list.length} of ${plural(cap, 'slot')} ${verb(cap, 'is', 'are')} used, so the least recently used node ${text(lru)} (next to TAIL) must go first.`, 'TAIL.prev is always the least recently used entry — no search needed.', 'warn', [18, 19], [24, 25], 2);
       map.delete(info[lru].k);
       list = list.slice(0, -1);
       hl = undefined;

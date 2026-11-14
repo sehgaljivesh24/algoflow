@@ -1,4 +1,5 @@
 import type { Aux, GraphEdgeVM, GraphNodeVM, ProblemDef, Step } from '../engine/types';
+import { plural } from './text.ts';
 import { TONES, parseEdges } from './graphKit.ts';
 import type { EdgeIn } from './graphKit.ts';
 
@@ -51,7 +52,7 @@ function build({ edges }: In): Step[] {
     return { kind: 'graph' as const, nodes, edges: ge };
   };
   const aux = (): Aux[] => [{
-    title: 'parent[ ]  (each node points toward its group leader)',
+    title: 'parent[ ] (each node points toward its group leader)',
     kind: 'list', items: Array.from({ length: n }, (_, k) => `${k + 1}→${parent[k + 1]}`),
     highlight: hot === null ? undefined : hot - 1,
   }];
@@ -115,7 +116,7 @@ function build({ edges }: In): Step[] {
       title: `Union: parent[${a}] = ${b}`, desc: `Different groups, so keep edge ${u}-${v} and hang leader ${a} under leader ${b}. The two groups become one colour.`,
       scene: scene([u, v]),
       logic: 'Merging groups never creates a cycle; it only connects two components.', logicTone: 'success',
-      tag: 'UNION', note: `parent[${a}] = ${b}, ${edges.length - done.filter(Boolean).length} edges left`,
+      tag: 'UNION', note: `parent[${a}] = ${b}, ${plural(edges.length - done.filter(Boolean).length, 'edge')} left`,
       javaLines: [7], pyLines: [7], algoStep: 2,
     });
     cur = -1;

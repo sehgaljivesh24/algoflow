@@ -1,4 +1,5 @@
 import type { Cell, LogicTone, ProblemDef, Step } from '../engine/types.ts';
+import { plural, verb } from './text.ts';
 
 interface In { arr: number[]; dep: number[] }
 
@@ -41,7 +42,7 @@ function build({ arr: a0, dep: d0 }: In): Step[] {
       aux: [{ title: 'platforms in use', kind: 'map', items: [`right now → ${plat}`, `peak so far → ${best}`] }],
     });
 
-  add('Start', 'START —', `${n} trains: plat = 0 and best = 0; next the arrival and departure times are sorted separately.`, `n = ${n}, plat = 0, best = 0`,
+  add('Start', 'START —', `${plural(n, 'train')}: plat = 0 and best = 0; next the arrival and departure times are sorted separately.`, `n = ${n}, plat = 0, best = 0`,
     'We do not need to know which departure belongs to which arrival. At any moment, platforms needed = arrivals so far − departures so far.', 'info', -1, -1, [0, 3], [0, 2], 0);
   add('Sort both lists', 'SORT:', `arrivals sorted to [${arr.map(fmt).join(', ')}] and departures to [${dep.map(fmt).join(', ')}], ready for a two-pointer sweep over time.`,
     `sort(arr), sort(dep)`,
@@ -65,7 +66,7 @@ function build({ arr: a0, dep: d0 }: In): Step[] {
     }
   }
 
-  add('Done', '✅ Done!', `all ${n} arrivals are processed, and the most platforms ever in use at once was ${best}.`, `return best = ${best}`, 'The peak of (arrivals − departures) over time is the number of platforms needed.', 'success', -1, -1, [12], [9], 3,
+  add('Done', '✅ Done!', `all ${plural(n, 'arrival')} ${verb(n, 'is', 'are')} processed, and the most platforms ever in use at once was ${best}.`, `return best = ${best}`, 'The peak of (arrivals − departures) over time is the number of platforms needed.', 'success', -1, -1, [12], [9], 3,
     { result: { title: String(best), text: 'Minimum platforms required' } });
   return steps;
 }

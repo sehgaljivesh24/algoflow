@@ -1,4 +1,5 @@
 import type { Cell, LogicTone, ProblemDef, Step } from '../engine/types.ts';
+import { plural, verb } from './text.ts';
 
 interface In { m: number[][] }
 
@@ -53,7 +54,7 @@ function build({ m }: In): Step[] {
       cur = [r, c];
       seen[r][c] = true;
       out.push(m[r][c]);
-      push(`Take ${m[r][c]}`, `(${r}, ${c}) holds ${m[r][c]}: walking the ${label}. ${out.length} of ${R * C} cells taken.`, 'Each cell is taken exactly once, in the order the ring is walked.', 'info', jv, pv, 1, undefined,
+      push(`Take ${m[r][c]}`, `(${r}, ${c}) holds ${m[r][c]}: walking the ${label}. ${out.length} of ${plural(R * C, 'cell')} taken.`, 'Each cell is taken exactly once, in the order the ring is walked.', 'info', jv, pv, 1, undefined,
         { tag: `${ICON[label]} TAKE —`, note: `out.add(m[${r}][${c}]) → ${m[r][c]}; taken = ${out.length}` });
     }
     const [from, to] = shrink();
@@ -77,7 +78,7 @@ function build({ m }: In): Step[] {
   }
 
   cur = null;
-  push('Done', `The walls have crossed (top = ${top} > bottom = ${bottom} or left = ${left} > right = ${right}): all ${out.length} cells were taken once.`, `Result: [${out.join(', ')}]`, 'success', [17], [18], 4,
+  push('Done', `The walls have crossed (top = ${top} > bottom = ${bottom} or left = ${left} > right = ${right}): all ${plural(out.length, 'cell')} ${verb(out.length, 'was', 'were')} taken once.`, `Result: [${out.join(', ')}]`, 'success', [17], [18], 4,
     { title: JSON.stringify(out), text: 'Spiral order' }, { tag: '✅ Done!', note: `return out → [${out.join(',')}]` });
   return steps;
 }

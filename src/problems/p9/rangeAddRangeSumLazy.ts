@@ -1,4 +1,5 @@
 import type { Aux, CellState, Pointer, ProblemDef, Step } from '../../engine/types.ts';
+import { plural, verb } from '../text.ts';
 import { parseOps, rangeText, segScene, segStructure } from './kitB.ts';
 import type { ParsedOps } from './kitB.ts';
 
@@ -296,7 +297,7 @@ function build(input: ParsedOps): Step[] {
       cellSt = (k) => (k >= ql && k <= qr ? 'swap' : undefined);
       ptrs = ql === qr ? [{ id: 'l', label: 'l=r', index: ql, tone: 'blue' }] : [{ id: 'l', label: 'l', index: ql, tone: 'blue' }, { id: 'r', label: 'r', index: qr, tone: 'orange' }];
       emit(`${opText}`, `Add ${v} to every element of a[${ql}..${qr}]. The array row already shows the true result; the tree has to catch up lazily.`, 'Touching every leaf would cost O(length); tags let us stop early.', 'info', L.addTop, 1, null,
-        'ADD —', `add(1, 0, ${n - 1}, ${ql}, ${qr}, ${v}): ${qr - ql + 1} elements change by ${v}`);
+        'ADD —', `add(1, 0, ${n - 1}, ${ql}, ${qr}, ${v}): ${plural(qr - ql + 1, 'element')} ${verb(qr - ql + 1, 'changes', 'change')} by ${v}`);
       add(1, 0, n - 1, ql, qr, v);
       answers.push('null');
       emit('Update finished', `Covered blocks carry tags; ancestors have been re-merged. Root sum is now ${sum[1]}.`, 'Tags left on inner nodes will be pushed only when a later operation needs to look below them.', 'info', L.addBack, 3, null,

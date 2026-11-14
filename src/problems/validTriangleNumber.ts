@@ -1,4 +1,5 @@
 import type { Cell, CellState, ProblemDef, Step } from '../engine/types.ts';
+import { plural } from './text.ts';
 import { ptr } from './pack1Kit.ts';
 import { parseInts } from './stepKit.ts';
 
@@ -45,7 +46,7 @@ function build({ nums }: In): Step[] {
     l = 0;
     r = k - 1;
     hit = [];
-    add(`Fix the longest side s[${k}] = ${s[k]}`, `k = ${k}: longest side ${s[k]}. Count pairs (l, r) among the ${k} shorter sticks with s[l] + s[r] > ${s[k]}, starting at l = ${l}, r = ${r}.`,
+    add(`Fix the longest side s[${k}] = ${s[k]}`, `k = ${k}: longest side ${s[k]}. Count pairs (l, r) among the ${plural(k, 'shorter stick')} with s[l] + s[r] > ${s[k]}, starting at l = ${l}, r = ${r}.`,
       'Sweep l from the far left and r from just left of k.', 'info', [3, 4], [3, 4], 1, { tag: 'FIX k —', note: `k = ${k}, l = 0, r = ${r}` });
     while (l < r) {
       const sum = s[l] + s[r];
@@ -54,7 +55,7 @@ function build({ nums }: In): Step[] {
         count += r - l;
         hit = [];
         for (let p = l; p <= r; p++) hit.push(p);
-        add(`${s[l]} + ${s[r]} = ${sum} > ${s[k]}: add ${r - l}`, `${s[l]} + ${s[r]} = ${sum} > ${s[k]}, so all ${r - l} sticks from l to r−1 pair with s[${r}] = ${s[r]}: count ${before} → ${count}. Then r moves to ${r - 1}.`,
+        add(`${s[l]} + ${s[r]} = ${sum} > ${s[k]}: add ${r - l}`, `${s[l]} + ${s[r]} = ${sum} > ${s[k]}, so all ${plural(r - l, 'stick')} from l to r−1 pair with s[${r}] = ${s[r]}: count ${before} → ${count}. Then r moves to ${r - 1}.`,
           'Sorted order means that if the smallest partner works, all bigger ones do too, so a whole block is counted in O(1).', 'success', [6, 7, 8], [6, 7, 8], 2,
           { tag: 'COUNT —', note: `count += ${r} − ${l} = ${r - l} → ${count}` });
         hit = [];

@@ -1,4 +1,5 @@
 import type { Cell, CellState, ProblemDef, Step } from '../engine/types.ts';
+import { plural } from './text.ts';
 import { Heap, parseInts } from './listheapKit.ts';
 import { recorder } from './stepKit.ts';
 import { intIn, leaf, semis } from './p4Kit.ts';
@@ -47,7 +48,7 @@ function build({ k, w: w0, profits, capital }: In): Step[] {
   }));
 
   say({
-    title: 'Start', desc: `${n} projects (p = profit, c = capital needed), ${k} pick${k === 1 ? '' : 's'} allowed, starting capital ${w}. They are laid out sorted by the capital they need.`,
+    title: 'Start', desc: `${plural(n, 'project')} (p = profit, c = capital needed), ${plural(k, 'pick')} allowed, starting capital ${w}. They are laid out sorted by the capital they need.`,
     logic: 'A project is only allowed once your capital covers its requirement, and you always want the biggest profit among the allowed ones.', java: [4], py: [1], algo: 0,
     tag: 'INIT', note: `order by capital: ${order.map((pi) => `c${capital[pi]}`).join(' ')}; w = ${w}, k = ${k}`,
   });

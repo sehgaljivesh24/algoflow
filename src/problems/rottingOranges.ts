@@ -1,4 +1,5 @@
 import type { Aux, Cell, CellState, ProblemDef, Step } from '../engine/types';
+import { plural, verb } from './text.ts';
 
 interface In { grid: string[] }
 
@@ -42,7 +43,7 @@ function build({ grid: g0 }: In): Step[] {
   for (let r = 0; r < R; r++) for (let c = 0; c < C; c++) if (g[r][c] === 2) q.push([r, c]);
   push({
     title: 'Start', tag: '🔴 INIT SOURCES —',
-    desc: `${q.length} rotten orange${q.length === 1 ? '' : 's'} ${qText()} and ${fresh} fresh one${fresh === 1 ? '' : 's'}. All rotten oranges enter the queue together.`,
+    desc: `${plural(q.length, 'rotten orange')}${q.length ? ' ' + qText() : ''} and ${plural(fresh, 'fresh one')}. All rotten oranges enter the queue together.`,
     note: `q = ${q.length} rotten, fresh = ${fresh}, minutes = 0`,
     logic: 'Every rotten orange spreads at the same moment, so we start a BFS from ALL of them at once (multi-source BFS).', logicTone: 'info',
     javaLines: [2], pyLines: [2, 3, 4, 5, 6, 7, 8, 9], algoStep: 0,
@@ -77,7 +78,7 @@ function build({ grid: g0 }: In): Step[] {
       title: `Minute ${minutes}: ${next.length} orange${next.length === 1 ? '' : 's'} rot`, tag: '🌊 SPREAD —',
       desc: next.length
         ? `${level.length} rotten from last minute infect ${next.length} fresh neighbour${next.length === 1 ? '' : 's'} ${list}. ${fresh} fresh left.`
-        : `${level.length} rotten oranges have no fresh neighbour left to infect. ${fresh} fresh stay fresh.`,
+        : `${plural(level.length, 'rotten orange')} ${verb(level.length, 'has', 'have')} no fresh neighbour left to infect. ${fresh} fresh ${verb(fresh, 'stays', 'stay')} fresh.`,
       note: next.length ? `grid = 2 at ${list}; fresh = ${fresh}` : `no grid[r][c] == 1 next to the queue; fresh = ${fresh}`,
       alert: next.length ? undefined : `Nothing rotted in minute ${minutes}: the remaining ${fresh} fresh orange${fresh === 1 ? ' is' : 's are'} walled off.`,
       logic: 'Processing the whole queue length at once is one level of BFS = one minute.', logicTone: next.length ? 'success' : 'warn',

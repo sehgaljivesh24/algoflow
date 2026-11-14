@@ -59,3 +59,9 @@
   .cs-topic { scroll-margin-top: 112px; }
   .cs-status { margin-left: 0; }
 }
+/* Phone: copy chips and the topic strip are finger-sized (also used by the edge-cases page) */
+@media (max-width: 600px) {
+  .chip-btn { min-height: 38px; }
+  .cs-nav-list a { min-height: 38px; }
+  .badge.cs-tag { font-size: .7rem; }
+}

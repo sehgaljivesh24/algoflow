@@ -1,4 +1,5 @@
 import type { ProblemDef } from '../engine/types.ts';
+import { plural } from './text.ts';
 import { buildPartition, parsePartition, type PartIn } from './ssbPartition.ts';
 
 export const capacityToShipPackages: ProblemDef<PartIn> = {
@@ -14,7 +15,7 @@ export const capacityToShipPackages: ProblemDef<PartIn> = {
   parseInput: (raw) => parsePartition(raw, 'weights ; days — e.g. 3 2 2 4 1 4 ; 3', 1, 50, 'Days', 'weights'),
   buildSteps: (inp) => buildPartition(inp, {
     itemName: 'weight', groupName: 'day', groupTag: 'D', capName: 'capacity', kName: 'days',
-    startDesc: `Ship ${inp.nums.length} packages in order within ${inp.k} day${inp.k === 1 ? '' : 's'}. We binary search the ship capacity.`,
+    startDesc: `Ship ${plural(inp.nums.length, 'package')} in order within ${plural(inp.k, 'day')}. We binary search the ship capacity.`,
     resultText: (a) => `The ship needs a capacity of at least ${a}`,
     java: { init: [2, 1], mid: [4, 3], check: [5, 12, 13], ok: [5], bad: [6], ret: [8] },
     py: { init: [1, 0], mid: [3, 2], check: [4, 11, 12], ok: [4, 5], bad: [6, 7], ret: [8] },

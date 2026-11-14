@@ -1,4 +1,5 @@
 import type { Aux, CellState, EdgeState, GraphEdgeVM, ProblemDef, Step } from '../engine/types';
+import { plural } from './text.ts';
 import { parseEdges, tokens } from './graphKit.ts';
 import type { EdgeIn } from './graphKit.ts';
 
@@ -40,9 +41,9 @@ function build({ n, edges }: In): Step[] {
   const push = (s: Omit<Step, 'vars' | 'aux' | 'scene'>) => steps.push({ ...s, scene: scene(), aux: aux(), vars: vars() });
 
   push({
-    title: 'Start', desc: `${n} courses, ${edges.length} prerequisites. All finished only if the prerequisite graph has no cycle.`,
+    title: 'Start', desc: `${plural(n, 'course')}, ${plural(edges.length, 'prerequisite')}. All finished only if the prerequisite graph has no cycle.`,
     logic: 'A cycle (A needs B needs A…) can never be satisfied. DFS finds one when it meets a node that is still on the current path.', logicTone: 'info',
-    tag: 'INIT —', note: `state[0..${n - 1}] = 0 (new), ${edges.length} edges`,
+    tag: 'INIT —', note: `state[0..${n - 1}] = 0 (new), ${plural(edges.length, 'edge')}`,
     javaLines: [1, 2, 3, 4], pyLines: [1, 2, 3, 4], algoStep: 0,
   });
 

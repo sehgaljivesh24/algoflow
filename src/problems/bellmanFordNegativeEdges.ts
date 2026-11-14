@@ -1,4 +1,5 @@
 import type { Aux, CellState, EdgeState, GraphEdgeVM, Pointer, ProblemDef, Step } from '../engine/types';
+import { plural, verb } from './text.ts';
 import { parseEdges, tokens } from './graphKit.ts';
 import type { EdgeIn } from './graphKit.ts';
 
@@ -51,7 +52,7 @@ function build({ n, src, edges }: In): Step[] {
   /** Edge relaxation table of the current round: u→v, weight, dist[u]+w, dist[v] before, update? */
   let table: string[] = [];
   const aux = (): Aux[] => [
-    { title: round > n - 1 ? `dist[ ] (check round ${round}, after the ${n - 1} relaxation rounds)` : `dist[ ] (round ${round} of ${n - 1})`, kind: 'list', items: dist.map((d, i) => `${i}: ${dd(d)}`) },
+    { title: round > n - 1 ? `dist[ ] (check round ${round}, after the ${plural(n - 1, 'relaxation round')})` : `dist[ ] (round ${round} of ${n - 1})`, kind: 'list', items: dist.map((d, i) => `${i}: ${dd(d)}`) },
     ...(table.length ? [{ title: 'Edge relaxation table: u→v · w · dist[u]+w · dist[v] before · update?', kind: 'list' as const, items: [...table], highlight: curEdge >= 0 ? table.length - 1 : undefined, bad: bad >= 0 ? [table.length - 1] : undefined }] : []),
   ];
   const vars = () => ({ round, edge: curEdge >= 0 ? `${edges[curEdge].u}→${edges[curEdge].v}` : '—', 'updates this round': changes });
@@ -60,7 +61,7 @@ function build({ n, src, edges }: In): Step[] {
   push({
     title: 'Start', desc: `Source is ${src}: dist[${src}] = 0, every other distance is ∞ (unknown). Edges may be negative.`,
     logic: 'Dijkstra\'s "finished nodes never improve" idea fails with negative edges, so Bellman-Ford simply relaxes every edge again and again.', logicTone: 'info',
-    tag: 'INIT —', note: `dist[${src}] = 0, the other ${n - 1} distances = ∞, ${edges.length} edges`,
+    tag: 'INIT —', note: `dist[${src}] = 0, the other ${plural(n - 1, 'distance')} = ∞, ${plural(edges.length, 'edge')}`,
     javaLines: [1, 2, 3, 4], pyLines: [1, 2], algoStep: 0,
   });
 
@@ -71,7 +72,7 @@ function build({ n, src, edges }: In): Step[] {
     table = [];
     examined.fill(false);
     push({
-      title: `Round ${round}`, desc: `Relax all ${edges.length} edges in the given order. After round ${round}, every shortest path that uses at most ${round} edge${round === 1 ? '' : 's'} is correct.`,
+      title: `Round ${round}`, desc: `Relax all ${plural(edges.length, 'edge')} in the given order. After round ${round}, every shortest path that uses at most ${round} edge${round === 1 ? '' : 's'} is correct.`,
       logic: 'A shortest path has at most n − 1 edges, so n − 1 rounds are always enough.', logicTone: 'info',
       tag: `ROUND ${round}`, note: `round ${round} of ${n - 1}, dist = [${dist.map(dd).join(', ')}]`,
       javaLines: [5, 6], pyLines: [3, 4], algoStep: 1,
@@ -134,9 +135,9 @@ function build({ n, src, edges }: In): Step[] {
     examined.fill(false);
     curEdge = -1;
     push({
-      title: `Round ${n}: check for a negative cycle`, desc: `All ${n - 1} rounds are done. If any edge can still be relaxed, a negative cycle is reachable from the source.`,
+      title: `Round ${n}: check for a negative cycle`, desc: `All ${plural(n - 1, 'round')} ${verb(n - 1, 'is', 'are')} done. If any edge can still be relaxed, a negative cycle is reachable from the source.`,
       logic: 'Without negative cycles the distances are final after n − 1 rounds, so any further improvement proves a cycle whose total weight is negative.', logicTone: 'info',
-      tag: 'CHECK', note: `extra pass over ${edges.length} edges, dist = [${dist.map(dd).join(', ')}]`,
+      tag: 'CHECK', note: `extra pass over ${plural(edges.length, 'edge')}, dist = [${dist.map(dd).join(', ')}]`,
       javaLines: [16], pyLines: [11], algoStep: 4,
     });
     for (let i = 0; i < edges.length && !cycle; i++) {

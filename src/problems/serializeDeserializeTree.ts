@@ -1,4 +1,5 @@
 import type { Aux, CellState, ProblemDef, Step, TreeNodeVM } from '../engine/types.ts';
+import { plural } from './text.ts';
 import { annotateRules } from './annotate.ts';
 import { buildTree, emitter, find, listAux, parseTree, stackAux, toLevelOrder, treeScene } from './treeKit.ts';
 import type { TreeIn } from './treeKit.ts';
@@ -111,7 +112,7 @@ function build({ tokens }: TreeIn): Step[] {
 
   const text = written.join(',');
   add({
-    title: 'Serialized', desc: `The string is "${text}" (${written.length} tokens = ${orig.length} values + ${orig.length + 1} markers).`,
+    title: 'Serialized', desc: `The string is "${text}" (${plural(written.length, 'token')} = ${plural(orig.length, 'value')} + ${plural(orig.length + 1, 'marker')}).`,
     logic: 'Now rebuild a fresh tree from this string alone.', tone: 'success', j: J.sRet, p: P.sRet, a: 2, vars: vars('—'), aux: aux(),
   });
 
@@ -157,7 +158,7 @@ function build({ tokens }: TreeIn): Step[] {
 
   const rebuilt = toLevelOrder(cur, 0);
   add({
-    title: 'Done', desc: `All ${written.length} tokens consumed. The rebuilt tree (level order ${rebuilt}) matches the original ${toLevelOrder(orig, 0)}.`,
+    title: 'Done', desc: `All ${plural(written.length, 'token')} consumed. The rebuilt tree (level order ${rebuilt}) matches the original ${toLevelOrder(orig, 0)}.`,
     logic: 'Serialization and deserialization visit nodes in the same preorder, so they are exact inverses.', tone: 'success',
     j: J.dRet, p: P.dRet, a: 3, vars: vars('—'), aux: aux(), result: { title: text, text: 'Serialized string (deserializes back to the same tree)' },
   });
@@ -168,7 +169,7 @@ function annotated(input: Parameters<typeof build>[0]): Step[] {
   return annotateRules(build(input), [
     { on: /^Start: serialize/, tag: 'INIT —', note: 'sb = [] ; serialize(root)', algoStep: 0 },
     { on: /^Write #/, tag: '∅ WRITE # —', note: () => 'node == null → append "#"', algoStep: 0 },
-    { on: /^Write (-?\d+)/, tag: 'WRITE —', note: (m, s) => `append ${m[1]} → ${s.vars.tokens} tokens; then left, then right`, algoStep: 0 },
+    { on: /^Write (-?\d+)/, tag: 'WRITE —', note: (m, s) => `append ${m[1]} → ${plural(Number(s.vars.tokens), 'token')}; then left, then right`, algoStep: 0 },
     { on: /^Serialized/, tag: 'JOIN —', note: () => 'String.join(",", tokens)', algoStep: 1 },
     { on: /^Start: deserialize/, tag: 'READ —', note: () => 'idx = 0; read tokens in the same preorder', algoStep: 2 },
     { on: /^Read # → null/, tag: '∅ READ # —', note: () => 'token "#" → return null', algoStep: 3 },

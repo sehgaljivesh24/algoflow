@@ -1,4 +1,5 @@
 import type { Cell, CellState, ProblemDef, Step } from '../engine/types.ts';
+import { ordinal, plural } from './text.ts';
 import { Heap, emitter, heapExtra, parseInts, parseOne, parts } from './listheapKit.ts';
 import type { HeapEvent } from './listheapKit.ts';
 
@@ -45,7 +46,7 @@ function build({ nums, k }: In): Step[] {
     x = nums[i];
     hot = {};
     if (heap.size < k) {
-      emit(`Read ${x}: heap not full`, `The heap has ${heap.size} of ${k} slots used, so ${x} goes straight in.`, 'Until k numbers are collected, every number is a candidate.', 'info', [3], [3], 1,
+      emit(`Read ${x}: heap not full`, `The heap has ${heap.size} of ${plural(k, 'slot')} used, so ${x} goes straight in.`, 'Until k numbers are collected, every number is a candidate.', 'info', [3], [3], 1,
         undefined, { tag: 'FILL', note: `size ${heap.size} < k = ${k}: offer(${x})` });
       heap.push(nums[i], cb([3], [4], 1));
     } else if (nums[i] > heap.peek()) {
@@ -71,7 +72,7 @@ function build({ nums, k }: In): Step[] {
   const ans = heap.peek();
   answer = ans;
   emit('Done', `All numbers are read. The root ${ans} is the smallest of the ${k} largest, i.e. the ${ord} largest. Heap: ${[...heap.a].sort((p, q) => q - p).join(', ')}.`, `The heap contains the ${k} largest values: ${[...heap.a].sort((p, q) => q - p).join(', ')}.`, 'success', [9], [7], 3,
-    { title: String(ans), text: `The ${k}-th largest element` }, { tag: '✅ Done!', note: `return peek() = ${ans}` });
+    { title: String(ans), text: `The ${ordinal(k)} largest element` }, { tag: '✅ Done!', note: `return peek() = ${ans}` });
   return steps;
 }
 

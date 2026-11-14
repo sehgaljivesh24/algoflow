@@ -1,4 +1,5 @@
 import type { Cell, CellState, ProblemDef, Step } from '../engine/types.ts';
+import { plural } from './text.ts';
 
 interface In { ransom: string; magazine: string }
 
@@ -34,7 +35,7 @@ function build({ ransom, magazine }: In): Step[] {
   };
 
   steps.push({
-    title: 'Start', tag: 'START —', desc: `Can "${ransom}" be cut out of the ${magazine.length} letters of "${magazine}"? Each magazine letter may be used only once.`,
+    title: 'Start', tag: 'START —', desc: `Can "${ransom}" be cut out of the ${plural(magazine.length, 'letter')} of "${magazine}"? Each magazine letter may be used only once.`,
     scene: grid(magCells(0).map((c) => ({ ...c, state: undefined })), noteCells(-1)), aux: [{ title: 'letters available', kind: 'map', items: [] }], vars: vars('—', ransom.length),
     logic: 'This is a counting problem: for each letter, the magazine must supply at least as many copies as the note needs.', logicTone: 'info',
     javaLines: [0, 1], pyLines: [0, 1], algoStep: 0, note: 'count table is empty',
@@ -54,7 +55,7 @@ function build({ ransom, magazine }: In): Step[] {
     title: 'Supply table complete', tag: 'COUNT:', desc: `the whole magazine is counted (${mapItems().join(', ')}); now spend letters for "${ransom}".`,
     scene: grid(magCells(magazine.length), noteCells(-1)), aux: [{ title: 'letters available', kind: 'map', items: mapItems() }], vars: vars('—', ransom.length),
     logic: 'From here on the magazine is never read again: only the table matters.', logicTone: 'info', javaLines: [3, 4], pyLines: [2, 3], algoStep: 1,
-    note: `${magazine.length} letters counted`,
+    note: `${plural(magazine.length, 'letter')} counted`,
   });
 
   for (let i = 0; i < ransom.length; i++) {
@@ -95,7 +96,7 @@ function build({ ransom, magazine }: In): Step[] {
   }
 
   steps.push({
-    title: 'Note completed', tag: '✅ Done!', desc: `all ${ransom.length} letters of "${ransom}" were available, so the note can be built.`,
+    title: 'Note completed', tag: '✅ Done!', desc: `all ${plural(ransom.length, 'letter')} of "${ransom}" ${ransom.length === 1 ? 'was' : 'were'} available, so the note can be built.`,
     scene: grid(magCells(magazine.length), noteCells(ransom.length)), aux: [{ title: 'letters available', kind: 'map', items: mapItems() }], vars: vars('—', 0),
     logic: 'No letter ran out, so the note can be built.', logicTone: 'success', javaLines: [10], pyLines: [7], algoStep: 4,
     note: 'return true',

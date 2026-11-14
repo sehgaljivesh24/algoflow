@@ -1,4 +1,5 @@
 import type { Cell, CellState, ProblemDef, Step } from '../engine/types.ts';
+import { plural } from './text.ts';
 
 interface In { s: string; t: string }
 
@@ -41,7 +42,7 @@ function build({ s, t }: In): Step[] {
 
   if (s.length !== t.length) {
     steps.push({
-      title: 'Different lengths', tag: 'LENGTH CHECK', desc: `"${s}" has ${s.length} letters and "${t}" has ${t.length}, so they cannot match`,
+      title: 'Different lengths', tag: 'LENGTH CHECK', desc: `"${s}" has ${plural(s.length, 'letter')} and "${t}" has ${t.length}, so they cannot match`,
       scene: scene(0, 0), aux: aux(), vars: vars('—', '—', 'length check'),
       alert: `Lengths differ (${s.length} vs ${t.length}): an anagram needs the same number of letters, so counting is skipped.`,
       logic: 'Anagrams must contain the same number of letters. This quick check avoids all counting.', logicTone: 'warn', javaLines: [1], pyLines: [1, 2], algoStep: 0,
@@ -56,7 +57,7 @@ function build({ s, t }: In): Step[] {
     return steps;
   }
   steps.push({
-    title: 'Lengths match', tag: 'LENGTH CHECK', desc: `both strings have ${s.length} letters, so counting can begin`,
+    title: 'Lengths match', tag: 'LENGTH CHECK', desc: `both strings have ${plural(s.length, 'letter')}, so counting can begin`,
     scene: scene(0, 0), aux: aux(), vars: vars('—', '—', 'length check'),
     logic: 'Equal lengths are necessary; the counts decide the rest.', logicTone: 'info', javaLines: [1, 2], pyLines: [1, 3], algoStep: 0,
     note: `${s.length} == ${t.length}, count = new int[26]`,

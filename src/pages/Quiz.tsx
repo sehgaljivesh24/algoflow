@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import { ALL_PATTERNS, CONTENT } from '../data/patterns';
+import { ALL_PATTERNS, PAGE_SLUGS } from '../data/patternCards';
 import { QUIZ_LENGTH, QUIZ_QUESTIONS, type QuizQuestion } from '../data/quiz';
 
 /* ───────────────────────── persistence ───────────────────────── */
@@ -50,7 +50,7 @@ const patternTitle = (slug: string) => ALL_PATTERNS.find((p) => p.slug === slug)
 
 function PatternRef({ slug }: { slug: string }) {
   const title = patternTitle(slug);
-  return CONTENT[slug] ? <Link to={`/patterns/${slug}`}>{title}</Link> : <span>{title}</span>;
+  return PAGE_SLUGS.has(slug) ? <Link to={`/patterns/${slug}`}>{title}</Link> : <span>{title}</span>;
 }
 
 function pickQuestions(n: number): QuizQuestion[] {

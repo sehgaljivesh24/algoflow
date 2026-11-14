@@ -1,4 +1,5 @@
 import type { Aux, ProblemDef, Step } from '../../engine/types.ts';
+import { plural } from '../text.ts';
 import { bruteLcp, fmtArr, parseWord, suffixesSorted, tableScene } from './kitD.ts';
 
 interface In { s: string }
@@ -119,7 +120,7 @@ function build({ s }: In): Step[] {
     hi = { cur: i, cmp: j };
     push({
       title: `LCP of "${s.slice(i)}" and "${s.slice(j)}" = ${hh}`,
-      desc: `Predecessor of suffix ${i} in sorted order is suffix ${j}. They share ${hh} letters${startH > 0 ? ` (we start counting at h = ${startH}, the letters already known to match)` : ''}.`,
+      desc: `Predecessor of suffix ${i} in sorted order is suffix ${j}. They share ${plural(hh, 'letter')}${startH > 0 ? ` (we start counting at h = ${startH}, the letters already known to match)` : ''}.`,
       logic: 'Kasai trick: dropping the first letter of both suffixes loses at most one letter of the common prefix, so h only goes down by 1 per step. Total work stays O(n).', logicTone: 'info',
       javaLines: [14, 15, 16], pyLines: [11, 12, 13, 14], algoStep: 3,
       tag: 'LCP —', note: `i=${i}, j=${j}: h grew ${startH} → ${hh}, lcp[${r}] = ${hh}`,
@@ -128,7 +129,7 @@ function build({ s }: In): Step[] {
       hh--;
       h = hh;
       push({
-        title: `Carry h = ${hh} to the next start`, desc: `Suffix ${i + 1} is suffix ${i} without its first letter, so its predecessor shares at least ${hh} letters.`,
+        title: `Carry h = ${hh} to the next start`, desc: `Suffix ${i + 1} is suffix ${i} without its first letter, so its predecessor shares at least ${plural(hh, 'letter')}.`,
         logic: 'This carried value is why the loop is linear instead of quadratic.', logicTone: 'info',
         javaLines: [17], pyLines: [15, 16], algoStep: 3,
         tag: 'CARRY h —', note: `h = ${hh + 1} − 1 = ${hh}`,

@@ -1,4 +1,5 @@
 import type { Cell, ProblemDef, Step } from '../engine/types.ts';
+import { plural, verb } from './text.ts';
 import { fmtList, parseInts, recorder } from './stepKit.ts';
 import { treeOverArray, twoPass, type RecTree } from './recTreeKit.ts';
 
@@ -41,7 +42,7 @@ function run({ nums }: In, tree: RecTree): Step[] {
 
   say({
     title: 'Start', tag: 'INIT',
-    desc: `Build every subset of ${fmtList(nums)}: ${n} elements give 2^${n} = ${2 ** n} calls in the recursion tree. Path = [ ], start = 0.`,
+    desc: `Build every subset of ${fmtList(nums)}: ${plural(n, 'element')} ${verb(n, 'gives', 'give')} 2^${n} = ${2 ** n} calls in the recursion tree. Path = [ ], start = 0.`,
     note: 'res = [], backtrack(nums, 0, [])',
     logic: 'Every node of the recursion is itself a valid subset, so we record the path on entry and then try to extend it with each later element.',
     java: [0, 1, 2], py: [0, 1, 2, 8], algo: 0,
@@ -97,7 +98,7 @@ function run({ nums }: In, tree: RecTree): Step[] {
     title: 'Done', tag: '✅ Done!',
     desc: `The tree is complete: ${results.length} subsets generated (2^${n}). Each element was either in or out of every one of them.`,
     note: `return res → ${results.length} = 2^${n}`,
-    logic: `Each of the ${n} elements is either in or out of a subset, giving 2^${n} = ${2 ** n} subsets.`, tone: 'success',
+    logic: `Each of the ${plural(n, 'element')} is either in or out of a subset, giving 2^${n} = ${2 ** n} subsets.`, tone: 'success',
     java: [3], py: [9], algo: 4,
     result: { title: `${results.length} subsets`, text: results.join(' ') },
   });

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { BRAND } from '../config';
 import { CodePanel, useCodeLang } from '../components/CodePanel';
@@ -22,6 +22,9 @@ export function ProblemPage() {
   // key = slug so switching problems fully resets loader and player state.
   return <LoadedPlayer key={slug} slug={slug} />;
 }
+
+/** Parts of the visualization card that keep their tallest height while stepping (see the layout effect in Player). */
+const STEADY_PARTS = ['.vp-stage', '.aux-row', '.vp-narr', '.vp-exec'];
 
 /** Fetches the problem's animation code (a separate chunk) before showing the lesson UI. */
 function LoadedPlayer({ slug }: { slug: string }) {
@@ -130,7 +133,31 @@ export function Player({ problem, embedded = false }: { problem: AnyProblem; emb
   const { chips, active: activeChip } = phaseChips(problem, step, p.index, final, true);
   const tone = narrationTone(step, problem.phases, final, p.index);
   const hasAlert = useMemo(() => steps.some((s) => s.alert), [steps]);
+  const hasAux = useMemo(() => steps.some((s) => s.aux && s.aux.length > 0), [steps]);
   const banner = alertText(step);
+
+  /* Keep the content below the picture from jumping while stepping: the picture, the side panels, the narration and the
+     code line never get shorter than the tallest state seen so far (grow-only, reset for a new example or a new width). */
+  const vizRef = useRef<HTMLElement>(null);
+  const steady = useRef<{ steps: Step[]; max: Record<string, number>; width: number }>({ steps, max: {}, width: 0 });
+  useLayoutEffect(() => {
+    const root = vizRef.current;
+    if (!root) return;
+    const s = steady.current;
+    const width = root.clientWidth;
+    const fresh = s.steps !== steps || (s.width !== 0 && Math.abs(s.width - width) > 2);
+    if (fresh) { s.steps = steps; s.max = {}; }
+    s.width = width;
+    for (const sel of STEADY_PARTS) {
+      const el = root.querySelector<HTMLElement>(`:scope > ${sel}`);
+      if (!el) continue;
+      if (fresh) el.style.minHeight = '';
+      const have = s.max[sel] ?? 0;
+      if (have && parseFloat(el.style.minHeight || '0') < have) el.style.minHeight = `${have}px`;
+      const h = el.offsetHeight;
+      if (h > have) { s.max[sel] = h; el.style.minHeight = `${h}px`; }
+    }
+  });
   const hint = execLine(problem, step, before, p.index, lang);
   const readable = (v: unknown) => (v && typeof v === 'object' && !Array.isArray(v) ? formatInput(v) : null);
   const inputLine = readable(input) ? formatInput(input, true) : null;
@@ -203,7 +230,7 @@ export function Player({ problem, embedded = false }: { problem: AnyProblem; emb
             </div>
           </div>
 
-          <section className="card vp-viz" aria-label="Visualization">
+          <section className="card vp-viz" aria-label="Visualization" ref={vizRef}>
             <h2 className="card-title vp-viz-title">
               <span className="vp-viz-icon"><Icon name={sceneIcon(sceneKind, problem.viz === 'bars')} /></span>
               {problem.vizTitle ?? sceneTitle(step, problem.viz === 'bars')}
@@ -240,6 +267,7 @@ export function Player({ problem, embedded = false }: { problem: AnyProblem; emb
               <SceneView step={step} bars={problem.viz === 'bars'} legend={problem.legend} />
             </div>
             <AuxPanels aux={step.aux} tone={step.logicTone} />
+            {hasAux && !step.aux?.length && <div className="aux-row" aria-hidden />}
 
             <div className={`vp-narr vp-tone-${tone}`} aria-live="polite" aria-atomic="true">
               <div className="vp-narr-text">

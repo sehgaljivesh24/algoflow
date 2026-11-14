@@ -1,4 +1,5 @@
 import type { Cell, LogicTone, ProblemDef, Step } from '../engine/types.ts';
+import { plural, verb } from './text.ts';
 
 interface In { n: number }
 
@@ -54,7 +55,7 @@ function build({ n }: In): Step[] {
 
   cur = null;
   k = n * n;
-  push('Done', '✅ Done!', `all ${n * n} numbers are placed in a spiral and every cell was filled exactly once.`, `return g (${n} × ${n})`, 'Every cell was filled exactly once.', 'success', [10], [10], 3,
+  push('Done', '✅ Done!', `all ${plural(n * n, 'number')} ${verb(n * n, 'is', 'are')} placed in a spiral and every cell was filled exactly once.`, `return g (${n} × ${n})`, 'Every cell was filled exactly once.', 'success', [10], [10], 3,
     { result: { title: JSON.stringify(g), text: `${n} × ${n} spiral matrix` } });
   return steps;
 }

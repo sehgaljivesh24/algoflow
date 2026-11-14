@@ -1,4 +1,5 @@
 import type { Aux, CellState, EdgeState, GraphEdgeVM, Pointer, ProblemDef, Step } from '../engine/types';
+import { plural, verb } from './text.ts';
 import { parseEdges, tokens } from './graphKit.ts';
 import type { EdgeIn } from './graphKit.ts';
 
@@ -53,8 +54,8 @@ function build({ n, source, destination, edges }: In): Step[] {
   const q = () => `[${queue.join(', ')}]`;
 
   push({
-    title: 'Start', tag: '🔍 SETUP —', desc: `Is there a route from ${source} to ${destination}? The ${edges.length} edges work in both directions, so each is listed under both ends.`,
-    note: `adj built from ${edges.length} edges`,
+    title: 'Start', tag: '🔍 SETUP —', desc: `Is there a route from ${source} to ${destination}? The ${plural(edges.length, 'edge')} ${verb(edges.length, 'works', 'work')} in both directions, so each is listed under both ends.`,
+    note: `adj built from ${plural(edges.length, 'edge')}`,
     logic: 'Explore outward from the source, level by level (BFS). If we ever reach the destination there is a path; if the frontier dries up first, there is none.', logicTone: 'info',
     javaLines: [1], pyLines: [1, 2, 3, 4], algoStep: 0,
   });
@@ -122,7 +123,7 @@ function build({ n, source, destination, edges }: In): Step[] {
     title: found ? 'Path exists' : 'No path', tag: found ? '✅ Done!' : '🚫 No path —',
     desc: found ? `${destination} is reachable from ${source}. Answer: true.` : `The queue is empty and ${destination} was never reached: ${source} and ${destination} are in different components. Answer: false.`,
     note: found ? 'return true' : 'queue empty → return false',
-    alert: found ? undefined : `Queue exhausted after visiting ${seen.filter(Boolean).length} nodes: ${destination} lies in another component.`,
+    alert: found ? undefined : `Queue exhausted after visiting ${plural(seen.filter(Boolean).length, 'node')}:${destination} lies in another component.`,
     scene: scene(), aux: aux(), vars: vars(),
     logic: found ? 'Return true.' : 'BFS explores the entire component of the source; the destination is not in it.', logicTone: found ? 'success' : 'warn',
     javaLines: found ? [13] : [21], pyLines: found ? [10] : [15], algoStep: 4,

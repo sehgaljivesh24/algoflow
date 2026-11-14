@@ -1,4 +1,5 @@
 import type { Cell, CellState, LogicTone, ProblemDef, Step } from '../engine/types.ts';
+import { plural } from './text.ts';
 
 interface In { nums: number[]; k: number }
 
@@ -49,7 +50,7 @@ function build({ nums, k }: In): Step[] {
     steps.push({ title, tag, desc, note, alert, cells: cells(cur, gone), pointers: cur >= 0 ? ptr(cur) : [], aux: aux(), vars: vars(cur >= 0 ? cur : '—'), logic, logicTone: tone, javaLines: j, pyLines: p, algoStep: a });
 
   add('Start', 'READY —', `Find the maximum of every window of size ${k}. The deque is empty; ${n - k + 1} window${n - k + 1 === 1 ? '' : 's'} will be reported.`,
-    `dq = [], ${n - k + 1} windows of size ${k}`,
+    `dq = [], ${plural(n - k + 1, 'window')} of size ${k}`,
     'The deque stores indexes of numbers that could still become a window maximum. Values decrease from front to back, so the front is always the maximum.', 'info', -1, -1, [1, 2, 3], [1], 0);
 
   for (let i = 0; i < n; i++) {
@@ -84,7 +85,7 @@ function build({ nums, k }: In): Step[] {
 
   const text = JSON.stringify(ans);
   steps.push({
-    title: 'Done', tag: '✅ Done!', desc: `${ans.length} windows, one maximum for each: ${text}`, note: `return ${text}`,
+    title: 'Done', tag: '✅ Done!', desc: `${plural(ans.length, 'window')}, one maximum for each: ${text}`, note: `return ${text}`,
     cells: cells(-1), pointers: [], aux: aux(), vars: vars('—'),
     logic: `Result: ${text}`, logicTone: 'success', javaLines: [11], pyLines: [10], algoStep: 4, result: { title: text, text: 'Maximum of each sliding window' },
   });

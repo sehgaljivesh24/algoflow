@@ -1,4 +1,5 @@
 import type { Cell, ProblemDef, Step } from '../engine/types.ts';
+import { plural } from './text.ts';
 import { recorder } from './stepKit.ts';
 
 interface In { s: string }
@@ -76,7 +77,7 @@ function build({ s }: In): Step[] {
       logic: dp[i] === 0 ? 'No decoding works for this prefix, and every longer prefix depending on it also gets 0.' : 'Add the decodings that end with a 1-digit letter and those that end with a 2-digit letter.',
       tone: dp[i] === 0 ? 'warn' : 'info', java: [4, 5, 6, 7, 8], py: [4, 5, 6, 7, 8], algo: 2,
       note: `dp[${i}] = ${w} (1 digit) + ${w2} (2 digits) = ${dp[i]}`,
-      ...(dp[i] === 0 ? { alert: `No valid split for the first ${i} digits: dp[${i}] = 0, and anything built on it stays 0.` } : {}),
+      ...(dp[i] === 0 ? { alert: `No valid split for the first ${plural(i, 'digit')}: dp[${i}] = 0, and anything built on it stays 0.` } : {}),
     });
     src = [];
   }

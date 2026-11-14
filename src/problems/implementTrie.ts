@@ -1,4 +1,5 @@
 import type { Aux, ProblemDef, Step } from '../engine/types';
+import { plural } from './text.ts';
 import { tokens } from './graphKit.ts';
 import { TrieModel } from './trieKit.ts';
 
@@ -56,7 +57,7 @@ function build({ ops }: In): Step[] {
       scene: trie.scene(path, { 0: 'active' }), logic: 'Every operation starts at the root and consumes one letter per step.', logicTone: 'info',
       javaLines: op === 'insert' ? [4, 5] : op === 'search' ? [14, 15, 24] : [19, 20, 24], pyLines: op === 'insert' ? [5, 6] : op === 'search' ? [13, 14, 21] : [17, 18, 21], algoStep: op === 'insert' ? 1 : 3,
       tag: op === 'insert' ? 'INSERT —' : op === 'search' ? 'SEARCH —' : 'PREFIX —',
-      note: `${op}("${w}"): ${w.length} letters to consume, start at root`,
+      note: `${op}("${w}"): ${plural(w.length, 'letter')} to consume, start at root`,
     });
 
     let failed = false;
@@ -135,7 +136,7 @@ function build({ ops }: In): Step[] {
 
   opLabel = '—'; word = '—'; at = 'root';
   push({
-    title: 'Done', desc: `All ${ops.length} operations processed. Outputs in order: [${out.join(', ')}].`,
+    title: 'Done', desc: `All ${plural(ops.length, 'operation')} processed. Outputs in order: [${out.join(', ')}].`,
     scene: trie.scene(), logic: 'Each operation walked at most one node per letter, so the cost never depended on how many words are stored.', logicTone: 'success',
     javaLines: [0], pyLines: [0], algoStep: 5, tag: '✅ Done!', note: `${stored.length} distinct word${stored.length === 1 ? '' : 's'} stored`,
   });

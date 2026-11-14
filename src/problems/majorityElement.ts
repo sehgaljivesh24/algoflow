@@ -1,4 +1,5 @@
 import type { Cell, CellState, ProblemDef, Step } from '../engine/types.ts';
+import { plural } from './text.ts';
 
 interface In { nums: number[] }
 
@@ -75,7 +76,7 @@ function build({ nums }: In): Step[] {
   }
 
   steps.push({
-    title: 'Done', tag: '✅ Done!', desc: `The surviving candidate is ${candidate}, which fills ${nums.filter((v) => v === candidate).length} of the ${n} cells: the majority element.`,
+    title: 'Done', tag: '✅ Done!', desc: `The surviving candidate is ${candidate}, which fills ${nums.filter((v) => v === candidate).length} of the ${plural(n, 'cell')}: the majority element.`,
     cells: nums.map((value, i) => ({ key: i, value, state: (value === candidate ? 'found' : 'dim') as CellState })), pointers: [], aux: aux(), vars: vars('—', '—'),
     logic: 'Because a majority is guaranteed, the survivor must be it. (Without that guarantee you would run a second pass to verify.)', logicTone: 'success',
     javaLines: [7], pyLines: [6], algoStep: 3, note: `return ${candidate}`,

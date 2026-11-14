@@ -1,4 +1,5 @@
 import type { Aux, CellState, EdgeState, GraphEdgeVM, ProblemDef, Step } from '../engine/types';
+import { plural } from './text.ts';
 import { TONES, parseEdges, tokens } from './graphKit.ts';
 import type { EdgeIn } from './graphKit.ts';
 
@@ -46,7 +47,7 @@ function build({ n, edges }: In): Step[] {
   const push = (s: Omit<Step, 'vars' | 'aux' | 'scene'>) => steps.push({ ...s, scene: scene(), aux: aux(), vars: vars() });
 
   push({
-    title: 'Start', desc: `${n} cities and ${edges.length} direct links. A province is a group of cities that are linked directly or through others.`,
+    title: 'Start', desc: `${plural(n, 'city', 'cities')} and ${plural(edges.length, 'direct link')}. A province is a group of cities that are linked directly or through others.`,
     logic: 'Counting provinces means counting connected components: every DFS launched from an unvisited city explores exactly one whole component.', logicTone: 'info',
     tag: 'INIT —', note: `visited[0..${n - 1}] = false, provinces = 0`,
     javaLines: [1, 2, 3], pyLines: [1, 2, 8], algoStep: 0,

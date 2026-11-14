@@ -1,4 +1,5 @@
 import type { Aux, CellState, EdgeState, GraphEdgeVM, Pointer, ProblemDef, Step } from '../engine/types';
+import { plural } from './text.ts';
 import { tokens } from './graphKit.ts';
 
 interface In { begin: string; end: string; words: string[] }
@@ -74,7 +75,7 @@ function build({ begin, end, words }: In): Step[] {
   push({
     title: 'Start', tag: '🔍 CHECK —',
     desc: `Change "${begin}" into "${end}" one letter at a time; every intermediate word must be in the list. Words one letter apart are joined by an edge.`,
-    note: `dict = ${words.length} words, ${edges.length} one-letter links`,
+    note: `dict = ${plural(words.length, 'word')}, ${plural(edges.length, 'one-letter link')}`,
     logic: 'This is a shortest-path question on an unweighted graph, so BFS gives the minimum number of words.', logicTone: 'info',
     javaLines: [1], pyLines: [1], algoStep: 0,
   });

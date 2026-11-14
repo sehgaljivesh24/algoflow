@@ -1,4 +1,5 @@
 import type { Aux, CellState, ProblemDef, Step } from '../../engine/types.ts';
+import { plural } from '../text.ts';
 import { childrenOf, countLight, hldOf, parList, parseParents, posRow, toneMap } from './hldKit.ts';
 
 interface In { par: number[] }
@@ -123,7 +124,7 @@ function build({ par }: In): Step[] {
     title: 'Decomposition complete', desc: `${h.chains.length} chain${h.chains.length > 1 ? 's' : ''}: ${fmtChains(h.chains)}. The deepest root path crosses ${maxLight} light edge${maxLight === 1 ? '' : 's'}.`,
     scene: scene({}, n),
     logic: 'A path query now splits into at most O(log n) chain pieces, each a range of consecutive positions.', logicTone: 'success',
-    tag: '✅ Done!', note: `${h.chains.length} chains: ${fmtChains(h.chains)}`,
+    tag: '✅ Done!', note: `${plural(h.chains.length, 'chain')}: ${fmtChains(h.chains)}`,
     javaLines: [12], pyLines: [21, 22], algoStep: 4,
     result: { title: fmtChains(h.chains), text: 'Chains, each written head to tail' },
   });

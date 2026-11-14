@@ -1,4 +1,5 @@
 import type { Aux, IntervalBarVM, ProblemDef, Step } from '../engine/types';
+import { plural } from './text.ts';
 import { parseIntervals } from './graphKit.ts';
 
 interface In { iv: [number, number][]; add: [number, number] }
@@ -91,7 +92,7 @@ function build({ iv, add }: In): Step[] {
   result = res.map(([a, b]) => fmt(a, b)).join(' ');
   push({
     tag: '✅ Done!', title: 'Done', desc: `One pass, no sorting. Result: ${result}.`,
-    note: `return res → ${res.length} intervals`,
+    note: `return res → ${plural(res.length, 'interval')}`,
     logic: 'One pass, no sorting needed: O(n).', logicTone: 'success',
     javaLines: [13], pyLines: [10], algoStep: 5,
     result: { title: result, text: 'Intervals after insertion' },

@@ -1,4 +1,5 @@
 import type { Aux, CellState, EdgeState, GraphEdgeVM, Pointer, ProblemDef, Step } from '../engine/types';
+import { plural } from './text.ts';
 import { parseEdges, tokens } from './graphKit.ts';
 import type { EdgeIn } from './graphKit.ts';
 
@@ -65,7 +66,7 @@ function build({ n, src, dst, k, edges }: In): Step[] {
   push({
     title: 'Start', desc: `Find the cheapest trip from ${src} to ${dst} using at most ${k} stop${k === 1 ? '' : 's'}, i.e. at most ${k + 1} flight${k === 0 ? '' : 's'}. dist[${src}] = 0, everything else ∞.`,
     logic: 'Bellman-Ford with a twist: round r only allows paths of r flights, so the stop limit becomes a round limit.', logicTone: 'info',
-    tag: 'INIT —', note: `dist[${src}] = 0, others ∞; ${k + 1} rounds allowed (k = ${k})`,
+    tag: 'INIT —', note: `dist[${src}] = 0, others ∞; ${plural(k + 1, 'round')} allowed (k = ${k})`,
     javaLines: [1, 2, 3], pyLines: [1, 2], algoStep: 0,
   });
 
@@ -121,11 +122,11 @@ function build({ n, src, dst, k, edges }: In): Step[] {
   if (ans !== -1) finalPath = path[dst];
   steps.push({
     title: ans === -1 ? `No trip within ${k} stops` : `Cheapest trip costs ${ans}`,
-    desc: ans === -1 ? `City ${dst} cannot be reached from ${src} using at most ${k + 1} flights.` : `Best route: ${[src, ...path[dst].map((i) => edges[i].v)].join(' → ')} for $${ans}.`,
+    desc: ans === -1 ? `City ${dst} cannot be reached from ${src} using at most ${plural(k + 1, 'flight')}.` : `Best route: ${[src, ...path[dst].map((i) => edges[i].v)].join(' → ')} for $${ans}.`,
     scene: scene(), aux: aux(), vars: vars(),
     logic: ans === -1 ? 'After k+1 rounds dst is still ∞, so no valid trip exists.' : 'After k+1 rounds dist[dst] is the cheapest price using at most k stops.', logicTone: ans === -1 ? 'warn' : 'success',
     tag: '✅ Done!', note: ans === -1 ? `dist[${dst}] = ∞ → return -1` : `dist[${dst}] = ${ans} → return ${ans}`,
-    alert: ans === -1 ? `City ${dst} is still ∞ after ${k + 1} rounds: no trip fits the stop limit.` : undefined,
+    alert: ans === -1 ? `City ${dst} is still ∞ after ${plural(k + 1, 'round')}: no trip fits the stop limit.` : undefined,
     javaLines: [14], pyLines: [10], algoStep: 4,
     result: { title: String(ans), text: ans === -1 ? 'No route within the stop limit' : 'Cheapest price' },
   });

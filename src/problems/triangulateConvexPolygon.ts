@@ -1,4 +1,5 @@
 import type { CellState, EdgeState, GraphEdgeVM, GraphNodeVM, ProblemDef, Step } from '../engine/types.ts';
+import { aNum, plural } from './text.ts';
 import { find, gc, parseOne, recorder } from './dpAdvKit.ts';
 
 interface In { n: number }
@@ -115,7 +116,7 @@ function build({ n }: In): Step[] {
       terms.push(`apex ${k}: ways[${lv}]×ways[${rv}] = ${ways[lv]}×${ways[rv]} = ${t}`);
       say({
         title: `${size}-gon, triangle (0, ${k}, ${size - 1})`,
-        desc: `The triangle on edge (0, ${size - 1}) with corner ${k} leaves a ${lv}-gon (corners 0..${k}) on one side and a ${rv}-gon (corners ${k}..${size - 1}) on the other: ${ways[lv]} × ${ways[rv]} = ${t}. Running total ${ways[size]}.`,
+        desc: `The triangle on edge (0, ${size - 1}) with corner ${k} leaves ${aNum(lv)}-gon (corners 0..${k}) on one side and ${aNum(rv)}-gon (corners ${k}..${size - 1}) on the other: ${ways[lv]} × ${ways[rv]} = ${t}. Running total ${ways[size]}.`,
         logic: 'The two leftover polygons are triangulated independently, so their counts multiply; different apexes give different triangulations, so the totals add.',
         java: J.term, py: P.term, algo: 2,
         tag: `APEX ${k} —`, note: `ways[${size}] += ways[${lv}] × ways[${rv}] = ${ways[lv]} × ${ways[rv]} = ${t} → ${ways[size]}`,
@@ -126,7 +127,7 @@ function build({ n }: In): Step[] {
     rv = -1;
     done = true;
     say({
-      title: `ways[${size}] = ${ways[size]}`, desc: `Every apex of the ${size}-gon has been counted: ${ways[size]} triangulations.`,
+      title: `ways[${size}] = ${ways[size]}`, desc: `Every apex of the ${size}-gon has been counted: ${plural(ways[size]!, 'triangulation')}.`,
       logic: 'Stored for the larger polygons that will contain this one as a piece.', tone: 'success', java: J.outer, py: P.outer, algo: 2,
       tag: 'STORE —', note: `ways[${size}] = ${ways[size]}`,
     });
@@ -138,7 +139,7 @@ function build({ n }: In): Step[] {
   rv = -1;
   done = true;
   say({
-    title: 'Done', tag: '✅ Done!', note: `return ways[${n}] = ${ways[n]}`, desc: `A convex ${n}-gon has ${ways[n]} triangulations — the Catalan number C(${n - 2}).`,
+    title: 'Done', tag: '✅ Done!', note: `return ways[${n}] = ${ways[n]}`, desc: `A convex ${n}-gon has ${plural(ways[n]!, 'triangulation')} — the Catalan number C(${n - 2}).`,
     logic: 'ways[n] is the answer; the polygon with n corners behaves like n − 2 pairs of brackets.', tone: 'success',
     java: J.ret, py: P.ret, algo: 3, result: { title: String(ways[n]), text: 'Triangulations' },
   });

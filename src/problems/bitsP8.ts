@@ -2,6 +2,7 @@
 import type { Cell, ProblemDef, Step } from '../engine/types.ts';
 import { bitHeads, bitRow } from './ssbShared.ts';
 import { Rec, arr, idx, nums as parseNums, parts } from './p8Kit.ts';
+import { plural, verb } from './text.ts';
 
 /* ------------------------------------------------------------ #1310 XOR Queries of a Subarray */
 interface QIn { arr: number[]; queries: [number, number][] }
@@ -124,11 +125,11 @@ function build477({ nums }: NIn): Step[] {
   let total = 0;
   const g = (hl: number) => columnGrid(nums, hl, ones, [{ head: 'ones×zeros', cells: pairs }], W4);
   const vars = (bit: number | string, o: number | string, p: number | string) => ({ bit, ones: o, zeros: typeof o === 'number' ? n - o : '—', 'pairs': p, total });
-  rec.push({ t: 'Start', d: `Sum the Hamming distance over all ${(n * (n - 1)) / 2} pairs of ${n} numbers. Instead of comparing pairs, look at one bit column at a time.`, scene: g(-1), v: vars('—', '—', '—'), why: 'In one column a pair differs exactly when one number has a 1 and the other a 0, so the column contributes ones × zeros.', j: [0, 1], p: [0, 1], a: 0, tag: 'READY —', note: `total = 0, n = ${n}` });
+  rec.push({ t: 'Start', d: `Sum the Hamming distance over all ${plural((n * (n - 1)) / 2, 'pair')} of ${plural(n, 'number')}. Instead of comparing pairs, look at one bit column at a time.`, scene: g(-1), v: vars('—', '—', '—'), why: 'In one column a pair differs exactly when one number has a 1 and the other a 0, so the column contributes ones × zeros.', j: [0, 1], p: [0, 1], a: 0, tag: 'READY —', note: `total = 0, n = ${n}` });
   for (let b = 0; b < W4; b++) {
     const o = nums.filter((x) => (x >> b) & 1).length;
     ones[b] = o;
-    rec.push({ t: `Bit ${b}: count the ones`, d: `${o} of the ${n} numbers have bit ${b} set, so ${n - o} have it clear.`, scene: g(b), v: vars(b, o, '—'), why: 'Columns are independent, so each one is counted on its own in O(n).', j: [3, 4], p: [3], a: 1, tag: `BIT ${b} — COUNT`, note: `ones = ${o}, zeros = ${n - o}` });
+    rec.push({ t: `Bit ${b}: count the ones`, d: `${o} of the ${plural(n, 'number')} ${verb(n, 'has', 'have')} bit ${b} set, so ${n - o} have it clear.`, scene: g(b), v: vars(b, o, '—'), why: 'Columns are independent, so each one is counted on its own in O(n).', j: [3, 4], p: [3], a: 1, tag: `BIT ${b} — COUNT`, note: `ones = ${o}, zeros = ${n - o}` });
     pairs[b] = o * (n - o);
     total += pairs[b]!;
     rec.push({ t: `Bit ${b}: ${o} × ${n - o} = ${pairs[b]} differing pairs`, d: `Every 1 pairs with every 0 here (${o} × ${n - o}): total is now ${total}.`, scene: g(b), v: vars(b, o, pairs[b]!), why: 'Each differing pair is counted once per column in which it differs, which is precisely what Hamming distance sums.', tone: 'success', j: [5], p: [4], a: 2, tag: `BIT ${b} — PAIRS`, note: `total += ${o} * ${n - o} → ${total}` });
@@ -198,7 +199,7 @@ function build2275({ nums }: NIn): Step[] {
     const better = o > best;
     const oldBest = best;
     if (better) { best = o; bestBit = b; }
-    rec.push({ t: `Bit ${b}: ${o} number${o === 1 ? '' : 's'} have it set`, d: better ? `${o} numbers have a 1 in column ${b} → 🏆 NEW BEST! best = ${best}.` : `${o} numbers in column ${b} do not beat best = ${best}.`, scene: g(b), v: vars(b, o), why: 'Any subset of the numbers that have bit b set keeps bit b alive in their AND, so the whole column is a valid group.', tone: better ? 'success' : 'info', j: [3, 4, 5], p: [3, 4], a: 1, tag: `BIT ${b} —`, note: `best = max(${oldBest}, ${o}) = ${best}` });
+    rec.push({ t: `Bit ${b}: ${plural(o, 'number')} ${verb(o, 'has', 'have')} it set`, d: better ? `${plural(o, 'number')} ${verb(o, 'has', 'have')} a 1 in column ${b} → 🏆 NEW BEST! best = ${best}.` : `${plural(o, 'number')} in column ${b} ${verb(o, 'does', 'do')} not beat best = ${best}.`, scene: g(b), v: vars(b, o), why: 'Any subset of the numbers that have bit b set keeps bit b alive in their AND, so the whole column is a valid group.', tone: better ? 'success' : 'info', j: [3, 4, 5], p: [3, 4], a: 1, tag: `BIT ${b} —`, note: `best = max(${oldBest}, ${o}) = ${best}` });
   }
   rec.push({ t: `Answer: ${best}`, d: `Bit ${bestBit} is shared by the most numbers (${best}).`, scene: g(bestBit), v: vars('—', '—'), why: 'No bigger group can exist: its AND would need a common set bit, and no column has more ones.', tone: 'success', j: [7], p: [5], a: 3, tag: '✅ Done!', note: `return ${best}`, result: { title: String(best), text: `Largest combination with AND > 0 has size ${best}` } });
   return rec.steps;

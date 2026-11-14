@@ -6,6 +6,8 @@
  *   node scripts/check-python-panels.mts            all problems
  *   ONLY=slug1,slug2 node scripts/check-python-panels.mts
  *   HINTS=1 node scripts/check-python-panels.mts    also print non-failing logic-parity hints
+ *   STRICT_IMPORTS=1 node scripts/check-python-panels.mts   also require explicit imports (deque, heapq, Counter, math ...);
+ *                                                   by default these stdlib names are accepted as LeetCode-preloaded
  *
  * Rules (each finding is "slug: [rule] line N: text"):
  *   undefined-call  a name is called/instantiated but never defined, imported, or a builtin
@@ -31,9 +33,8 @@ const BUILTINS = new Set(('len range min max sum sorted enumerate zip map filter
  * Standard-library names the panels use WITHOUT an import line (the Java panels likewise omit `import java.util.*`).
  * LeetCode's Python environment preloads all of these. Set STRICT_IMPORTS=1 to report them as undefined instead.
  */
-const PRELOADED = new Set(['heapq', 'math', 'bisect', 'functools', 'itertools', 'random', 'collections', 'sys', 'string',
-  'deque', 'Counter', 'defaultdict', 'OrderedDict', 'bisect_left', 'bisect_right', 'insort', 'heappush', 'heappop', 'heapify', 'heappushpop',
-  'lru_cache', 'cache', 'cmp_to_key', 'reduce', 'accumulate', 'permutations', 'combinations', 'product', 'gcd', 'inf',
+const PRELOADED = new Set(['heapq', 'math', 'bisect', 'functools', 'itertools', 'random', 'collections',
+  'deque', 'Counter', 'defaultdict', 'OrderedDict', 'bisect_left', 'bisect_right', 'insort', 'cmp_to_key', 'lru_cache', 'cache',
   'List', 'Dict', 'Set', 'Tuple', 'Optional', 'Deque']);
 const STRICT_IMPORTS = process.env.STRICT_IMPORTS === '1';
 /** LeetCode predefines these node classes; allowed only in the panels whose constructor use matches the stub. */
@@ -306,6 +307,28 @@ function analyse(slug: string, python: string[]): string[] {
       continue;
     }
     processStmt(t);
+  }
+
+  // ---- self.<attr> / self.<method>() that nothing in the snippet defines ----
+  const methods = new Set<string>();
+  for (const { text } of logical) for (const m of text.matchAll(/\bdef\s+(\w+)/g)) methods.add(m[1]);
+  const selfAssigned = new Set<string>();
+  for (const s of stmts) {
+    const parts = splitTop(s.text, '=');
+    for (let k = 0; k < parts.length - 1; k++) {
+      const lhs = parts[k].replace(/[-+*/%|&^@<>]$/, '');
+      for (const m of lhs.matchAll(/\bself\.(\w+)(?!\s*[\[.(\w])/g)) selfAssigned.add(m[1]);
+    }
+    for (const m of s.text.matchAll(/\bfor\s+(.+?)\s+in\b/g)) for (const t of m[1].matchAll(/\bself\.(\w+)/g)) selfAssigned.add(t[1]);
+  }
+  const selfSeen = new Set<string>();
+  for (const { ln, text } of logical) {
+    for (const m of text.matchAll(/\bself\.(\w+)/g)) {
+      const a = m[1];
+      if (selfAssigned.has(a) || methods.has(a) || defined.has(a) || /^__\w+__$/.test(a) || selfSeen.has(a)) continue;
+      selfSeen.add(a);
+      add('undefined-name', ln, `self.${a} is used but never assigned or defined in the snippet`);
+    }
   }
 
   // ---- usage ----

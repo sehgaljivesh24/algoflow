@@ -1,4 +1,5 @@
 import type { CellState, ProblemDef, Step } from '../engine/types.ts';
+import { plural } from './text.ts';
 import { arr, find, gc, parseInts, ptr, recorder } from './dpAdvKit.ts';
 
 interface In { nums: number[] }
@@ -126,7 +127,7 @@ function build({ nums }: In): Step[] {
   done = true;
   cur = dp[0][N - 1]!;
   say({
-    title: 'Done', tag: '✅ Done!', note: `return dp[0][${N - 1}] = ${dp[0][N - 1]}`, desc: `dp[0][${N - 1}] = ${dp[0][N - 1]}: the most coins from bursting all ${nums.length} balloons.`,
+    title: 'Done', tag: '✅ Done!', note: `return dp[0][${N - 1}] = ${dp[0][N - 1]}`, desc: `dp[0][${N - 1}] = ${dp[0][N - 1]}: the most coins from bursting all ${plural(nums.length, 'balloon')}.`,
     logic: 'The full interval between the two walls is the original problem.', tone: 'success', java: J.ret, py: P.ret, algo: 3,
     result: { title: String(dp[0][N - 1]), text: 'Maximum coins' },
   });

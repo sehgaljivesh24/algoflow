@@ -1,4 +1,5 @@
 import type { Cell, CellState, ProblemDef, Step } from '../engine/types.ts';
+import { plural } from './text.ts';
 
 interface In { nums: number[]; k: number }
 
@@ -96,7 +97,7 @@ function build({ nums, k }: In): Step[] {
   r = -1;
   l = n;
   steps.push({
-    title: 'Done', tag: '✅ Done!', desc: `best = ${best}: flipping at most ${k} zero${k === 1 ? '' : 's'} gives a run of ${best} ones (window [${bestL}..${bestR}])`,
+    title: 'Done', tag: '✅ Done!', desc: `best = ${best}: flipping at most ${k} zero${k === 1 ? '' : 's'} gives a run of ${plural(best, 'one')} (window [${bestL}..${bestR}])`,
     cells: nums.map((value, i) => ({ key: i, value, state: i >= bestL && i <= bestR ? ('found' as const) : ('dim' as const) })), pointers: [], vars: { l: '—', r: '—', zeros, best },
     logic: `Best window: indexes ${bestL}..${bestR} (length ${best}).`, logicTone: 'success', javaLines: [10], pyLines: [10], algoStep: 4,
     note: `return ${best}`,

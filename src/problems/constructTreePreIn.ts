@@ -1,4 +1,5 @@
 import type { Aux, CellState, ProblemDef, Step, TreeNodeVM } from '../engine/types.ts';
+import { plural, verb } from './text.ts';
 import { annotateRules } from './annotate.ts';
 import { emitter, find, listAux, parseInts, splitParts, stackAux, toLevelOrder, treeScene } from './treeKit.ts';
 
@@ -160,7 +161,7 @@ function build({ pre, ino }: In): Step[] {
   range = `[0..${ino.length - 1}]`;
   const out = toLevelOrder(nodes, 0);
   add({
-    title: 'Done', desc: `All ${pre.length} values placed. Level order of the rebuilt tree: ${out}`,
+    title: 'Done', desc: `All ${plural(pre.length, 'value')} ${verb(pre.length, 'is', 'are')} placed. Level order of the rebuilt tree: ${out}`,
     logic: 'Each node consumed exactly one preorder value and one inorder slot.', tone: 'success',
     j: J.ret, p: P.ret, a: 3, vars: vars('—', '—', '—', '—'), aux: aux(), result: { title: out, text: 'Constructed tree (level order)' },
   });

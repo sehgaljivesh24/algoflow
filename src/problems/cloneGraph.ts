@@ -1,4 +1,5 @@
 import type { Aux, CellState, EdgeState, GraphEdgeVM, GraphNodeVM, ProblemDef, Step } from '../engine/types';
+import { plural, verb } from './text.ts';
 import { fixedCoords } from '../components/graphLayout.ts';
 import { parseEdges, tokens } from './graphKit.ts';
 import type { EdgeIn } from './graphKit.ts';
@@ -127,10 +128,10 @@ function build({ n, edges }: In): Step[] {
   probe = null;
   const result = `[${cloneAdj.slice(1).map((l) => `[${l.join(', ')}]`).join(', ')}]`;
   steps.push({
-    title: 'Done', tag: '✅ Done!', desc: `all ${n} nodes are copied and all ${edges.length} edge${edges.length === 1 ? '' : 's'} are linked from both sides, so the right graph is an independent deep copy`,
+    title: 'Done', tag: '✅ Done!', desc: `all ${plural(n, 'node')} ${verb(n, 'is', 'are')} copied and all ${plural(edges.length, 'edge')} ${verb(edges.length, 'is', 'are')} linked from both sides, so the right graph is an independent deep copy`,
     scene: scene(), aux: aux(), vars: vars(),
     logic: 'Every original node has exactly one copy, and each copy’s neighbours are copies, never originals.', logicTone: 'success',
-    javaLines: [9], pyLines: [9, 10], algoStep: 4, note: `return the copy of node 1, ${n} copies in the map`,
+    javaLines: [9], pyLines: [9, 10], algoStep: 4, note: `return the copy of node 1, ${plural(n, 'copy', 'copies')} in the map`,
     result: { title: result, text: 'Adjacency list of the cloned graph' },
   });
   return steps;

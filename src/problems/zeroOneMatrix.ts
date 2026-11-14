@@ -1,4 +1,5 @@
 import type { Aux, Cell, ProblemDef, Step } from '../engine/types.ts';
+import { plural, verb } from './text.ts';
 import { recorder } from './stepKit.ts';
 import { DIRS4, gridScene, parseCharRows } from './p4Kit.ts';
 
@@ -40,8 +41,8 @@ function build({ grid }: In): Step[] {
   for (let r = 0; r < R; r++) for (let c = 0; c < C; c++) if (dist[r][c] === 0) q.push([r, c]);
   say({
     title: 'Start', tag: '🔴 INIT SOURCES —',
-    desc: `All ${q.length} zero${q.length === 1 ? '' : 's'} enter the queue together at distance 0; the other ${unknown()} cells are unknown (?). Time = 0.`,
-    note: `q = all ${q.length} zeros, dist[zero] = 0, dist[one] = -1`,
+    desc: `All ${plural(q.length, 'zero')} ${verb(q.length, 'enters', 'enter')} the queue together at distance 0; the other ${plural(unknown(), 'cell')} ${verb(unknown(), 'is', 'are')} unknown (?). Time = 0.`,
+    note: `q = all ${plural(q.length, 'zero')}, dist[zero] = 0, dist[one] = -1`,
     logic: 'Instead of searching from every 1 towards a 0, flip the question: search outward from all the 0s at once, so each cell is reached first by its nearest 0.', java: [3], py: [2, 3], algo: 0,
   });
 

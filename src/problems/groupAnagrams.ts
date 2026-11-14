@@ -1,4 +1,5 @@
 import type { Cell, CellState, ProblemDef, Step } from '../engine/types.ts';
+import { plural, verb } from './text.ts';
 
 interface In { words: string[] }
 
@@ -27,7 +28,7 @@ function build({ words }: In): Step[] {
   const vars = (i: number | string, w: string, key: string) => ({ i, word: w, key, groups: groups.size });
 
   steps.push({
-    title: 'Start', tag: 'SETUP —', desc: `Group the ${words.length} word${words.length > 1 ? 's' : ''} that are anagrams of each other. The map groups starts empty.`,
+    title: 'Start', tag: 'SETUP —', desc: `Group the ${plural(words.length, 'word')} ${verb(words.length, 'with its anagrams', 'that are anagrams of each other')}. The map groups starts empty.`,
     cells: cells(-1, 0), pointers: [], aux: [{ title: 'groups (sorted key → words)', kind: 'map', items: [] }], vars: vars('—', '—', '—'),
     logic: 'Anagrams become identical when their letters are sorted. That sorted string is a canonical key: words with the same key belong together.', logicTone: 'info',
     javaLines: [1], pyLines: [1], algoStep: 0, note: 'groups = {}',

@@ -1,4 +1,5 @@
 import type { Aux, CellState, ProblemDef, Step } from '../../engine/types.ts';
+import { plural, verb } from '../text.ts';
 import { dagScene, layoutDag, lineOf, parseNums, splitBar } from './kitC.ts';
 import type { DagLayout, PNode } from './kitC.ts';
 
@@ -309,7 +310,7 @@ function run(input: In, lay: DagLayout | null): { steps: Step[]; nodes: PNode[] 
   op = 'done';
   version = '—';
   index = '—';
-  push({ title: 'All operations done', desc: `Values returned by get: [${answers.join(', ')}]. ${roots.length} versions share ${nodes.length} nodes in total; storing them as separate trees would need ${roots.length * (2 * n - 1)}.`, logic: 'Each set added O(log n) nodes, so history is cheap to keep.', logicTone: 'success', javaLines: J.getEnd, pyLines: P.getEnd, algoStep: 4, tag: '✅ Done!', note: `${nodes.length} shared nodes vs ${roots.length * (2 * n - 1)} for separate copies` });
+  push({ title: 'All operations done', desc: `Values returned by get: [${answers.join(', ')}]. ${plural(roots.length, 'version')} ${verb(roots.length, 'shares', 'share')} ${plural(nodes.length, 'node')} in total; storing them as separate trees would need ${roots.length * (2 * n - 1)}.`, logic: 'Each set added O(log n) nodes, so history is cheap to keep.', logicTone: 'success', javaLines: J.getEnd, pyLines: P.getEnd, algoStep: 4, tag: '✅ Done!', note: `${nodes.length} shared nodes vs ${roots.length * (2 * n - 1)} for separate copies` });
   steps[steps.length - 1].result = { title: `[${answers.join(', ')}]`, text: 'Values returned by the get operations' };
   return { steps, nodes };
 }

@@ -1,4 +1,5 @@
 import type { CellState, ProblemDef, Step } from '../engine/types.ts';
+import { plural } from './text.ts';
 import { find, gc, parseInts, recorder, splitParts } from './dpAdvKit.ts';
 
 interface In { digits: number[]; n: number }
@@ -74,9 +75,9 @@ function build({ digits, n }: In): Step[] {
   const say = recorder(steps, snap);
 
   say({
-    title: 'Two kinds of numbers', desc: `Count positive numbers ≤ ${n} built only from the digits {${digits.join(', ')}} (repeats allowed). N = ${n} has ${L} digit${L === 1 ? '' : 's'}. Numbers with FEWER digits are always smaller; numbers with exactly ${L} digits must be compared with N digit by digit.`,
+    title: 'Two kinds of numbers', desc: `Count positive numbers ≤ ${n} built only from the digits {${digits.join(', ')}} (repeats allowed). N = ${n} has ${L} digit${L === 1 ? '' : 's'}. Numbers with FEWER digits are always smaller; numbers with exactly ${plural(L, 'digit')} must be compared with N digit by digit.`,
     logic: 'Splitting by length removes the "is it ≤ N?" question for every shorter length, leaving one careful walk for the same length.',
-    java: J.def, py: P.def, algo: 0, tag: 'SPLIT BY LENGTH —', note: `N = ${n} has ${L} digits, d = ${d} allowed digits`,
+    java: J.def, py: P.def, algo: 0, tag: 'SPLIT BY LENGTH —', note: `N = ${n} has ${plural(L, 'digit')}, d = ${plural(d, 'allowed digit')}`,
   });
 
   for (let len = 1; len < L; len++) {
@@ -132,7 +133,7 @@ function build({ digits, n }: In): Step[] {
   finished = true;
   tight = tightOn ? 'yes' : 'no (broken)';
   say({
-    title: 'Done', desc: `${count} numbers ≤ ${n} can be written with {${digits.join(', ')}}${self ? ' (including N itself)' : ''}.`,
+    title: 'Done', desc: `${plural(count, 'number')} ≤ ${n} can be written with {${digits.join(', ')}}${self ? ' (including N itself)' : ''}.`,
     logic: 'Shorter lengths plus the below-N choices along the tight path cover every valid number exactly once.', tone: 'success', java: J.ret, py: P.ret, algo: 4,
     tag: '✅ Done!', note: `return count = ${count}`,
     result: { title: String(count), text: 'Numbers ≤ N' },

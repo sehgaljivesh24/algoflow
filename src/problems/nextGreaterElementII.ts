@@ -1,4 +1,5 @@
 import type { Cell, CellState, ProblemDef, Step } from '../engine/types.ts';
+import { plural } from './text.ts';
 import { emitter } from './listheapKit.ts';
 import { parseNums, ptr } from './ssbShared.ts';
 import { annotate, auxItems } from './annotate.ts';
@@ -39,7 +40,7 @@ function build({ nums }: In): Step[] {
     };
   });
 
-  emit('Start', `A circular array of ${n} numbers: after the last element the search wraps to the first. We scan 2n = ${2 * n} positions with a stack of unresolved indexes.`,
+  emit('Start', `A circular array of ${plural(n, 'number')}: after the last element the search wraps to the first. We scan 2n = ${2 * n} positions with a stack of unresolved indexes.`,
     'Walking the array twice lets every element "see" the ones before it, which is exactly what wrapping around means.', 'info', [1, 2, 3, 4], [1, 2, 3], 0);
 
   for (let v = 0; v < 2 * n; v++) {

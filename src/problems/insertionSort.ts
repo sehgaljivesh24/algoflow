@@ -1,4 +1,5 @@
 import type { Cell, CellState, ProblemDef, Step } from '../engine/types.ts';
+import { plural } from './text.ts';
 import { parseNums, ptr } from './ssbShared.ts';
 
 interface In { nums: number[] }
@@ -67,9 +68,9 @@ function build({ nums }: In): Step[] {
 
   steps.push({
     title: 'Done', tag: '✅ Done!', desc: `every element has been inserted: sorted with ${shifts} shift${shifts === 1 ? '' : 's'} and ${compares} comparison${compares === 1 ? '' : 's'}, [${arr.join(', ')}].`,
-    cells: cells(n), pointers: [], vars: vars('—', '—', '—'), note: `${compares} compares, ${shifts} shifts`,
+    cells: cells(n), pointers: [], vars: vars('—', '—', '—'), note: `${plural(compares, 'compare')}, ${plural(shifts, 'shift')}`,
     logic: `Final array: [${arr.join(', ')}]`, logicTone: 'success', javaLines: [0, 10], pyLines: [0], algoStep: 4,
-    result: { title: `[${arr.join(', ')}]`, text: `${compares} comparisons · ${shifts} shifts` },
+    result: { title: `[${arr.join(', ')}]`, text: `${plural(compares, 'comparison')} · ${plural(shifts, 'shift')}` },
   });
   return steps;
 }

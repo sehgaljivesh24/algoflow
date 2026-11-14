@@ -1,4 +1,5 @@
 import type { Aux, CellState, EdgeState, GraphEdgeVM, Pointer, ProblemDef, Step } from '../engine/types';
+import { plural } from './text.ts';
 import { parseEdges, tokens } from './graphKit.ts';
 import type { EdgeIn } from './graphKit.ts';
 
@@ -48,7 +49,7 @@ function build({ n, edges }: In): Step[] {
   const push = (s: Omit<Step, 'vars' | 'aux' | 'scene'>) => steps.push({ ...s, scene: scene(), aux: aux(), vars: vars() });
 
   push({
-    title: 'Start', desc: `${n} node${n === 1 ? '' : 's'} and ${edges.length} edge${edges.length === 1 ? '' : 's'}. A tree is connected AND has no cycle (so it has exactly n − 1 = ${n - 1} edges).`,
+    title: 'Start', desc: `${plural(n, 'node')} and ${plural(edges.length, 'edge')}. A tree is connected AND has no cycle (so it has exactly n − 1 = ${plural(n - 1, 'edge')}).`,
     logic: 'Two checks: (1) a DFS from node 0 must never meet an already-visited node other than the one it came from; (2) afterwards every node must be visited.', logicTone: 'info',
     tag: 'INIT —', note: `n = ${n}, edges = ${edges.length}, a tree needs ${n - 1}; seen[] = false`,
     javaLines: [1, 2], pyLines: [1], algoStep: 0,
@@ -115,7 +116,7 @@ function build({ n, edges }: In): Step[] {
   result = String(ok);
   push({
     title: ok ? 'All nodes visited' : `${missing.length} node${missing.length === 1 ? '' : 's'} unreachable`,
-    desc: ok ? `No cycle, and the DFS from 0 reached all ${n} nodes: connected.` : `No cycle, but ${missing.join(', ')} ${missing.length === 1 ? 'was' : 'were'} never reached (red): the graph is disconnected.`,
+    desc: ok ? `No cycle, and the DFS from 0 reached all ${plural(n, 'node')}: connected.` : `No cycle, but ${missing.join(', ')} ${missing.length === 1 ? 'was' : 'were'} never reached (red): the graph is disconnected.`,
     logic: ok ? 'Connected and acyclic is exactly the definition of a tree.' : 'A tree must be connected, so unreachable nodes mean the answer is No.', logicTone: ok ? 'success' : 'warn',
     tag: ok ? '✅ Done!' : '⚠ Disconnected!', note: ok ? `visited ${n}/${n} nodes, no cycle → return true` : `visited ${n - missing.length}/${n} nodes → return false`,
     alert: ok ? undefined : `Node${missing.length === 1 ? '' : 's'} ${missing.join(', ')} never reached: the graph is disconnected.`,

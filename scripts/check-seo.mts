@@ -12,7 +12,7 @@ import { existsSync, readFileSync, statSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { ALL_PROBLEMS } from '../src/problems/registry.ts';
 import { ALL_ENTRIES } from '../src/data/catalog.ts';
-import { ALL_PATTERNS } from '../src/data/patterns.ts';
+import { ALL_PATTERNS, PATTERN_META } from '../src/data/patternsFull.ts';
 import { DESCRIPTION_MAX, PATTERN_INDEX_COPY, TITLE_MAX, allRoutes, metaFor } from '../src/seo/meta.ts';
 
 const root = resolve(import.meta.dirname, '..');
@@ -24,7 +24,8 @@ const fail = (msg: string) => {
 const ok = (cond: unknown, msg: string) => { if (!cond) fail(msg); };
 
 const statements = new Map<string, string>(ALL_PROBLEMS.map((p) => [p.slug, p.statement]));
-const opts = { statementOf: (slug: string) => statements.get(slug) };
+// Node may be eager: the hero text of a pattern (lazy in the browser bundle) comes from the full data, like the build plugin does
+const opts = { statementOf: (slug: string) => statements.get(slug), heroOf: (slug: string) => PATTERN_META[slug]?.desc };
 const routes = allRoutes();
 
 /* ---------- 1. metaFor ---------- */
@@ -56,6 +57,19 @@ for (const bad of ['/nope', '/patterns/not-a-pattern', '/problem/not-a-problem',
   ok(m.noindex === true && m.title.length <= TITLE_MAX && m.description.length <= DESCRIPTION_MAX, `${bad}: unknown route must be noindex`);
 }
 ok(metaFor('/patterns/kadane/').canonical === '/patterns/kadane', 'trailing slash is normalised');
+// the browser derives the same tags once a pattern's text is loaded (src/seo/useRouteMeta.ts passes heroOf from loadPatternText);
+// before that it uses the card-only fallback, whose TITLE must already be the final one so the tab title never changes
+{
+  const { loadPatternText } = await import('../src/data/patternText/load.ts');
+  for (const p of ALL_PATTERNS) {
+    const lazy = await loadPatternText(p.slug);
+    const route = `/patterns/${p.slug}`;
+    const full = metaFor(route, '', opts);
+    const browser = metaFor(route, '', { heroOf: () => lazy.meta?.desc });
+    ok(JSON.stringify(browser) === JSON.stringify(full), `${route}: browser meta (lazy text) differs from the build meta`);
+    ok(metaFor(route).title === full.title, `${route}: fallback title differs from the final title`);
+  }
+}
 console.log(`metaFor: ${routes.length} routes, ${titles.size} distinct titles, ${descs.size} distinct descriptions`);
 
 {

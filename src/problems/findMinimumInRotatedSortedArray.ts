@@ -1,4 +1,5 @@
 import type { ProblemDef, Step } from '../engine/types.ts';
+import { plural } from './text.ts';
 import { parseNums, ptr, windowCells } from './ssbShared.ts';
 
 interface In { nums: number[] }
@@ -27,7 +28,7 @@ function build({ nums }: In): Step[] {
     title: 'Start', desc: `A sorted array was rotated; find its minimum (the "pivot") in O(log n). n = ${n}.`,
     cells: windowCells(nums, lo, hi), pointers: ptrs(), vars: vars('—'),
     logic: 'The minimum is the one place where the order wraps around from big back to small.', logicTone: 'info', javaLines: [0, 1], pyLines: [0, 1], algoStep: 0,
-    tag: 'READY —', note: `lo = 0, hi = ${n - 1}, window = all ${n} numbers`,
+    tag: 'READY —', note: `lo = 0, hi = ${n - 1}, window = all ${plural(n, 'number')}`,
   });
 
   while (lo < hi) {

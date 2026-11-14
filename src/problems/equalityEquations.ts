@@ -1,4 +1,5 @@
 import type { Aux, ProblemDef, Step } from '../engine/types';
+import { plural } from './text.ts';
 import { Dsu, mstScene, tokens } from './mstKit.ts';
 import type { EdgeMark } from './mstKit.ts';
 
@@ -50,7 +51,7 @@ function build({ eqs }: In): Step[] {
     steps.push({ ...s, scene: scene(), aux: aux(), vars: { equation: cur >= 0 ? eqText(eqs[cur]) : '—', 'root(a)': ra, 'root(b)': rb, verdict } });
 
   push({
-    title: 'Letters are nodes', desc: `${n} letters, ${eqs.length} equations. Every letter starts alone. Pass 1 merges letters joined by ==; pass 2 checks that no != pair ended up in one group.`,
+    title: 'Letters are nodes', desc: `${plural(n, 'letter')}, ${plural(eqs.length, 'equation')}. Every letter starts alone. Pass 1 merges letters joined by ==; pass 2 checks that no != pair ended up in one group.`,
     logic: '"Equal to" is transitive, so the == equations partition the letters into groups that must all hold the same value.', logicTone: 'info',
     tag: 'INIT —', note: `${n} letters, each its own group; ${eqs.filter((e) => e.eq).length} == and ${eqs.filter((e) => !e.eq).length} != equations`,
     javaLines: [1, 2], pyLines: [1], algoStep: 0,

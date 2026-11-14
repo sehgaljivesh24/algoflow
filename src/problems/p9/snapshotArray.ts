@@ -1,4 +1,5 @@
 import type { Aux, Cell, CellState, ProblemDef, Step } from '../../engine/types.ts';
+import { plural } from '../text.ts';
 import { lineOf } from './kitC.ts';
 
 type Op = { k: 'set'; i: number; v: number } | { k: 'snap' } | { k: 'get'; i: number; s: number };
@@ -160,7 +161,7 @@ function build({ n, ops }: In): Step[] {
   };
 
   push({
-    title: 'Start: one tiny history per index', desc: `${n} cells, all 0. Each row keeps only the (snapshot id, value) pairs where the cell actually changed; a dot means "no entry in that snapshot".`,
+    title: 'Start: one tiny history per index', desc: `${plural(n, 'cell')}, all 0. Each row keeps only the (snapshot id, value) pairs where the cell actually changed; a dot means "no entry in that snapshot".`,
     logic: 'Instead of copying the array at every snap, remember a cell\'s value only when it is written.', logicTone: 'info',
     javaLines: J.init, pyLines: P.init, algoStep: 0,
     tag: 'INIT —', note: `hist[0..${n - 1}] = [(0, 0)], snapId = 0`,
@@ -223,7 +224,7 @@ function build({ n, ops }: In): Step[] {
   }
   st = new Map();
   op = 'done';
-  push({ title: 'All operations done', desc: `Outputs in order: [${out.join(', ')}].`, logic: 'set is O(1), snap is O(1), get is O(log w).', logicTone: 'success', javaLines: J.ret, pyLines: P.ret, algoStep: 4, tag: '✅ Done!', note: `${ops.length} operations, ${totalSnaps} snapshot${totalSnaps === 1 ? '' : 's'}, no array was ever copied` });
+  push({ title: 'All operations done', desc: `Outputs in order: [${out.join(', ')}].`, logic: 'set is O(1), snap is O(1), get is O(log w).', logicTone: 'success', javaLines: J.ret, pyLines: P.ret, algoStep: 4, tag: '✅ Done!', note: `${plural(ops.length, 'operation')}, ${totalSnaps} snapshot${totalSnaps === 1 ? '' : 's'}, no array was ever copied` });
   steps[steps.length - 1].result = { title: `[${out.join(', ')}]`, text: 'Outputs of the operations in order' };
   return steps;
 }

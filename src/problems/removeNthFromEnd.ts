@@ -1,4 +1,5 @@
 import type { CellState, ProblemDef, Step } from '../engine/types.ts';
+import { plural } from './text.ts';
 import { arrow, chainKeys, emitter, listScene, parseInts, parseOne, parts, show } from './listheapKit.ts';
 import { annotate } from './annotate.ts';
 
@@ -50,7 +51,7 @@ function build({ vals, n }: In): Step[] {
     gap++;
     hot = gapStates();
     emit(`Move fast ahead (${gap}/${n})`, `fast advances to ${show(fast, all)}. fast is now ${gap} node${gap === 1 ? '' : 's'} ahead of the head.`,
-      `We build a head start of exactly ${n} nodes between slow and fast.`, 'info', [3], [3], 1);
+      `We build a head start of exactly ${plural(n, 'node')} between slow and fast.`, 'info', [3], [3], 1);
   }
 
   while (fast !== null) {

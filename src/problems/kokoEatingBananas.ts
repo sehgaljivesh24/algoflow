@@ -1,4 +1,5 @@
 import type { Aux, Cell, ProblemDef, Step } from '../engine/types.ts';
+import { plural } from './text.ts';
 import { parseInt1, parseNums, parseParts, ptr } from './ssbShared.ts';
 
 interface In { piles: number[]; h: number }
@@ -41,7 +42,7 @@ function build({ piles, h }: In): Step[] {
 
   steps.push({
     title: 'Start: search over the speed k', tag: 'BOUND —',
-    desc: `${piles.length} piles [${piles.join(', ')}], ${h} hours. Candidate speeds are 1..${maxPile}; the cells below ARE the candidate answers.`,
+    desc: `${plural(piles.length, 'pile')} [${piles.join(', ')}], ${plural(h, 'hour')}. Candidate speeds are 1..${maxPile}; the cells below ARE the candidate answers.`,
     cells: cells(), pointers: ptrs(), vars: vars('—'), aux: [range()],
     logic: 'Speed is monotone: if Koko can finish at speed k she can also finish at any faster speed. So the feasible speeds form a suffix of 1..max, and we binary search for where it starts.', logicTone: 'info',
     javaLines: [1], pyLines: [1], algoStep: 0, note: `lo = 1, hi = max(piles) = ${maxPile}`,
@@ -87,7 +88,7 @@ function build({ piles, h }: In): Step[] {
 
   hoursShown = hoursAt(piles, lo); // the Variables panel must show the hours at the ANSWER speed, not at the last speed that was tried
   steps.push({
-    title: `Minimum speed = ${lo}`, tag: '✅ Done!', desc: `lo = hi = ${lo}: the smallest speed that finishes within ${h} hours (${hoursAt(piles, lo)} hours needed).`,
+    title: `Minimum speed = ${lo}`, tag: '✅ Done!', desc: `lo = hi = ${lo}: the smallest speed that finishes within ${plural(h, 'hour')} (${plural(hoursAt(piles, lo), 'hour')} needed).`,
     cells: cells({ [lo]: 'found' }), pointers: [ptr('k', 'k', lo - 1, 'green')], vars: vars('—'), aux: [range()],
     logic: `${lo} is feasible, and ${lo - 1 >= 1 ? `${lo - 1} was ruled out` : 'nothing below it exists'}.`, logicTone: 'success', javaLines: [7], pyLines: [9], algoStep: 4,
     note: `lo == hi → return ${lo}`,

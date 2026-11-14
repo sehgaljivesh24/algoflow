@@ -1,4 +1,5 @@
 import type { Aux, CellState, GraphEdgeVM, ProblemDef, Step } from '../engine/types';
+import { plural } from './text.ts';
 
 interface In { pts: [number, number][] }
 
@@ -115,7 +116,7 @@ function build({ pts }: In): Step[] {
     title: 'Done', desc: `All ${n} points are connected. Minimum total cost = ${total}.`,
     scene: scene(), aux: aux(), vars: vars(),
     logic: 'n points need exactly n−1 edges; Prim never added an edge that closes a cycle because it only links outside points.', logicTone: 'success',
-    tag: '✅ Done!', note: `${n - 1} edges, total = ${total}`,
+    tag: '✅ Done!', note: `${plural(n - 1, 'edge')}, total = ${total}`,
     javaLines: [18], pyLines: [13], algoStep: 3,
     result: { title: String(total), text: 'Minimum cost to connect all points' },
   });

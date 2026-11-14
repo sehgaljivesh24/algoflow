@@ -2,7 +2,7 @@
  * Validates the quiz bank. Run:  node scripts/check-quiz.mts
  */
 import { QUIZ_QUESTIONS, QUIZ_LENGTH } from '../src/data/quiz.ts';
-import { ALL_PATTERNS, PATTERN_GROUPS } from '../src/data/patterns.ts';
+import { ALL_PATTERNS, PATTERN_GROUPS } from '../src/data/patternsFull.ts';
 
 let failures = 0;
 const ok = (name: string, cond: boolean, extra = '') => {

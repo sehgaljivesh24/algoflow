@@ -1,5 +1,6 @@
 import type { Aux, CellState, EdgeState, GraphEdgeVM, Pointer, ProblemDef, Step, Tone } from '../engine/types';
 import { adjacency, mkEdges, parseGraph } from './p5dKit.ts';
+import { plural } from './text.ts';
 import type { GIn } from './p5dKit.ts';
 
 /** Undirected graph on nodes 0..n-1. Return an odd-length cycle, or report that the graph is bipartite. */
@@ -42,7 +43,7 @@ function build({ n, edges }: GIn): Step[] {
   const push = (s: Omit<Step, 'vars' | 'aux' | 'scene'>) => steps.push({ ...s, scene: scene(), aux: aux(), vars: vars() });
 
   push({
-    title: 'Start', desc: `${n} nodes, ${edges.length} edges. Two-colour the graph with BFS; if that fails, the failing edge plus the BFS tree paths above it will contain an odd cycle.`,
+    title: 'Start', desc: `${plural(n, 'node')}, ${plural(edges.length, 'edge')}. Two-colour the graph with BFS; if that fails, the failing edge plus the BFS tree paths above it will contain an odd cycle.`,
     logic: 'A graph has an odd cycle exactly when it is not bipartite, so a colouring conflict is a certificate we can turn into an explicit cycle.', logicTone: 'info',
     tag: 'INIT —', note: `color[0..${n - 1}] = −1, parent[] = −1`,
     javaLines: [1, 2], pyLines: [1, 2], algoStep: 0,

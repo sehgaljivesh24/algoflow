@@ -5,6 +5,7 @@
  */
 import type { Aux, Cell, CellState, Phase, Pointer, Step } from '../../engine/types.ts';
 import { bitScene, lowbit } from './kitB.ts';
+import { plural } from '../text.ts';
 
 export type FenMode = 'smaller' | 'inversions';
 
@@ -132,7 +133,7 @@ export function fenCountSteps(nums: number[], mode: FenMode, L: FenLines): Step[
     } else {
       gain = seen() - s;
       total += gain;
-      emit(`+${gain} inversion${gain === 1 ? '' : 's'}`, `${seen()} earlier item${seen() === 1 ? '' : 's'} minus ${s} that are <= ${x} leaves ${gain} strictly greater earlier item${gain === 1 ? '' : 's'}. Total inversions: ${total}.`, 'An inversion is an earlier, larger item; "all earlier minus not-larger" counts them.', gain > 0 ? 'warn' : 'info', L.record, 3,
+      emit(`+${gain} inversion${gain === 1 ? '' : 's'}`, `${seen()} earlier item${seen() === 1 ? '' : 's'} minus ${s} that ${s === 1 ? 'is' : 'are'} <= ${x} leaves ${gain} strictly greater earlier item${gain === 1 ? '' : 's'}. Total inversions: ${total}.`, 'An inversion is an earlier, larger item; "all earlier minus not-larger" counts them.', gain > 0 ? 'warn' : 'info', L.record, 3,
         'COUNT —', `inversions += ${seen()} - ${s} = ${gain} → ${total}`,
         gain > 0 ? `${gain} earlier item${gain === 1 ? ' is' : 's are'} larger than ${x}: ${gain} inversion${gain === 1 ? '' : 's'} found` : undefined);
     }
@@ -160,7 +161,7 @@ export function fenCountSteps(nums: number[], mode: FenMode, L: FenLines): Step[
     void gain;
   }
   cur = -1; here = null; path = []; jumps = []; st = {}; pieces = []; jShow = '—'; sumShow = '—'; rankShow = '—';
-  emit('Done', mode === 'smaller' ? `Every item was counted against the smaller items to its right: ${outText()}.` : `Every pair (earlier larger, later smaller) was counted exactly once: ${total} inversions.`,
+  emit('Done', mode === 'smaller' ? `Every item was counted against the smaller items to its right: ${outText()}.` : `Every pair (earlier larger, later smaller) was counted exactly once: ${plural(total, 'inversion')}.`,
     'Each item cost O(log m) for its query and O(log m) for its insert.', 'success', L.done, 5,
     '✅ Done!', mode === 'smaller' ? `return ${outText()}` : `return ${total}`);
   const last = steps[steps.length - 1];

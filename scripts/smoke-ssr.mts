@@ -16,6 +16,11 @@
  *   2. src/engine/useStepPlayer.ts  -> initial step from globalThis.__SMOKE_STEP (the real page seeks in an effect
  *                                      from window.location.search; the pattern page reads ?step= during render, so it needs no patch).
  *   3. src/pages/ProblemPage.tsx    -> initial example from globalThis.__SMOKE_EX (there is no ?ex= on the problem page).
+ *   4. src/data/patternText/usePatternText.ts -> returns the preloaded pattern text synchronously (same reason as 1).
+ *                                      The text itself is fetched through the REAL lazy loader (loadPatternText, the manifest
+ *                                      and the source chunks), so a slug missing from the manifest fails here as it would in the browser.
+ * The lazily loaded routes (/patterns, /cheatsheet, /quiz, /edge-cases are React.lazy) are rendered with the streaming
+ * renderer, which waits for their chunks; everything else renders synchronously.
  *
  * Whitelisted console output (expected when rendering on the server, counted but not failures):
  *   - "useLayoutEffect does nothing on the server" (PatternAnimation measures its window frame in a layout effect)
@@ -37,6 +42,7 @@ const ONLY = (process.env.ONLY ?? '').split(',').map((s) => s.trim()).filter(Boo
 
 const g = globalThis as Record<string, any>;
 g.__SMOKE_PROBLEMS = new Map<string, unknown>();
+g.__SMOKE_TEXT = new Map<string, unknown>();
 g.__SMOKE_STEP = 0;
 g.__SMOKE_EX = 0;
 
@@ -57,6 +63,12 @@ const smokePlugin: Plugin = {
       return `export function useProblem(slug) {
   const p = globalThis.__SMOKE_PROBLEMS.get(slug);
   return p ? { status: 'ready', problem: p } : { status: 'loading' };
+}`;
+    }
+    if (norm(id).endsWith('/src/data/patternText/usePatternText.ts')) {
+      return `export function usePatternText(slug) {
+  const t = globalThis.__SMOKE_TEXT.get(slug);
+  return t ? { status: 'ready', text: t } : { status: 'loading' };
 }`;
     }
     return null;
@@ -264,7 +276,7 @@ function endCapture(route: string) {
 /* ------------------------------------------------------------------ load the app */
 
 const mod: any = await vite.ssrLoadModule('/scripts/smoke/entry.tsx');
-const { ALL_ENTRIES, ALL_PATTERNS, CONTENT, examplesFor, loadProblem, isAnimated, MANIFEST, renderRoute, renderRouteAsync } = mod;
+const { ALL_ENTRIES, ALL_PATTERNS, CONTENT, examplesFor, loadProblem, loadPatternText, isAnimated, MANIFEST, renderRoute, renderRouteAsync } = mod;
 console.log(`smoke-ssr: app loaded in ${((Date.now() - T0) / 1000).toFixed(1)}s`);
 
 const problemCache = new Map<string, any>();
@@ -303,12 +315,12 @@ function tick(route: string) {
 interface PageSpec { url: string; expect?: RegExp; async?: boolean; thin?: boolean; why?: string }
 const PAGES: PageSpec[] = [
   { url: '/', expect: /AlgoFlow|problems/i },
-  { url: '/patterns', expect: /pattern/i },
-  { url: '/cheatsheet', expect: /cheat/i },
+  { url: '/patterns', expect: /pattern/i, async: true, why: 'React.lazy route' },
+  { url: '/cheatsheet', expect: /cheat/i, async: true, why: 'React.lazy route' },
   { url: '/cheatsheets', expect: /cheat/i },
   { url: '/cheatsheets/credits', expect: /credit|licen/i },
-  { url: '/quiz', expect: /quiz/i },
-  { url: '/edge-cases', expect: /edge/i },
+  { url: '/quiz', expect: /quiz/i, async: true, why: 'React.lazy route' },
+  { url: '/edge-cases', expect: /edge/i, async: true, why: 'React.lazy route' },
   { url: '/this/page/does/not/exist', expect: /Page not found/ },
   { url: '/problem/no-such-problem', expect: /Problem not found/ },
   { url: '/patterns/no-such-pattern', expect: /Pattern not found/ },
@@ -347,6 +359,7 @@ const pages = ONLY.length ? [] : PAGES;
 for (const s of problemSlugs) await problemOf(s);
 const patternTabs = new Map<string, { slug: string; declared: number }[]>();
 for (const ps of patternSlugs) {
+  g.__SMOKE_TEXT.set(ps, await loadPatternText(ps)); // the real lazy path: manifest + source chunks (src/data/patternText)
   const seen: string[] = [];
   const declared = examplesFor(ps) as { slug: string }[];
   for (const e of declared) {

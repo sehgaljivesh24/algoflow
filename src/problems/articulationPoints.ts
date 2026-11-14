@@ -1,4 +1,5 @@
 import type { Aux, CellState, EdgeState, GraphEdgeVM, Pointer, ProblemDef, Step } from '../engine/types';
+import { plural as countOf } from './text.ts';
 import { adjacency, mkEdges, parseGraph } from './p5dKit.ts';
 import type { GIn } from './p5dKit.ts';
 
@@ -38,7 +39,7 @@ function build({ n, edges }: GIn): Step[] {
   const push = (s: Omit<Step, 'vars' | 'aux' | 'scene'>) => steps.push({ ...s, scene: scene(), aux: aux(), vars: vars() });
 
   push({
-    title: 'Start', desc: `${n} nodes, ${edges.length} edges. An articulation point is a node whose removal (with its edges) leaves the rest of its component in pieces. Each node shows "disc/low".`,
+    title: 'Start', desc: `${countOf(n, 'node')}, ${countOf(edges.length, 'edge')}. An articulation point is a node whose removal (with its edges) leaves the rest of its component in pieces. Each node shows "disc/low".`,
     logic: 'Same disc/low bookkeeping as for bridges, but the test is about vertices: can the subtree below a child escape without going through u?', logicTone: 'info',
     tag: 'INIT —', note: `disc[0..${n - 1}] = −1, cut[] = false, timer = 0`,
     javaLines: [3, 4, 5], pyLines: [1, 2, 3, 4], algoStep: 0,

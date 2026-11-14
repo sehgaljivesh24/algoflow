@@ -1,4 +1,5 @@
 import type { CellState, ProblemDef, Step } from '../engine/types.ts';
+import { plural } from './text.ts';
 import { parseNumsAndK, twoRows } from './pack1Kit.ts';
 
 interface In { nums: number[]; k: number }
@@ -30,7 +31,7 @@ function build({ nums, k }: In): Step[] {
   const add = (title: string, tag: string, desc: string, note: string, logic: string, tone: 'info' | 'warn' | 'success', cur: number, gone: number, j: number[], p: number[], a: number, alert?: string) =>
     steps.push({ title, tag, desc, note, alert, scene: scene(cur, gone), aux: aux(), vars: vars(cur >= 0 ? cur : '—'), logic, logicTone: tone, javaLines: j, pyLines: p, algoStep: a });
 
-  add('Start', 'READY —', `dp[i] = best score of any path landing on index i. dp[0] = nums[0] = ${nums[0]}; every jump moves 1 to ${k} steps right.`,
+  add('Start', 'READY —', `dp[i] = best score of any path landing on index i. dp[0] = nums[0] = ${nums[0]}; every jump moves 1 to ${plural(k, 'step')} right.`,
     `dp[0] = ${nums[0]}, dq = [0]`,
     'dp[i] = nums[i] + max(dp[i−k .. i−1]). A plain scan of that range costs O(k) per cell. The deque keeps the best dp value in reach at its front.', 'info', 0, -1, [1, 2, 3, 4, 5], [1, 2, 3, 4], 0);
 

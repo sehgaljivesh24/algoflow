@@ -1,4 +1,5 @@
 import type { Aux, CellState, IntervalBarVM, ProblemDef, Step } from '../engine/types';
+import { plural, verb } from './text.ts';
 import { parseIntervals } from './graphKit.ts';
 
 interface In { iv: [number, number][] }
@@ -83,7 +84,7 @@ function build({ iv }: In): Step[] {
   }
   cur = -1;
   push({
-    tag: '✅ Done!', title: 'Done', desc: `Removed ${removed} interval${removed === 1 ? '' : 's'}; the ${kept.length} kept ones do not overlap.`,
+    tag: '✅ Done!', title: 'Done', desc: `Removed ${removed} interval${removed === 1 ? '' : 's'}; the ${plural(kept.length, 'kept interval')} ${verb(kept.length, 'does', 'do')} not overlap.`,
     note: `return removed → ${removed}`,
     logic: 'Greedy-by-end keeps the maximum number of intervals, so the removals are minimal.', logicTone: 'success',
     javaLines: [11], pyLines: [8], algoStep: 4,

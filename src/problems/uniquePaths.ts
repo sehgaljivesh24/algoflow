@@ -1,4 +1,5 @@
 import type { ProblemDef, Step } from '../engine/types.ts';
+import { plural, verb } from './text.ts';
 import { at, heads, inList, recorder, tableRows } from './stepKit.ts';
 
 interface In { m: number; n: number }
@@ -59,7 +60,7 @@ function build({ m, n }: In): Step[] {
       dp[r][c] = up + left;
       done = true;
       say({
-        title: `dp[${r}][${c}] = ${dp[r][c]}`, tag: 'FILL CELL —', desc: `Cell (${r}, ${c}): ${up} ways from above + ${left} from the left = ${dp[r][c]} ways.`,
+        title: `dp[${r}][${c}] = ${dp[r][c]}`, tag: 'FILL CELL —', desc: `Cell (${r}, ${c}): ${plural(up, 'way')} from above + ${left} from the left = ${plural(dp[r][c]!, 'way')}.`,
         logic: 'The two sets of routes end with a different final move, so they never overlap and the counts simply add.', java: [5, 6], py: [3, 4], algo: 2,
         note: `dp[${r}][${c}] = ${up} + ${left} = ${dp[r][c]}`,
       });
@@ -73,7 +74,7 @@ function build({ m, n }: In): Step[] {
   left = '—';
   done = true;
   say({
-    title: 'Done', tag: '✅ Done!', desc: `dp[${m - 1}][${n - 1}] = ${dp[m - 1][n - 1]}: there are ${dp[m - 1][n - 1]} unique paths in a ${m}×${n} grid.`,
+    title: 'Done', tag: '✅ Done!', desc: `dp[${m - 1}][${n - 1}] = ${dp[m - 1][n - 1]}: there ${verb(dp[m - 1][n - 1]!, 'is', 'are')} ${plural(dp[m - 1][n - 1]!, 'unique path')} in a ${m}×${n} grid.`,
     logic: 'The bottom-right cell holds the number of routes to the finish.', tone: 'success', java: [9], py: [5], note: `return dp[${m - 1}][${n - 1}] = ${dp[m - 1][n - 1]}`,
     algo: 3, result: { title: String(dp[m - 1][n - 1]), text: `Unique paths in a ${m}×${n} grid` },
   });

@@ -1,4 +1,5 @@
 import type { Cell, CellState, ProblemDef, Step } from '../engine/types.ts';
+import { plural } from './text.ts';
 
 interface In { p: string; s: string }
 
@@ -71,7 +72,7 @@ function build({ p, s }: In): Step[] {
   if (k > n) {
     for (const c of p) need[code(c)]++;
     steps.push({
-      title: 'Pattern is longer than the text', tag: 'REJECT —', desc: `"${p}" has ${k} letters but "${s}" has only ${n}, so no window can fit it.`,
+      title: 'Pattern is longer than the text', tag: 'REJECT —', desc: `"${p}" has ${plural(k, 'letter')} but "${s}" has only ${n}, so no window can fit it.`,
       cells: cells(0, -1), pointers: [], aux: aux(), vars: vars('—', 'false'),
       alert: `s1 needs ${k} letters, s2 has only ${n}. No window fits.`,
       logic: 'A permutation of s1 needs at least |s1| characters in s2.', logicTone: 'warn', javaLines: [2], pyLines: [2], algoStep: 3,
@@ -103,7 +104,7 @@ function build({ p, s }: In): Step[] {
   });
   for (let i = 0; i < k; i++) win[code(s[i])]++;
   steps.push({
-    title: 'Count the first window', tag: 'COUNT —', desc: `count the first ${k} letters of s2, window ${win2(0, k - 1)} = [0..${k - 1}]`,
+    title: 'Count the first window', tag: 'COUNT —', desc: `count the first ${plural(k, 'letter')} of s2, window ${win2(0, k - 1)} = [0..${k - 1}]`,
     cells: cells(0, k - 1), pointers: ptrs(0, k - 1), aux: aux(), vars: vars(win2(0, k - 1)),
     logic: 'The first window is counted letter by letter, once. Every later window is derived from the previous one.', logicTone: 'info',
     javaLines: [4, 6], pyLines: [4, 6], algoStep: 0, note: `window = ${win2(0, k - 1)}`,

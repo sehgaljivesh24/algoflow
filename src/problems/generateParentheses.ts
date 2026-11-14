@@ -1,4 +1,5 @@
 import type { Cell, ProblemDef, Step } from '../engine/types.ts';
+import { plural, verb } from './text.ts';
 import { capSteps, recorder } from './stepKit.ts';
 import { treeOverArray, twoPass, type RecTree } from './recTreeKit.ts';
 
@@ -101,7 +102,7 @@ function run({ n }: In, tree: RecTree): Step[] {
         logic: 'Undo before trying the other symbol at this slot.', tone: 'warn', java: [11], py: [9], algo: 4,
       });
     } else {
-      reject('(', `all ${n} openers are already used (open = ${open})`, `open < n (${open} < ${n})`, 9, 6);
+      reject('(', `all ${plural(n, 'opener')} ${verb(n, 'is', 'are')} already used (open = ${open})`, `open < n (${open} < ${n})`, 9, 6);
     }
     if (close < open) {
       path.push(')');
@@ -130,10 +131,10 @@ function run({ n }: In, tree: RecTree): Step[] {
 
   say({
     title: 'Done', tag: '✅ Done!',
-    desc: `${results.length} well-formed strings (Catalan number C${n}); every rejected branch was cut before it was built.`,
-    note: `return res → ${results.length} strings`,
+    desc: `${plural(results.length, 'well-formed string')} (Catalan number C${n}); every rejected branch was cut before it was built.`,
+    note: `return res → ${plural(results.length, 'string')}`,
     logic: 'The counts follow 1, 2, 5, 14, … for n = 1, 2, 3, 4.', tone: 'success', java: [3], py: [15], algo: 5,
-    result: { title: `${results.length} strings`, text: results.join(' ') },
+    result: { title: plural(results.length, 'string'), text: results.join(' ') },
   });
   return steps;
 }

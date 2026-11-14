@@ -1,5 +1,5 @@
 import { ALL_ENTRIES } from '../../data/catalog';
-import { ALL_PATTERNS } from '../../data/patterns';
+import { ALL_PATTERNS } from '../../data/patternCards';
 
 export interface NavItem {
   id: string;

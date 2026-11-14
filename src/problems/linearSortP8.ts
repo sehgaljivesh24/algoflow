@@ -1,6 +1,7 @@
 /** Pack p8 linear-time sorting problems: Counting Sort, Radix Sort (LSD), Maximum Gap (#164, bucket idea). */
 import type { Cell, ProblemDef, Step } from '../engine/types.ts';
 import { Rec, arr, nums as parseNums, ptr, range } from './p8Kit.ts';
+import { plural, verb } from './text.ts';
 
 interface NIn { nums: number[] }
 
@@ -30,7 +31,7 @@ function buildCounting({ nums }: NIn): Step[] {
     ],
   });
   const vars = (i: number | string, v: number | string) => ({ i, x: v, slot: typeof v === 'number' ? v - lo : '—', written: w });
-  rec.push({ t: 'Start', d: `Values range from ${lo} to ${hi}, so ${k} count slots are enough. Left: input, middle: count[], right: sorted output.`, scene: scene(-1, -1), v: vars('—', '—'), why: 'When the value range k is small, we can sort by counting instead of comparing: no comparison is ever made.', j: [0, 1, 2], p: [0, 1, 2], a: 0, tag: 'READY —', note: `min = ${lo}, max = ${hi} → count = new int[${k}]` });
+  rec.push({ t: 'Start', d: `Values range from ${lo} to ${hi}, so ${plural(k, 'count slot')} ${verb(k, 'is', 'are')} enough. Left: input, middle: count[], right: sorted output.`, scene: scene(-1, -1), v: vars('—', '—'), why: 'When the value range k is small, we can sort by counting instead of comparing: no comparison is ever made.', j: [0, 1, 2], p: [0, 1, 2], a: 0, tag: 'READY —', note: `min = ${lo}, max = ${hi} → count = new int[${k}]` });
   nums.forEach((x, i) => {
     count[x - lo]++;
     rec.push({ t: `Count ${x}`, d: `nums[${i}] = ${x} → slot ${x} − ${lo} = ${x - lo}: count[${x - lo}] becomes ${count[x - lo]}.`, scene: scene(i, x - lo, [], true), v: vars(i, x), why: 'Each value increments its own slot, so after the pass count[v] is exactly how often v occurs.', j: [3], p: [3, 4], a: 1, tag: `COUNT ${x} —`, note: `count[${x} - ${lo}]++ → count[${x - lo}] = ${count[x - lo]}` });

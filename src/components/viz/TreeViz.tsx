@@ -40,7 +40,7 @@ export function TreeViz({ scene, sortedSolid = false }: { scene: Extract<Scene, 
 
   return (
     <div className="tv-wrap">
-      <svg className="svg-viz tv" style={{ minWidth: Math.min(width, 520), ...(maxScale ? { maxWidth: Math.round(width * maxScale) } : null) }} viewBox={`0 0 ${width} ${height}`} role="img" aria-label="Binary tree">
+      <svg className={`svg-viz tv${width <= 460 ? ' tv-fit' : ''}`} style={{ minWidth: Math.min(width, 520), ...(maxScale ? { maxWidth: Math.round(width * maxScale) } : null) }} viewBox={`0 0 ${width} ${height}`} role="img" aria-label="Binary tree">
         <defs>
           <marker id={arrowId}viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
             <path d="M0 0L10 5L0 10z" className="tv-xarrow" />

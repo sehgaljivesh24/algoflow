@@ -1,4 +1,5 @@
 import type { Cell, ProblemDef, Step } from '../engine/types.ts';
+import { plural } from './text.ts';
 
 interface In { nums: number[] }
 
@@ -20,7 +21,7 @@ function build({ nums }: In): Step[] {
   const vars = (i: number | string) => ({ n, i });
 
   steps.push({
-    title: 'Start', desc: `nums has n = ${n} numbers, so ans needs 2n = ${2 * n} slots.`,
+    title: 'Start', desc: `nums has n = ${plural(n, 'number')}, so ans needs 2n = ${plural(2 * n, 'slot')}.`,
     cells: cells(), pointers: [], aux: aux(), vars: vars('—'),
     logic: 'The answer is nums followed by nums again: slot i and slot i + n always hold the same value.', logicTone: 'info',
     javaLines: [1, 2], pyLines: [1, 2], algoStep: 0, tag: 'READY —', note: `n = ${n}, ans = new int[${2 * n}]`,

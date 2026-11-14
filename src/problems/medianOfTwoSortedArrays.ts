@@ -1,4 +1,5 @@
 import type { Cell, CellState, ProblemDef, Step } from '../engine/types.ts';
+import { plural } from './text.ts';
 import { isSortedAsc, parseNums, parseParts } from './ssbShared.ts';
 
 interface In { a: number[]; b: number[] }
@@ -49,7 +50,7 @@ function build({ a, b }: In): Step[] {
 
   steps.push({
     title: 'Start: partition both arrays', tag: 'START —',
-    desc: `A = [${A.join(', ')}], B = [${B.join(', ')}]${swapped ? ' (the shorter array is called A, so the inputs were swapped)' : ''}. The median splits the ${m + n} numbers into a left half of ${half} and a right half.`,
+    desc: `A = [${A.join(', ')}], B = [${B.join(', ')}]${swapped ? ' (the shorter array is called A, so the inputs were swapped)' : ''}. The median splits the ${plural(m + n, 'number')} into a left half of ${half} and a right half.`,
     scene: grid(), vars: vars('—', '—'),
     logic: 'Instead of merging, search for a cut i in A and a cut j = half − i in B so that every number on the left is ≤ every number on the right. Binary search runs over the shorter array only.', logicTone: 'info',
     javaLines: [0, 1, 2, 3], pyLines: [0, 1, 2, 3, 4, 5], algoStep: 0, note: `m = ${m}, n = ${n}, half = (${m} + ${n} + 1) / 2 = ${half}`,
@@ -65,7 +66,7 @@ function build({ a, b }: In): Step[] {
     const r2 = j < n ? B[j] : Infinity;
     const borders = (highlight?: number) => [{ title: 'Border values', kind: 'map' as const, items: [`L1 → ${fmt(l1)}`, `R1 → ${fmt(r1)}`, `L2 → ${fmt(l2)}`, `R2 → ${fmt(r2)}`], highlight }];
     steps.push({
-      title: `Cut A after ${i} elements, B after ${j}`, tag: 'CUT:', desc: `search range [${lo}, ${hi}] gives i = ${i} and j = half − i = ${j}; borders L1 = ${fmt(l1)}, R1 = ${fmt(r1)}, L2 = ${fmt(l2)}, R2 = ${fmt(r2)}.`,
+      title: `Cut A after ${plural(i, 'element')}, B after ${j}`, tag: 'CUT:', desc: `search range [${lo}, ${hi}] gives i = ${i} and j = half − i = ${j}; borders L1 = ${fmt(l1)}, R1 = ${fmt(r1)}, L2 = ${fmt(l2)}, R2 = ${fmt(r2)}.`,
       scene: grid(i, j), vars: vars(i, j), aux: borders(),
       logic: 'Blue cells are the left half. Yellow cells are the four values next to the cuts. A missing neighbour counts as −∞ or +∞.', logicTone: 'info',
       javaLines: [5, 6, 7], pyLines: [7, 8, 9, 10, 11, 12], algoStep: 1, note: `i = (${lo} + ${hi}) / 2 = ${i}, j = ${half} − ${i} = ${j}`,
@@ -94,7 +95,7 @@ function build({ a, b }: In): Step[] {
         note: (m + n) % 2 === 1 ? `max(${fmt(l1)}, ${fmt(l2)}) = ${leftMax}` : `(${leftMax} + ${Math.min(r1, r2)}) / 2 = ${med}`,
       });
       steps.push({
-        title: `Median = ${med}`, tag: '✅ Done!', desc: `the median of all ${m + n} numbers is ${med}, found after ${iter} cut${iter === 1 ? '' : 's'} and without merging.`,
+        title: `Median = ${med}`, tag: '✅ Done!', desc: `the median of all ${plural(m + n, 'number')} is ${med}, found after ${plural(iter, 'cut')} and without merging.`,
         scene: grid(i, j, true), vars: vars(i, j), aux: borders(),
         logic: 'Binary search over the shorter array needed only O(log(min(m, n))) cuts.', logicTone: 'success',
         javaLines: [11], pyLines: [17], algoStep: 5, note: `return ${med}`,

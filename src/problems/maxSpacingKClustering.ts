@@ -1,4 +1,5 @@
 import type { Aux, ProblemDef, Step } from '../engine/types';
+import { aNum } from './text.ts';
 import { Dsu, isConnected, mstScene, parseWeightedEdges, tokens } from './mstKit.ts';
 import type { EdgeMark, WEdge } from './mstKit.ts';
 
@@ -106,7 +107,7 @@ function build({ n, k, edges: input }: In): Step[] {
     logic: 'Max spacing equals the weight of the first Kruskal edge that would merge two of the final k clusters.', logicTone: 'success',
     tag: '✅ Done!', note: `${k} clusters → return spacing = ${spacing}`,
     javaLines: [8], pyLines: [8, 9], algoStep: 4,
-    result: { title: String(spacing), text: `Maximum spacing of a ${k}-clustering` },
+    result: { title: String(spacing), text: `Maximum spacing of ${aNum(k)}-clustering` },
   });
   return steps;
 }

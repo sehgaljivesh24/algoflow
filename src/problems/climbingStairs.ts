@@ -1,4 +1,5 @@
 import type { Cell, CellState, ProblemDef, Step } from '../engine/types';
+import { plural, verb } from './text.ts';
 
 interface In { n: number }
 
@@ -50,16 +51,16 @@ function build({ n }: In): Step[] {
     dp[i] = a + b;
     steps.push({
       title: `Compute dp[${i}] = ${dp[i]}`, tag: 'RECURRENCE —',
-      desc: `dp[${i}] = dp[${i - 1}] + dp[${i - 2}] = ${a} + ${b} = ${dp[i]}: ${a} ways end with a 1-step, ${b} end with a 2-step.`,
+      desc: `dp[${i}] = dp[${i - 1}] + dp[${i - 2}] = ${a} + ${b} = ${dp[i]}: ${plural(a, 'way')} ${verb(a, 'ends', 'end')} with a 1-step, ${b} end with a 2-step.`,
       cells: cells(i, [i - 1, i - 2]), pointers: ptr(i), vars: vars(i, a, b, dp[i]!),
-      aux: [{ title: `LAST MOVE INTO STAIR ${i}`, kind: 'list', items: [`1 step from stair ${i - 1}: ${a} ways`, `2 steps from stair ${i - 2}: ${b} ways`, `total: ${dp[i]} ways`], highlight: 2 }],
+      aux: [{ title: `LAST MOVE INTO STAIR ${i}`, kind: 'list', items: [`1 step from stair ${i - 1}: ${plural(a, 'way')}`, `2 steps from stair ${i - 2}: ${plural(b, 'way')}`, `total: ${plural(dp[i]!, 'way')}`], highlight: 2 }],
       logic: `The two possible last moves lead to disjoint sets of paths, so the counts add: ${a} + ${b}. This is the Fibonacci sequence in disguise.`, logicTone: 'info',
       javaLines: [5, 4], pyLines: [5, 4], algoStep: 2, note: `i=${i}: ${a} + ${b} = ${dp[i]}`,
     });
   }
 
   steps.push({
-    title: 'Done', tag: '✅ Done!', desc: `dp[${n}] = ${dp[n]} → there are ${dp[n]} distinct ways to climb ${n} stair${n === 1 ? '' : 's'}.`,
+    title: 'Done', tag: '✅ Done!', desc: `dp[${n}] = ${dp[n]} → there ${verb(dp[n]!, 'is', 'are')} ${plural(dp[n]!, 'distinct way')} to climb ${plural(n, 'stair')}.`,
     cells: cells(n, [], true), pointers: ptr(n), vars: vars(n, dp[n - 1] ?? '—', dp[n - 2] ?? '—', dp[n]!),
     logic: `${dp[n]} distinct ways to reach the top. Only the last two values were ever needed, so two variables can replace the table.`, logicTone: 'success',
     javaLines: [7], pyLines: [6], algoStep: 3, note: `return dp[${n}] = ${dp[n]}`,

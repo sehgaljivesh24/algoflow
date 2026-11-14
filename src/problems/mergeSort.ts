@@ -1,4 +1,5 @@
 import type { Cell, CellState, Pointer, ProblemDef, Step } from '../engine/types.ts';
+import { plural } from './text.ts';
 import { parseNums, ptr } from './ssbShared.ts';
 import { treeOverArray, twoPass, type RecTree } from './recTreeKit.ts';
 
@@ -136,7 +137,7 @@ function run({ nums }: In, tree: RecTree): Step[] {
     note: `return nums = [${arr.join(', ')}]`, plain: true,
     cells: arr.map((value, i) => ({ key: keys[i], value, state: 'sorted' as const })), pointers: [], vars: vars('—', '—', '—', '—', '—'), aux: aux(),
     logic: `Final array: [${arr.join(', ')}]`, logicTone: 'success', javaLines: [0], pyLines: [0], algoStep: 4,
-    result: { title: `[${arr.join(', ')}]`, text: `${compares} comparisons` },
+    result: { title: `[${arr.join(', ')}]`, text: plural(compares, 'comparison') },
   });
   return steps;
 }

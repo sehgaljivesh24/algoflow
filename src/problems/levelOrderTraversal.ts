@@ -1,4 +1,5 @@
 import type { CellState, ProblemDef, Step } from '../engine/types.ts';
+import { plural } from './text.ts';
 import { buildTree, emitter, find, fmtList, fmtLists, listAux, parseTree, queueAux, treeScene } from './treeKit.ts';
 import type { TreeIn } from './treeKit.ts';
 
@@ -142,7 +143,7 @@ function build({ tokens }: TreeIn): Step[] {
   const out = fmtLists(result);
   add({
     title: 'Done', tag: '✅ Complete!',
-    desc: `The queue is empty after ${visited} nodes in ${result.length} level${result.length === 1 ? '' : 's'}. Result: ${out}`,
+    desc: `The queue is empty after ${plural(visited, 'node')} in ${plural(result.length, 'level')}. Result: ${out}`,
     note: `return res → ${out}`,
     logic: `${result.length} level${result.length === 1 ? '' : 's'}, visited top to bottom.`, tone: 'success',
     j: J.ret, p: P.ret, a: 5, vars: vars(), aux: aux(), result: { title: out, text: 'Level-order traversal' },

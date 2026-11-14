@@ -1,4 +1,5 @@
 import type { Cell, ProblemDef, Step } from '../engine/types.ts';
+import { plural } from './text.ts';
 import { recorder } from './stepKit.ts';
 import { gridScene, parseNumRows } from './p4Kit.ts';
 
@@ -70,7 +71,7 @@ function build({ m }: In): Step[] {
       });
     } else {
       say({
-        title: `Take ${v} at ${here}`, tag: '🏁 LAST CELL —', desc: `${v} at ${here} is the last cell, so the output holds all ${R * C} values.`,
+        title: `Take ${v} at ${here}`, tag: '🏁 LAST CELL —', desc: `${v} at ${here} is the last cell, so the output holds all ${plural(R * C, 'value')}.`,
         note: `out[${out.length - 1}] = m[${pr}][${pc}] = ${v}; ${out.length} = R × C`,
         logic: 'Exactly R × C cells were taken, one per loop iteration.', tone: 'success', java: [6], py: [6], algo: 1,
       });

@@ -1,4 +1,5 @@
 import type { Cell, ProblemDef, Step } from '../engine/types.ts';
+import { plural, verb } from './text.ts';
 import { emitter, parseOne, parts } from './listheapKit.ts';
 
 interface In { tasks: string[]; n: number }
@@ -39,7 +40,7 @@ function build({ tasks, n }: In): Step[] {
     };
   });
 
-  emit('Start', `${tasks.length} tasks, cooldown n = ${n}: two runs of the same letter need at least ${n} other slot${n === 1 ? '' : 's'} between them. Each time unit runs one task or idles.`,
+  emit('Start', `${plural(tasks.length, 'task')}, cooldown n = ${n}: two runs of the same letter need at least ${n} other slot${n === 1 ? '' : 's'} between them. Each time unit runs one task or idles.`,
     'Greedy rule: always run the ready task with the most copies left — the most frequent letter is the bottleneck.', 'info', [0, 6], [0, 4], 0, undefined,
     { tag: 'START —', note: `n = ${n}, time = 0` });
   emit('Count the tasks', `tally the letters: ${ready.map(([l, r]) => `${l}×${r}`).join(', ')}; the most frequent task appears ${maxF} times and ${countMax} task${countMax === 1 ? ' ties' : 's tie'} for it.`,
@@ -64,18 +65,18 @@ function build({ tasks, n }: In): Step[] {
     const [letter, rem] = ready.shift() as [string, number];
     line.push(letter);
     if (rem - 1 > 0) cool.push({ letter, rem: rem - 1, at: t + n + 1 });
-    emit(`t = ${t}: run ${letter}`, `${relText}run ${letter} (${rem} left, the most among ready tasks). ${rem - 1 > 0 ? `${rem - 1} copies remain, so it cools for ${n} unit${n === 1 ? '' : 's'} and is ready again at t = ${t + n + 1}.` : `${letter} is finished.`}`,
+    emit(`t = ${t}: run ${letter}`, `${relText}run ${letter} (${rem} left, the most among ready tasks). ${rem - 1 > 0 ? `${plural(rem - 1, 'copy', 'copies')} ${verb(rem - 1, 'remains', 'remain')}, so it cools for ${n} unit${n === 1 ? '' : 's'} and is ready again at t = ${t + n + 1}.` : `${letter} is finished.`}`,
       'The task with the most copies left is the hardest to place later, so it goes first.', 'success', [7, 8, 9, 10, 11, 13], [5, 6, 7, 8, 9, 10, 11, 12], 1, undefined,
       { tag: 'RUN:', note: rem - 1 > 0 ? `${letter}×${rem} → ${letter}×${rem - 1}, back at t = ${t + n + 1}` : `${letter}×${rem} → done` });
   }
 
   const formula = (maxF - 1) * (n + 1) + countMax;
-  emit('Cross-check with the formula', `(maxFreq − 1) × (n + 1) + countMax = (${maxF} − 1) × ${n + 1} + ${countMax} = ${formula}, and max(${formula}, ${tasks.length} tasks) = ${Math.max(formula, tasks.length)}, which equals the ${t} units simulated.`,
+  emit('Cross-check with the formula', `(maxFreq − 1) × (n + 1) + countMax = (${maxF} − 1) × ${n + 1} + ${countMax} = ${formula}, and max(${formula}, ${plural(tasks.length, 'task')}) = ${Math.max(formula, tasks.length)}, which equals the ${plural(t, 'unit')} simulated.`,
     `Frame view: (maxFreq − 1) full frames of n + 1 slots plus a last row holding the ${countMax} most frequent letter${countMax === 1 ? '' : 's'}.`, 'info', [14], [5], 3, undefined,
     { tag: 'CHECK:', note: `max(${formula}, ${tasks.length}) = ${Math.max(formula, tasks.length)}` });
-  emit('Done', `all ${tasks.length} tasks are scheduled in ${t} time units, with ${idle} idle slot${idle === 1 ? '' : 's'}.`,
+  emit('Done', `all ${plural(tasks.length, 'task')} ${verb(tasks.length, 'is', 'are')} scheduled in ${plural(t, 'time unit')}, with ${idle} idle slot${idle === 1 ? '' : 's'}.`,
     `${idle} idle slot${idle === 1 ? '' : 's'}: ${tasks.length} task units plus ${idle} idle units make ${t}.`, 'success', [15], [13], 4,
-    { title: String(t), text: `${tasks.length} tasks + ${idle} idle slot${idle === 1 ? '' : 's'}` },
+    { title: String(t), text: `${plural(tasks.length, 'task')} + ${idle} idle slot${idle === 1 ? '' : 's'}` },
     { tag: '✅ Done!', note: `return ${t}` });
   return steps;
 }

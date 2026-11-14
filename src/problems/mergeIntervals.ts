@@ -1,4 +1,5 @@
 import type { Aux, CellState, IntervalBarVM, ProblemDef, Step } from '../engine/types';
+import { plural } from './text.ts';
 import { parseIntervals } from './graphKit.ts';
 
 interface In { iv: [number, number][] }
@@ -103,7 +104,7 @@ function build({ iv }: In): Step[] {
   result = merged.map(([a, b]) => fmt(a, b)).join(' ');
   push({
     tag: '✅ Done!', title: 'Done', desc: `Save the last block. ${merged.length} merged interval${merged.length === 1 ? '' : 's'}: ${result}.`,
-    note: `merged.add(cur) → ${merged.length} intervals`,
+    note: `merged.add(cur) → ${plural(merged.length, 'interval')}`,
     logic: 'Each merged block covers exactly the union of the intervals folded into it.', logicTone: 'success',
     javaLines: [13, 14], pyLines: [10, 11], algoStep: 5,
     result: { title: result, text: 'Merged intervals' },

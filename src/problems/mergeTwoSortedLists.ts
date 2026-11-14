@@ -1,4 +1,5 @@
 import type { CellState, ProblemDef, Step } from '../engine/types.ts';
+import { plural } from './text.ts';
 import { arrow, chainKeys, chainOrder, emitter, listScene, parseInts, parts, show } from './listheapKit.ts';
 import { annotate } from './annotate.ts';
 
@@ -66,7 +67,7 @@ function build({ a, b }: In): Step[] {
   const out = chainKeys(next, next[0]).map((k) => all[k]);
   p1 = null;
   p2 = null;
-  emit('Done', `Return dummy.next: ${arrow(out)}.`, 'A single pass through both lists, relinking existing nodes.', 'success', [8], [11], 3, { title: arrow(out), text: `${out.length} nodes merged` });
+  emit('Done', `Return dummy.next: ${arrow(out)}.`, 'A single pass through both lists, relinking existing nodes.', 'success', [8], [11], 3, { title: arrow(out), text: `${plural(out.length, 'node')} merged` });
   return steps;
 }
 

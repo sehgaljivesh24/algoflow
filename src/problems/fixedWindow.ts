@@ -48,7 +48,7 @@ function build({ nums, k }: In): Step[] {
     if (complete) { best = sum; bestL = 0; }
     steps.push({
       title: `Build: add nums[${i}]`, tag: 'BUILDING —',
-      desc: `add nums[${i}] = ${nums[i]} → windowSum = ${sum}${complete ? ` , maxSum = ${best} ✦` : ''}`,
+      desc: `add nums[${i}] = ${nums[i]} → windowSum = ${sum}${complete ? `, maxSum = ${best} ✦` : ''}`,
       cells: cells(0, i, i), pointers: ptrs(0, i), vars: vars(`[0..${i}]`),
       logic: complete ? 'The first window is complete: its sum is the best so far.' : 'This one pass is the only time we add k numbers one by one.', logicTone: 'info',
       javaLines: complete ? [2, 3] : [2], pyLines: complete ? [1, 2] : [1],

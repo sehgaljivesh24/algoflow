@@ -1,4 +1,5 @@
 import type { CellState, ProblemDef, Step, TreeNodeVM } from '../engine/types.ts';
+import { plural, verb } from './text.ts';
 import { annotateRules } from './annotate.ts';
 import { emitter, find, listAux, parseInts, stackAux, toLevelOrder, treeScene } from './treeKit.ts';
 
@@ -94,7 +95,7 @@ function build({ nums }: In): Step[] {
   midIdx = -1;
   const out = toLevelOrder(nodes, 0);
   add({
-    title: 'Done', desc: `All ${nums.length} elements are placed. Level order of the BST: ${out}`,
+    title: 'Done', desc: `All ${plural(nums.length, 'element')} ${verb(nums.length, 'is', 'are')} placed. Level order of the BST: ${out}`,
     logic: 'In-order reading of this tree gives back the sorted array, and no two subtrees differ in height by more than 1.', tone: 'success',
     j: J.ret, p: P.ret, a: 3, vars: vars('—', '—', '—'), aux: aux(), result: { title: out, text: 'Height-balanced BST (level order)' },
   });

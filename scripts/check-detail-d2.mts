@@ -6,8 +6,7 @@
  *  - 20 (valid parentheses) and 739 (daily temperatures) results vs plain reference solutions on random inputs.
  *  - text: 5 bullets (4 allowed only when listed), 6-8 practice items, 3-4 tags, complexity note 28-42 words, tip 18-38 words.
  */
-import { examplesFor, CONTENT, ALL_PATTERNS } from '../src/data/patterns.ts';
-import { PATTERN_META } from '../src/data/patternMeta.ts';
+import { examplesFor, CONTENT, ALL_PATTERNS, PATTERN_META } from '../src/data/patternsFull.ts';
 import { PROBLEMS } from '../src/problems/registry.ts';
 
 const SLUGS = [

@@ -1,4 +1,5 @@
 import type { Cell, CellState, ProblemDef, Step } from '../engine/types.ts';
+import { plural } from './text.ts';
 
 interface In { accounts: number[][] }
 
@@ -38,7 +39,7 @@ function build({ accounts }: In): Step[] {
   const vars = (row: number | string, sum: number | string) => ({ customer: row, sum, best });
 
   steps.push({
-    title: 'Start', desc: `${R} customers × ${C} banks. A customer's wealth is the sum of their row.`,
+    title: 'Start', desc: `${plural(R, 'customer')} × ${plural(C, 'bank')}. A customer's wealth is the sum of their row.`,
     scene: scene(-1, false), aux: aux(), vars: vars('—', '—'),
     logic: 'Rows are customers and columns are banks, so "wealth" is a row sum. We need the largest row sum.', logicTone: 'info',
     javaLines: [0, 1], pyLines: [0, 1], algoStep: 0, tag: 'READY —', note: 'best = 0',

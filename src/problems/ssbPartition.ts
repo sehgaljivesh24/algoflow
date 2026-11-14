@@ -121,7 +121,7 @@ export function buildPartition({ nums, k }: PartIn, cfg: PartCfg): Step[] {
         { title: `${cfg.groupName[0].toUpperCase()}${cfg.groupName.slice(1)} sums vs limit ${mid}`, kind: 'list', items: sums.map((s, i) => `${cfg.groupTag}${i + 1}: ${s}`), bad: sums.flatMap((_, i) => (i >= k ? [i] : [])) },
       ],
       alert: ok ? undefined : `${cfg.capName} ${mid} needs ${plural(sums.length)}, more than the allowed ${k}: too small.`,
-      logic: ok ? `Feasible with ${sums.length} ≤ ${k}. A smaller ${cfg.capName} might work too, so keep mid and search lower.` : `Needs ${sums.length} > ${k} ${cfg.groupName}s (red cells overflow). Any limit ≤ ${mid} is worse, so move up.`, logicTone: ok ? 'success' : 'warn',
+      logic: ok ? `Feasible with ${sums.length} ≤ ${k}. A smaller ${cfg.capName} might work too, so keep mid and search lower.` : `Needs ${sums.length} > ${plural(k)} (red cells overflow). Any limit ≤ ${mid} is worse, so move up.`, logicTone: ok ? 'success' : 'warn',
       javaLines: cfg.java.check, pyLines: cfg.py.check, algoStep: 2,
       tag: ok ? 'TEST · FEASIBLE —' : 'TEST · TOO SMALL —', note: `${sums.length} ${cfg.groupName}${sums.length === 1 ? '' : 's'} ${ok ? '≤' : '>'} ${k}${ok ? ' ✓' : ''}`,
     });

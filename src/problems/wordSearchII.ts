@@ -1,4 +1,5 @@
 import type { Aux, Cell, CellState, ProblemDef, Step } from '../engine/types';
+import { plural } from './text.ts';
 import { tokens } from './graphKit.ts';
 import { TrieModel } from './trieKit.ts';
 
@@ -71,7 +72,7 @@ function build({ board, words }: In): Step[] {
     title: 'Start', desc: `Board ${R}×${C}, ${words.length} word${words.length === 1 ? '' : 's'}. First all words go into a trie (right). The DFS walks the board and the trie together.`,
     logic: 'The trie lets one DFS search for every word at once, and stop a path as soon as no word starts with its letters.', logicTone: 'info',
     javaLines: [1, 2], pyLines: [1, 2], algoStep: 0,
-    tag: 'START —', note: `root = buildTrie(words): ${trie.nodes.length - 1} nodes for ${words.length} word${words.length === 1 ? '' : 's'}`,
+    tag: 'START —', note: `root = buildTrie(words): ${plural(trie.nodes.length - 1, 'node')} for ${plural(words.length, 'word')}`,
   });
 
   const dfs = (r: number, c: number, node: number) => {

@@ -1,4 +1,5 @@
 import type { Cell, LogicTone, ProblemDef, Step, Tone } from '../engine/types.ts';
+import { plural } from './text.ts';
 
 interface In { m: number[][]; target: number }
 
@@ -50,7 +51,7 @@ function build({ m, target }: In): Step[] {
   const span = () => (lo <= hi ? `[${lo}..${hi}]` : 'empty');
 
   show([`target = ${target}`, `flat range = ${span()}`, `k → (k / ${C}, k % ${C})`]);
-  push('Start', `Looking for ${target}. Pretend the ${R}×${C} matrix is one sorted list of ${total} numbers: indexes 0..${total - 1}.`,
+  push('Start', `Looking for ${target}. Pretend the ${R}×${C} matrix is one sorted list of ${plural(total, 'number')}: indexes 0..${total - 1}.`,
     'Because each row starts above the previous row\'s end, row-by-row order is a single sorted sequence. Index k lives at row k / n, column k % n.', 'info', [2], [2], 0,
     undefined, { tag: 'INIT —', note: `lo = 0, hi = ${R} * ${C} − 1 = ${total - 1}` });
 

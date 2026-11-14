@@ -1,4 +1,5 @@
 import type { ProblemDef, Step } from '../engine/types.ts';
+import { plural } from './text.ts';
 import { emitter } from './listheapKit.ts';
 import { parseNums, ptr, windowCells } from './ssbShared.ts';
 
@@ -37,7 +38,7 @@ function build({ nums }: In): Step[] {
   const show = (items: string[], hl?: number) => { box = items; boxHl = hl; };
 
   show([`window = [${lo}..${hi}]`, 'rule: pairs start on even indexes until the single value']);
-  emit('Start', `Every value appears twice except one, and the array is sorted. Find the single value in O(log n). The array has ${nums.length} entries.`,
+  emit('Start', `Every value appears twice except one, and the array is sorted. Find the single value in O(log n). The array has ${plural(nums.length, 'entry', 'entries')}.`,
     'Before the single element pairs start on even indexes (0,1) (2,3) …; after it they start on odd indexes. That parity flip is what we search for.', 'info', [1], [1], 0,
     undefined, { tag: 'INIT —', note: `lo = 0, hi = ${nums.length} − 1 = ${hi}` });
 

@@ -1,4 +1,4 @@
-import type { PatternContent, PracticeItem } from '../patterns.ts';
+import type { PatternContent, PracticeItem, PracticeRef } from '../patterns.ts';
 import type { PatternExample } from '../packs/types.ts';
 import type { PatternMeta } from '../patternMeta.ts';
 
@@ -22,7 +22,7 @@ export interface PatternDigest {
   /** Flagship animation slug: the card is "live" when this problem is animated. */
   animation: string;
   /** First practice entries that resolve to a catalog problem or are outside problems (at most 4), as a pills list needs them. */
-  practice: (string | PracticeItem)[];
+  practice: (string | PracticeRef | PracticeItem)[];
   /** Slugs of the worked examples (the card shows how many of them are animated). */
   examples: string[];
 }

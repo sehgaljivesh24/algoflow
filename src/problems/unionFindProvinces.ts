@@ -1,4 +1,5 @@
 import type { Aux, Cell, CellState, GraphEdgeVM, GraphNodeVM, ProblemDef, Step } from '../engine/types.ts';
+import { plural as counted, verb } from './text.ts';
 import { recorder } from './stepKit.ts';
 import { forestLayout } from './p9/kitA.ts';
 import type { Tone } from '../engine/types.ts';
@@ -89,8 +90,8 @@ function build({ isConnected: M }: In): Step[] {
   };
   const scene = () => ({ kind: 'split' as const, parts: [grid(), forest()] });
   const aux = (): Aux[] => [
-    { title: 'parent[ ]  (i → parent)', kind: 'list', items: parent.map((p, i) => `${i}→${p}`), highlight: focus >= 0 ? focus : undefined, bad: changed.length ? [...changed] : undefined },
-    { title: 'rank[ ]  (tree height)', kind: 'list', items: rank.map((r, i) => `${i}: ${r}`), highlight: rankHot >= 0 ? rankHot : undefined },
+    { title: 'parent[ ] (i → parent)', kind: 'list', items: parent.map((p, i) => `${i}→${p}`), highlight: focus >= 0 ? focus : undefined, bad: changed.length ? [...changed] : undefined },
+    { title: 'rank[ ] (tree height)', kind: 'list', items: rank.map((r, i) => `${i}: ${r}`), highlight: rankHot >= 0 ? rankHot : undefined },
     {
       title: 'pairs with a 1  (i < j)', kind: 'queue',
       items: pairs.map(([a, b], k) => `${a}-${b}${status.get(k) === 'merged' ? ' ✓' : status.get(k) === 'skipped' ? ' skip' : ''}`),
@@ -101,7 +102,7 @@ function build({ isConnected: M }: In): Step[] {
   const say = recorder(steps, () => ({ scene: scene(), aux: aux(), vars: { pair: pairText(), components, unions, finds } }));
 
   say({
-    title: 'Start', desc: `${n} cities start alone: parent[i] = i and rank[i] = 0. Only pairs i < j holding a 1 are examined, ${pairs.length} in all.`,
+    title: 'Start', desc: `${counted(n, 'city', 'cities')} ${verb(n, 'starts', 'start')} alone: parent[i] = i and rank[i] = 0. Only pairs i < j holding a 1 are examined, ${pairs.length} in all.`,
     logic: 'The matrix is symmetric, so the upper triangle holds every link once. Each link will be fed to union-find.',
     java: [3, 4], py: [2, 3], algo: 0, tag: 'INIT —', note: `parent[i] = i, rank[i] = 0 for i = 0..${n - 1}, provinces = ${n}`,
   });
@@ -214,7 +215,7 @@ function build({ isConnected: M }: In): Step[] {
   nodeSt = Object.fromEntries(rootsList.map((r) => [r, 'found' as CellState]));
   say({
     title: 'Done', desc: `All pairs scanned: provinces = ${n} − ${unions} unions = ${components}, namely ${groups.join(' and ')}.`,
-    logic: `Each successful union merges two groups, so ${n} groups minus ${unions} merges leaves ${components}: exactly the roots still standing.`, tone: 'success',
+    logic: `Each successful union merges two groups, so ${counted(n, 'group')} minus ${counted(unions, 'merge')} leaves ${components}: exactly the roots still standing.`, tone: 'success',
     java: [8], py: [8], algo: 5, tag: '✅ Done!', note: `return ${components}, roots ${rootsList.join(', ')}`,
     result: { title: String(components), text: 'Number of provinces' },
   });

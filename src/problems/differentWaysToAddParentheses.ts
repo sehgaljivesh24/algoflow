@@ -1,4 +1,5 @@
 import type { CellState, ProblemDef, Step } from '../engine/types.ts';
+import { plural } from './text.ts';
 import { capSteps, recorder } from './stepKit.ts';
 import { find } from './treeKit.ts';
 import { treeOverArray, twoPass, type RecTree } from './recTreeKit.ts';
@@ -97,7 +98,7 @@ function run({ expr }: In, tree: RecTree): Step[] {
     title: 'Start', desc: `List every value of ${toks.join(' ')} over all ways to place parentheses.`,
     logic: 'Choose which operator is applied LAST. Everything left of it and everything right of it are smaller expressions, each solved the same way.',
     java: J.enter, py: P.enter, algo: 0,
-    tag: 'INIT', note: `diffWaysToCompute("${toks.join('')}"): ${(toks.length + 1) / 2} numbers`,
+    tag: 'INIT', note: `diffWaysToCompute("${toks.join('')}"): ${plural((toks.length + 1) / 2, 'number')}`,
   });
 
   const ways = (a: number, b: number): number[] => {
@@ -181,7 +182,7 @@ function run({ expr }: In, tree: RecTree): Step[] {
   v.range = `0..${toks.length - 1}`;
   const out = `[${sorted.join(',')}]`;
   say({
-    title: 'Done', desc: `${sorted.length} results (${new Set(sorted).size} distinct): ${out}.`,
+    title: 'Done', desc: `${plural(sorted.length, 'result')} (${new Set(sorted).size} distinct): ${out}.`,
     logic: 'The number of groupings is a Catalan number, so the output grows quickly: 1, 1, 2, 5, 14 for 1 to 5 numbers.', tone: 'success',
     java: J.ret, py: P.ret, algo: 4, result: { title: out, text: 'All possible results (sorted)' },
     tag: '✅ Done!', note: `return ${out}`,

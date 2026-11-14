@@ -1,5 +1,6 @@
 import type { Cell, ProblemDef, Step } from '../engine/types.ts';
 import { Heap } from './listheapKit.ts';
+import { plural } from './text.ts';
 import { recorder } from './stepKit.ts';
 import { gridScene, leaf, ordinal, parseNumRows, semis } from './p4Kit.ts';
 
@@ -49,7 +50,7 @@ function build({ m, k }: In): Step[] {
   say({
     title: 'Start', desc: `A ${R}×${C} matrix whose rows and columns are sorted. Find the ${ordinal(k)} smallest value without flattening and sorting everything.`,
     logic: 'Each row is a sorted list, so this is a k-way merge: only the front of every row can be the next smallest value.', java: [2], py: [1, 2], algo: 0,
-    tag: 'INIT', note: `${R} rows = ${R} sorted lists, k = ${k}`,
+    tag: 'INIT', note: `${plural(R, 'row')} = ${plural(R, 'sorted list')}, k = ${k}`,
   });
   for (let r = 0; r < Math.min(R, k); r++) heap.push({ v: m[r][0], r, c: 0 }, noop, true);
   say({
@@ -92,7 +93,7 @@ function build({ m, k }: In): Step[] {
   const ans = out[out.length - 1];
   say({
     title: 'Done', desc: `The ${ordinal(k)} value popped is ${ans}.`,
-    logic: `Popped order: ${out.join(', ')}. The heap never held more than ${Math.min(R, k)} entries.`, tone: 'success', java: [9], py: [8], algo: 3,
+    logic: `Popped order: ${out.join(', ')}. The heap never held more than ${plural(Math.min(R, k), 'entry', 'entries')}.`, tone: 'success', java: [9], py: [8], algo: 3,
     result: { title: String(ans), text: `${ordinal(k)} smallest element` },
     tag: '✅ Done!', note: `return cur[0] = ${ans}`,
   });

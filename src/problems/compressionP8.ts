@@ -1,6 +1,7 @@
 /** Pack p8 coordinate-compression problems: Rank Transform of an Array (#1331), Relative Ranks (#506), Maximum Overlap of Wide Intervals. */
 import type { Cell, ProblemDef, Step } from '../engine/types.ts';
 import { Rec, arr, idx, nums as parseNums, strs } from './p8Kit.ts';
+import { plural } from './text.ts';
 
 /* ------------------------------------------------------------------ #1331 Rank Transform */
 interface NIn { nums: number[] }
@@ -36,7 +37,7 @@ function buildRank({ nums }: NIn): Step[] {
     out[i] = rank.get(v);
     rec.push({ t: `arr[${i}] = ${v} → rank ${out[i]}`, d: `${v} is looked up in the rank map: out[${i}] = ${out[i]}.`, scene: grid(i, i), aux: aux(true), v: vars(v, out[i]!), why: 'Equal values map to the same rank, and a smaller value always gets a smaller rank, so the order of the array is preserved.', tone: 'success', j: [4, 5], p: [5], a: 2, tag: `arr[${i}] —`, note: `out[${i}] = rank.get(${v}) = ${out[i]}` });
   });
-  rec.push({ t: `Ranks: ${arr(out as number[])}`, d: `${n} values compressed into ranks 1…${sorted.length}.`, scene: grid(), aux: aux(true), v: vars('—', '—'), why: 'Cost: sorting dominates, O(n log n).', tone: 'success', j: [6], p: [5], a: 3, tag: '✅ Done!', note: `return ${arr(out as number[])}`, result: { title: arr(out as number[]), text: `Rank transform: ${arr(out as number[])}` } });
+  rec.push({ t: `Ranks: ${arr(out as number[])}`, d: `${plural(n, 'value')} compressed into ranks 1…${sorted.length}.`, scene: grid(), aux: aux(true), v: vars('—', '—'), why: 'Cost: sorting dominates, O(n log n).', tone: 'success', j: [6], p: [5], a: 3, tag: '✅ Done!', note: `return ${arr(out as number[])}`, result: { title: arr(out as number[]), text: `Rank transform: ${arr(out as number[])}` } });
   return rec.steps;
 }
 
@@ -204,7 +205,7 @@ function buildOverlap({ iv }: IIn): Step[] {
     };
   };
   const vars = (x: number | string) => ({ points: phase === 'raw' ? '—' : k, 'coordinate': x, overlap: cur, best });
-  rec.push({ t: 'Start', d: `${iv.length} closed interval${iv.length > 1 ? 's' : ''} with coordinates up to ${Math.max(...iv.map(([, b]) => b)).toLocaleString('en-US')}. A difference array over the raw coordinates would be enormous, but only the endpoints matter.`, scene: grid(), v: vars('—'), why: 'The overlap count only changes at an interval start or just after an end, so every other coordinate can be ignored: compress to those points.', j: [0], p: [0], a: 0, tag: 'READY —', note: `${iv.length} intervals, largest end = ${Math.max(...iv.map(([, b]) => b)).toLocaleString('en-US')}` });
+  rec.push({ t: 'Start', d: `${iv.length} closed interval${iv.length > 1 ? 's' : ''} with coordinates up to ${Math.max(...iv.map(([, b]) => b)).toLocaleString('en-US')}. A difference array over the raw coordinates would be enormous, but only the endpoints matter.`, scene: grid(), v: vars('—'), why: 'The overlap count only changes at an interval start or just after an end, so every other coordinate can be ignored: compress to those points.', j: [0], p: [0], a: 0, tag: 'READY —', note: `${plural(iv.length, 'interval')}, largest end = ${Math.max(...iv.map(([, b]) => b)).toLocaleString('en-US')}` });
   phase = 'pts';
   rec.push({ t: `Compress: ${k} interesting coordinates`, d: `Collect each start a and each end + 1 (closed intervals stop counting right after b), sort and de-duplicate: ${pts.join(', ')}. They get ranks r0…r${k - 1}.`, scene: grid(), v: vars('—'), why: 'The sorted distinct points are the compressed axis; order is preserved so a sweep over ranks equals a sweep over coordinates.', j: [1, 2, 3, 4, 5], p: [1, 2], a: 1, tag: 'COMPRESS —', note: `pts = [${pts.join(', ')}] → ranks 0..${k - 1}` });
   iv.forEach(([a, b], i) => {

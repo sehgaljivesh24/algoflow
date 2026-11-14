@@ -1,4 +1,5 @@
 import type { ProblemDef } from '../engine/types.ts';
+import { plural } from './text.ts';
 import { buildPartition, parsePartition, type PartIn } from './ssbPartition.ts';
 
 export const splitArrayLargestSum: ProblemDef<PartIn> = {
@@ -14,7 +15,7 @@ export const splitArrayLargestSum: ProblemDef<PartIn> = {
   parseInput: (raw) => parsePartition(raw, 'numbers ; k — e.g. 7 2 5 10 8 ; 2', 1, 10, 'k', 'numbers', true),
   buildSteps: (inp) => buildPartition(inp, {
     itemName: 'value', groupName: 'subarray', groupTag: 'S', capName: 'largest sum', kName: 'k',
-    startDesc: `Split ${inp.nums.length} numbers into ${inp.k} contiguous part${inp.k === 1 ? '' : 's'}, minimising the biggest part sum. We binary search that sum.`,
+    startDesc: `Split ${plural(inp.nums.length, 'number')} into ${plural(inp.k, 'contiguous part')}, minimising the biggest part sum. We binary search that sum.`,
     resultText: (a) => `The best possible largest subarray sum is ${a}`,
     java: { init: [2, 1], mid: [4, 3], check: [5, 12, 13], ok: [5], bad: [6], ret: [8] },
     py: { init: [1, 0], mid: [3, 2], check: [4, 11, 12], ok: [4, 5], bad: [6, 7], ret: [8] },

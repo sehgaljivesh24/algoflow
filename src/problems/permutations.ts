@@ -1,4 +1,5 @@
 import type { Cell, ProblemDef, Step } from '../engine/types.ts';
+import { plural, verb } from './text.ts';
 import { fmtList, parseInts, recorder } from './stepKit.ts';
 import { treeOverArray, twoPass, type RecTree } from './recTreeKit.ts';
 
@@ -36,7 +37,7 @@ function run({ nums }: In, tree: RecTree): Step[] {
 
   say({
     title: 'Start', tag: 'INIT',
-    desc: `Arrange all ${n} numbers of ${fmtList(nums)} in every order: ${n}! = ${fact} leaves in the tree. used[] starts all false.`,
+    desc: `Arrange all ${plural(n, 'number')} of ${fmtList(nums)} in every order: ${n}! = ${fact} leaves in the tree. used[] starts all false.`,
     note: `used = new boolean[${n}], path = [ ]`,
     logic: 'At each depth we may pick any number that is not already in the path; a full-length path is one permutation.',
     java: [2], py: [2], algo: 0,
@@ -53,7 +54,7 @@ function run({ nums }: In, tree: RecTree): Step[] {
       tree.found(tree.top);
       say({
         title: `Record ${fmtList(path)}`, tag: 'FOUND!',
-        desc: `The path holds all ${n} numbers: ${fmtList(path)} is permutation #${results.length}. Save a copy and return.`,
+        desc: `The path holds all ${plural(n, 'number')}: ${fmtList(path)} is permutation #${results.length}. Save a copy and return.`,
         note: `path.size() == ${n} → res.add(${fmtList(path)})`,
         logic: 'A path of full length uses every number exactly once.', tone: 'success', java: [6], py: [4, 5], algo: 1,
       });
@@ -89,11 +90,11 @@ function run({ nums }: In, tree: RecTree): Step[] {
   cur = -1;
   say({
     title: 'Done', tag: '✅ Done!',
-    desc: `All ${results.length} permutations generated (${n}! = ${results.length}): every slot tried each number that was still free.`,
+    desc: `All ${plural(results.length, 'permutation')} generated (${n}! = ${results.length}): every slot tried each number that was still free.`,
     note: `return res → ${results.length} = ${n}!`,
-    logic: `There are ${n} choices for the first slot, ${Math.max(n - 1, 1)} for the second, and so on.`, tone: 'success',
+    logic: `There ${verb(n, 'is', 'are')} ${plural(n, 'choice')} for the first slot, ${Math.max(n - 1, 1)} for the second, and so on.`, tone: 'success',
     java: [3], py: [14], algo: 4,
-    result: { title: `${results.length} permutations`, text: results.join(' ') },
+    result: { title: plural(results.length, 'permutation'), text: results.join(' ') },
   });
   return steps;
 }

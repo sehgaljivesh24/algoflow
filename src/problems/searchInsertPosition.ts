@@ -1,4 +1,5 @@
 import type { Cell, CellState, Pointer, ProblemDef, Step } from '../engine/types.ts';
+import { plural } from './text.ts';
 import { isSortedAsc, parseInt1, parseNums, parseParts, ptr } from './ssbShared.ts';
 
 interface In { nums: number[]; target: number }
@@ -28,7 +29,7 @@ function build({ nums, target }: In): Step[] {
   const win = () => (lo <= hi ? `[${lo}..${hi}]` : 'empty');
 
   steps.push({
-    title: 'Start', tag: 'INIT —', desc: `lo = 0, hi = ${n - 1}. Look for ${target}, or the index where it would slot in to keep ${n} numbers sorted.`,
+    title: 'Start', tag: 'INIT —', desc: `lo = 0, hi = ${n - 1}. Look for ${target}, or the index where it would slot in to keep ${plural(n, 'number')} sorted.`,
     cells: cellsOf(), pointers: ptrs(), vars: vars('—'),
     aux: box([`target = ${target}`, `window = ${win()}`, `insertAt = ${lo}`]),
     logic: 'If the target is present we return its index; otherwise we need the index where it would be inserted to keep the order.', logicTone: 'info',

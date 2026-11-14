@@ -1,4 +1,5 @@
 import type { Cell, CellState, ProblemDef, Step } from '../engine/types.ts';
+import { plural, verb } from './text.ts';
 import { emitter, parseOne, parts } from './listheapKit.ts';
 import { ptr } from './ssbShared.ts';
 import { annotate, auxItems } from './annotate.ts';
@@ -68,7 +69,7 @@ function build({ num, k: k0 }: In): Step[] {
   cur = -1;
   phase = 'trim';
   if (k > 0) {
-    emit('Trim the tail', `The digits never decreased enough, so ${k} removal${k === 1 ? '' : 's'} remain. The stack is non-decreasing: the largest digits are at the end.`,
+    emit('Trim the tail', `The digits never decreased enough, so ${plural(k, 'removal')} ${verb(k, 'remains', 'remain')}. The stack is non-decreasing: the largest digits are at the end.`,
       'In a non-decreasing number, dropping the last digit hurts least.', 'warn', [9], [7, 8], 3);
     while (k > 0) {
       const j = stack.pop()!;

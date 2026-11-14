@@ -115,3 +115,9 @@
 @media (prefers-reduced-motion: reduce) {
   .csh-card, .csh-item { transition: none; }
 }
+/* Phone: link rows and "Open" links are finger-sized */
+@media (max-width: 600px) {
+  .csh-item { min-height: 40px; }
+  .csh-link, .csh-panel-open { display: inline-flex; align-items: center; min-height: 38px; }
+  .csh-item-tag, .csh-group-title, .csh-group-count, .csh-badge, .csh-holder { font-size: .7rem; }
+}

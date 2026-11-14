@@ -1,4 +1,5 @@
 import type { Aux, Cell, CellState, ProblemDef, Scene, Step, TreeNodeVM } from '../engine/types.ts';
+import { plural, verb } from './text.ts';
 import { annotateRules } from './annotate.ts';
 import { parseInts } from './stepKit.ts';
 import { emitter, find, stackAux, toLevelOrder, treeScene } from './treeKit.ts';
@@ -97,7 +98,7 @@ function build({ pre }: In): Step[] {
 
   boundNow = '—';
   const out = toLevelOrder(nodes, 0);
-  frame('Done', `All ${n} values are placed. Level order of the BST: ${out}`, 'Each value was consumed exactly once, so the work is linear.', J.ret, P.ret, 3, 'success');
+  frame('Done', `All ${plural(n, 'value')} ${verb(n, 'is', 'are')} placed. Level order of the BST: ${out}`, 'Each value was consumed exactly once, so the work is linear.', J.ret, P.ret, 3, 'success');
   steps[steps.length - 1].result = { title: out, text: 'BST (level order)' };
   return steps;
 }

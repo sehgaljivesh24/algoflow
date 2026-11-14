@@ -1,4 +1,5 @@
 import type { Cell, CellState, ProblemDef, Step } from '../engine/types.ts';
+import { plural, verb } from './text.ts';
 
 interface In { nums: number[] }
 
@@ -66,7 +67,7 @@ function build({ nums }: In): Step[] {
   }
 
   steps.push({
-    title: 'All distinct', tag: '✅ Done!', desc: `all ${nums.length} values were new when we met them, so the answer is false`,
+    title: 'All distinct', tag: '✅ Done!', desc: `all ${plural(nums.length, 'value')} ${verb(nums.length, 'was', 'were')} new when we met them, so the answer is false`,
     cells: cells(nums.length), pointers: [], aux: aux(), vars: { i: '—', x: '—', seen: seen.length },
     logic: 'Every value was new when we met it, so all values are distinct.', logicTone: 'warn',
     javaLines: [7], pyLines: [6], algoStep: 4, note: 'return false',

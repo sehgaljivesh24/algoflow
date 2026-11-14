@@ -1,4 +1,5 @@
 import type { CellState, ProblemDef, Step } from '../engine/types.ts';
+import { plural, verb } from './text.ts';
 import { find, gc, heads, recorder, splitParts } from './dpAdvKit.ts';
 
 interface In { n: number; target: number }
@@ -120,7 +121,7 @@ function build({ n, target: S }: In): Step[] {
       done = true;
       notes = terms;
       say({
-        title: `free[${r}][${t}] = ${v}`, desc: `A ${r}-digit string with sum ${t} starts with some digit 0..${Math.min(9, t)}; the other ${r - 1} digits then need sum ${t} − digit. Adding the ${Math.min(9, t) + 1} cells above (yellow) gives ${v}.`,
+        title: `free[${r}][${t}] = ${v}`, desc: `A ${r}-digit string with sum ${t} starts with some digit 0..${Math.min(9, t)}; the other ${plural(r - 1, 'digit')} ${verb(r - 1, 'then needs', 'then need')} sum ${t} − digit. Adding the ${plural(Math.min(9, t) + 1, 'cell')} above (yellow) gives ${v}.`,
         logic: 'A convolution row by row: each cell sums up to ten cells of the previous row.', java: J.fill, py: P.fill, algo: 2,
         tag: 'FILL CELL —', note: `free[${r}][${t}] = Σ free[${r - 1}][${t}−d], d = 0..${Math.min(9, t)} = ${v}`,
       });

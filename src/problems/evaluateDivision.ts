@@ -1,4 +1,5 @@
 import type { Aux, CellState, EdgeState, GraphEdgeVM, Pointer, ProblemDef, Step } from '../engine/types';
+import { plural } from './text.ts';
 
 interface Eq { a: string; b: string; v: number }
 interface In { eqs: Eq[]; queries: [string, string][] }
@@ -88,7 +89,7 @@ function build({ eqs, queries }: In): Step[] {
   push({
     title: 'Start', tag: 'BUILD —', desc: `each equation a/b = k becomes an arrow a → b weighted k plus the reverse b → a weighted 1/k, giving ${names.length} nodes and ${eqs.length * 2} arrows.`,
     logic: 'Divisions chain: (a/b) × (b/c) = a/c. So a query is a path product in a weighted graph.', logicTone: 'info',
-    javaLines: [1, 2, 3, 4, 5, 6], pyLines: [1, 2, 3, 4], algoStep: 0, note: `${eqs.length} equations → ${eqs.length * 2} weighted arrows`,
+    javaLines: [1, 2, 3, 4, 5, 6], pyLines: [1, 2, 3, 4], algoStep: 0, note: `${plural(eqs.length, 'equation')} → ${plural(eqs.length * 2, 'weighted arrow')}`,
   });
 
   queries.forEach(([x, y], k) => {

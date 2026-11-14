@@ -1,6 +1,7 @@
 import type { Aux, CellState, Step } from '../engine/types';
 import type { EdgeMark, WEdge } from './mstKit.ts';
 import { mstScene } from './mstKit.ts';
+import { plural, verb } from './text.ts';
 
 type Lines = { java: number[]; py: number[] };
 /** Code-line highlights for the five moments of lazy-heap Prim. */
@@ -116,7 +117,7 @@ export function primSteps(o: {
   const ans = taken === n ? total : -1;
   steps.push({
     title: ans === -1 ? 'Graph is not connected' : `Spanning tree cost ${ans}`,
-    desc: ans === -1 ? 'The heap ran dry before every node joined the tree.' : `All ${n} nodes are in the tree, joined by ${n - 1} edges (green) with total weight ${ans}.`,
+    desc: ans === -1 ? 'The heap ran dry before every node joined the tree.' : `All ${plural(n, 'node')} ${verb(n, 'is', 'are')} in the tree, joined by ${plural(n - 1, 'edge')} (green) with total weight ${ans}.`,
     scene: mstScene({ n, base: 0, edges, marks, states: states(), tags: Array.from({ length: n }, () => undefined), labels: Array.from({ length: n }, (_, i) => o.label?.(i)) }),
     aux: aux(),
     vars: { popped: cur, 'cost so far': total, 'in tree': `${taken}/${n}` },

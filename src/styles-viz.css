@@ -510,3 +510,22 @@
 .tv-xedge path { stroke: var(--orange); stroke-width: 2; stroke-dasharray: 5 4; }
 .tv-xedge text { fill: var(--orange); font: 700 10px var(--mono); }
 .tv-xarrow { fill: var(--orange); }
+
+/* phone (≤ 600px): finger-sized controls (36-40px) and no text under 11px; the desktop look is untouched */
+@media (max-width: 600px) {
+  .vp-crumbs a { display: inline-flex; align-items: center; min-height: 34px; }
+  .vp-practice, .vp-status select { min-height: 40px; }
+  .vp-theme { width: 40px; height: 40px; }
+  .vp .vbtn { min-height: 40px; }
+  .vp-speed { min-height: 40px; }
+  .vp-speed input[type=range] { box-sizing: content-box; height: 4px; padding: 15px 0; background-clip: content-box; }
+  .vp-speed input[type=range]::-webkit-slider-thumb { width: 20px; height: 20px; }
+  .vp-speed input[type=range]::-moz-range-thumb { width: 20px; height: 20px; }
+  .vp-scrub { padding: 16px 0 14px; margin-top: 0; }
+  .vp-ex, .vp-run { min-height: 38px; }
+  .cp-copy-btn, .cp-lang-btn { min-height: 34px; padding: 5px 12px; font-size: .7rem; }
+  .vp .card-title, .vp-ph, .vp-hint, .vp-appr-label, .al-num, .st-lbl, .cplx-l, .vp-pill, .step-ctr, .av-idx { font-size: .7rem; }
+  .vp-narr .step-ctr { padding: 4px 10px; }
+  /* small / medium binary trees (up to ~8 nodes) scale down to the card instead of scrolling sideways */
+  .svg-viz.tv.tv-fit { min-width: 0 !important; }
+}

@@ -78,7 +78,7 @@ function build({ eqs, queries }: In): Step[] {
     return { kind: 'graph' as const, nodes, edges };
   };
   const aux = (): Aux[] => [
-    { title: 'parent[x]  and  w[x] = value(x) / value(parent[x])', kind: 'list', items: names.map((s, i) => (parent[i] === i ? `${s}: root` : `${s}: ${names[parent[i]]}  ×${fstr(w[i])}`)), highlight: changed >= 0 ? changed : undefined },
+    { title: 'parent[x] and w[x] = value(x) / value(parent[x])', kind: 'list', items: names.map((s, i) => (parent[i] === i ? `${s}: root` : `${s}: ${names[parent[i]]}  ×${fstr(w[i])}`)), highlight: changed >= 0 ? changed : undefined },
     { title: 'answers', kind: 'list', items: [...answers] },
   ];
   const say = recorder(steps, () => ({ scene: scene(), aux: aux(), vars: { step: what, 'root(a)': ra, 'root(b)': rb, answers: `[${answers.join(', ')}]` } }));

@@ -1,4 +1,5 @@
 import type { Aux, ProblemDef, Step } from '../../engine/types.ts';
+import { plural } from '../text.ts';
 import { TrieModel } from '../trieKit.ts';
 import { bruteLcp, parseWord, suffixesSorted } from './kitD.ts';
 
@@ -67,7 +68,7 @@ function build({ s }: In): Step[] {
   cur = '—';
   suffix = '—';
   push({
-    title: 'Cross-check with the suffix array', desc: `Total letters in all suffixes = ${(n * (n + 1)) / 2}. Sorted neighbours share ${lcpSum} letters in total (sum of LCP). ${(n * (n + 1)) / 2} − ${lcpSum} = ${(n * (n + 1)) / 2 - lcpSum}, the same count.`,
+    title: 'Cross-check with the suffix array', desc: `Total letters in all suffixes = ${(n * (n + 1)) / 2}. Sorted neighbours share ${plural(lcpSum, 'letter')} in total (sum of LCP). ${(n * (n + 1)) / 2} − ${lcpSum} = ${(n * (n + 1)) / 2 - lcpSum}, the same count.`,
     scene: trie.scene([], {}), logic: 'Each suffix adds (its length − LCP with its sorted predecessor) new substrings, so the suffix array gives the answer without building a trie.', logicTone: 'info',
     javaLines: [12], pyLines: [10], algoStep: 3,
     tag: 'CROSS-CHECK —', note: `${(n * (n + 1)) / 2} − ${lcpSum} = ${(n * (n + 1)) / 2 - lcpSum} = ${nodes} nodes`,

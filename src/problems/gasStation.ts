@@ -1,4 +1,5 @@
 import type { Cell, LogicTone, ProblemDef, Step } from '../engine/types.ts';
+import { plural } from './text.ts';
 
 interface In { gas: number[]; cost: number[] }
 
@@ -42,7 +43,7 @@ function build({ gas, cost }: In): Step[] {
       aux: [{ title: 'trip so far', kind: 'map', items: [`candidate start → ${start}`, `tank since start → ${tank}`, `total net of all stations → ${total}`], bad: tank < 0 ? [1] : undefined }],
     });
 
-  add('Start', 'INIT', `${n} stations on a circle: gain gas[i], pay cost[i] to reach the next. Which start completes a lap? Total supply ${gas.reduce((x, y) => x + y, 0)}, total cost ${cost.reduce((x, y) => x + y, 0)}.`,
+  add('Start', 'INIT', `${plural(n, 'station')} on a circle: gain gas[i], pay cost[i] to reach the next. Which start completes a lap? Total supply ${gas.reduce((x, y) => x + y, 0)}, total cost ${cost.reduce((x, y) => x + y, 0)}.`,
     'total = 0, tank = 0, start = 0',
     'Look at the net gain gas − cost of each station. Total net < 0 means no start works; otherwise a start exists and we can find it in one pass.', 'info', -1, false, [1], [1], 0);
 

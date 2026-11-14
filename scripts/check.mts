@@ -8,8 +8,12 @@
  */
 import { ALL_PROBLEMS, PROBLEMS } from '../src/problems/registry.ts';
 import { ALL_ENTRIES } from '../src/data/catalog.ts';
-import { ALL_PATTERNS, CONTENT, PATTERN_GROUPS, examplesFor } from '../src/data/patterns.ts';
+import { ALL_PATTERNS, CONTENT, PATTERN_GROUPS, PATTERN_META, examplesFor } from '../src/data/patternsFull.ts';
 import { checkScene } from './check-scenes.mts';
+import { staleFiles } from './gen-pattern-text.mts';
+import { readdirSync, readFileSync } from 'node:fs';
+import { join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 let failures = 0;
 const warnings: string[] = [];
@@ -39,6 +43,61 @@ ok('registry slugs unique', new Set(slugs).size === slugs.length, slugs.filter((
     for (const p of ALL_PROBLEMS) {
       const got = await loadProblem(p.slug).catch(() => null);
       ok(`manifest resolves ${p.slug}`, got === p);
+    }
+  }
+}
+
+// ---- lazy pattern data: the browser reads the light index (patternCards.ts, catalog.ts, problemAccent.ts) and loads the text
+// of one pattern on demand (patternText/load.ts). All of it is generated from / merged out of the eager data, and must
+// equal it. Fix with: node scripts/gen-pattern-text.mts
+{
+  const stale = staleFiles();
+  ok('patternText light.ts / digest.ts / manifest.ts are current', stale.length === 0, `out of date: ${stale.join(', ')} - run: node scripts/gen-pattern-text.mts`);
+
+  const cards = await import('../src/data/patternCards.ts');
+  ok('light cards equal the full cards (patternCards.ts vs patternsFull.ts)', JSON.stringify(cards.PATTERN_GROUPS) === JSON.stringify(PATTERN_GROUPS) && JSON.stringify(cards.ALL_PATTERNS) === JSON.stringify(ALL_PATTERNS));
+  ok('PAGE_SLUGS equals the keys of CONTENT', cards.PAGE_SLUGS.size === Object.keys(CONTENT).length && Object.keys(CONTENT).every((s) => cards.PAGE_SLUGS.has(s)));
+
+  const { hasPatternText, loadPatternText } = await import('../src/data/patternText/load.ts');
+  const { SLUG_UNITS } = await import('../src/data/patternText/manifest.ts');
+  const { DIGEST } = await import('../src/data/patternText/digest.ts');
+  const eager = (s: string) => ({ content: CONTENT[s], meta: PATTERN_META[s], examples: examplesFor(s) });
+  const slugsWithText = new Set([...Object.keys(CONTENT), ...Object.keys(PATTERN_META), ...ALL_PATTERNS.map((p) => p.slug)]);
+  for (const slug of slugsWithText) {
+    const lazy = await loadPatternText(slug);
+    ok(`lazy pattern text equals the eager text: ${slug}`, JSON.stringify(lazy) === JSON.stringify(eager(slug)), 'run: node scripts/gen-pattern-text.mts');
+    ok(`manifest knows ${slug}`, hasPatternText(slug) === (slug in SLUG_UNITS));
+    if (CONTENT[slug] || PATTERN_META[slug]) ok(`digest has ${slug}`, !!DIGEST[slug]);
+  }
+  ok('manifest lists no unknown slug', Object.keys(SLUG_UNITS).every((s) => slugsWithText.has(s)));
+
+  // the light problem accent must equal the one computed from the full data
+  const { computeFeatured } = await import('../src/data/featuredAccent.ts');
+  const { problemAccent } = await import('../src/data/problemAccent.ts');
+  const featured = computeFeatured(ALL_PATTERNS, (s) => CONTENT[s], examplesFor);
+  for (const e of ALL_ENTRIES) {
+    const want = featured.get(e.slug) ?? undefined;
+    if (want) ok(`problem accent ${e.slug}`, problemAccent(e.slug, e.category, e.tag) === want);
+  }
+
+  // browser-side files must never import the eager data modules (they would pull ~700 kB of text into the entry chunk)
+  const BROWSER_SAFE = ['src/pages', 'src/components', 'src/seo', 'src/engine', 'src/App.tsx', 'src/main.tsx', 'src/config.ts', 'src/surface.ts', 'src/data'];
+  const HEAVY = /from\s+['"][^'"]*\/(patternsFull|patternContent|packs\/index|detail\/index|packs\/p\d+[a-z]?|detail\/d\d+[a-z]?)(\.ts)?['"]|from\s+['"][^'"]*\/data\/patterns(\.ts)?['"]|from\s+['"][^'"]*\/patternMeta(\.ts)?['"]|from\s+['"]\.\/(patterns|patternMeta)(\.ts)?['"]/;
+  const root = fileURLToPath(new URL('..', import.meta.url));
+  const walkSrc = (rel: string): string[] => {
+    const abs = join(root, rel);
+    let ents: import('node:fs').Dirent[];
+    try { ents = readdirSync(abs, { withFileTypes: true }); } catch { return [rel]; }
+    return ents.flatMap((d) => (d.isDirectory() ? walkSrc(`${rel}/${d.name}`) : /\.(ts|tsx)$/.test(d.name) ? [`${rel}/${d.name}`] : []));
+  };
+  // data modules that ARE the lazy sources / eager reference may import each other; everything else may not import them as values
+  const SOURCES = /^src\/data\/(patternsFull|patterns|patternMeta|patternContent|patternTemplates|packs\/.*|detail\/.*|patternText\/(manifest|digest|light))\.ts$/;
+  for (const file of BROWSER_SAFE.flatMap(walkSrc)) {
+    if (SOURCES.test(file) || /^src\/problems\//.test(file)) continue;
+    const text = readFileSync(join(root, file), 'utf8');
+    for (const line of text.split('\n')) {
+      if (/^\s*import\s+type\b/.test(line) || /^\s*export\s+type\b/.test(line)) continue;
+      if (HEAVY.test(line) && !/^\s*import\s*\{\s*type\b[^}]*\}\s*from/.test(line)) ok(`browser code must not import the eager pattern data: ${file}`, false, line.trim());
     }
   }
 }

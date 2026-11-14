@@ -1,4 +1,5 @@
 import type { Cell, CellState, Pointer, ProblemDef, Step } from '../engine/types.ts';
+import { plural } from './text.ts';
 import { parseNums, ptr } from './ssbShared.ts';
 import { treeOverArray, twoPass, type RecTree } from './recTreeKit.ts';
 
@@ -97,7 +98,7 @@ function run({ nums }: In, tree: RecTree): Step[] {
     if (i !== hi) swaps++;
     done.add(i);
     emit({
-      title: `Place the pivot at index ${i}`, tag: 'PLACE PIVOT', desc: `Swap the pivot ${pivot} into index ${i}. Left part: ${i - lo} value(s) < ${pivot}; right part: ${hi - i} value(s) ≥ ${pivot}.`,
+      title: `Place the pivot at index ${i}`, tag: 'PLACE PIVOT', desc: `Swap the pivot ${pivot} into index ${i}. Left part: ${plural(i - lo, 'value')} < ${pivot}; right part: ${plural(hi - i, 'value')} ≥ ${pivot}.`,
       note: `swap(nums, ${i}, ${hi}) → pivot ${pivot} at index ${i}: [${arr.slice(lo, hi + 1).join(', ')}]`,
       cells: cells(lo, hi, i, {}), pointers: [], vars: vars(lo, hi, i, '—', pivot), aux: aux(),
       logic: `${pivot} is now in its final sorted position (green).`, logicTone: 'success', javaLines: [15], pyLines: [13, 14], algoStep: 2,
@@ -114,7 +115,7 @@ function run({ nums }: In, tree: RecTree): Step[] {
     note: `return nums = [${arr.join(', ')}]`, plain: true,
     cells: cells(0, n - 1, 0), pointers: [], vars: vars('—', '—', '—', '—', '—'), aux: aux(),
     logic: `Final array: [${arr.join(', ')}]`, logicTone: 'success', javaLines: [4], pyLines: [5], algoStep: 4,
-    result: { title: `[${arr.join(', ')}]`, text: `${compares} comparisons · ${swaps} swaps` },
+    result: { title: `[${arr.join(', ')}]`, text: `${plural(compares, 'comparison')} · ${plural(swaps, 'swap')}` },
   });
   return steps;
 }

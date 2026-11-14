@@ -1,4 +1,5 @@
 import type { Cell, ProblemDef, Step } from '../engine/types.ts';
+import { plural, verb } from './text.ts';
 import { capSteps, fmtList, recorder } from './stepKit.ts';
 
 interface In { n: number }
@@ -48,7 +49,7 @@ function build({ n }: In): Step[] {
 
   say({
     title: 'Start', tag: 'INIT',
-    desc: `Place ${n} queens on a ${n}×${n} board so none attacks another. One queen per row, so rows never clash; only columns and diagonals can.`,
+    desc: `Place ${plural(n, 'queen')} on a ${n}×${n} board so none attacks another. One queen per row, so rows never clash; only columns and diagonals can.`,
     note: `solve(n=${n}, cols=[ ]) → row 0`,
     logic: 'Only columns and diagonals can conflict. Red × squares in the next row show where earlier queens already attack.',
     java: [2], py: [14], algo: 0,
@@ -65,7 +66,7 @@ function build({ n }: In): Step[] {
         solved = true;
         say({
           title: `Solution found: ${fmtList(cols)}`, tag: 'SOLUTION!',
-          desc: `The last queen goes on (${row}, ${c}); all ${n} rows are filled safely. Record solution #${solutions.length}: columns ${fmtList(cols)}.`,
+          desc: `The last queen goes on (${row}, ${c}); all ${plural(n, 'row')} ${verb(n, 'is', 'are')} filled safely. Record solution #${solutions.length}: columns ${fmtList(cols)}.`,
           note: `row == ${n} → res.add(draw(${fmtList(cols)}))`,
           logic: 'A full board reached through safe placements is automatically valid.', tone: 'success', java: [7], py: [6, 7], algo: 2,
         });

@@ -1,4 +1,5 @@
 import type { Cell, CellState, ProblemDef, Scene, Step } from '../engine/types.ts';
+import { plural } from './text.ts';
 import { Heap, emitter, heapExtra, parseInts, parseOne, parts } from './listheapKit.ts';
 import type { HeapEvent } from './listheapKit.ts';
 
@@ -62,7 +63,7 @@ function build({ nums, k }: In): Step[] {
   phase = 'heap';
   entries = [...freq].map(([n, f]) => ({ n, f }));
   emit('Counting done', `${freq.size} distinct value${freq.size === 1 ? '' : 's'}. Feed the (value, count) pairs into a min-heap ordered by count, keeping at most ${k}.`, 'The heap root is always the least frequent of the survivors, i.e. the first one to drop out.', 'info', [3], [2, 3], 1,
-    undefined, { tag: 'HEAP', note: `pq = min-heap by count; ${freq.size} entries to offer` });
+    undefined, { tag: 'HEAP', note: `pq = min-heap by count; ${plural(freq.size, 'entry', 'entries')} to offer` });
 
   for (ei = 0; ei < entries.length; ei++) {
     cur = entries[ei];
@@ -71,7 +72,7 @@ function build({ nums, k }: In): Step[] {
     if (heap.size > k) {
       const drop = heap.peek();
       hot = { 0: 'error' };
-      emit(`Heap too big: drop ${drop.n}`, `The heap holds ${heap.size} > ${k} pairs. The root (value ${drop.n}, count ${drop.f}) is the least frequent, so it is removed.`, 'Whatever is at the root can no longer be among the k most frequent.', 'warn', [6], [5, 6], 2,
+      emit(`Heap too big: drop ${drop.n}`, `The heap holds ${heap.size} > ${plural(k, 'pair')}. The root (value ${drop.n}, count ${drop.f}) is the least frequent, so it is removed.`, 'Whatever is at the root can no longer be among the k most frequent.', 'warn', [6], [5, 6], 2,
         undefined, { tag: 'EVICT', note: `size ${heap.size} > k = ${k}: poll() removes ${drop.n} (×${drop.f})`, alert: `Value ${drop.n} (×${drop.f}) is the least frequent of ${heap.size} and is evicted.` });
       heap.pop(cb([6], [6], 2));
       hot = {};

@@ -1,4 +1,5 @@
 import type { Cell, LogicTone, ProblemDef, Step } from '../engine/types.ts';
+import { plural } from './text.ts';
 
 interface In { board: string[]; word: string }
 
@@ -87,7 +88,7 @@ function build({ board, word }: In): Step[] {
     if (i === word.length - 1) {
       won = true;
       push(`Matched ${board[r][c]} — word complete`, `Letter ${i} ("${word[i]}") matches at (${r}, ${c}) and it is the last letter.`, 'The whole path is now a valid word placement.', 'success', [8], [8, 9], 4, true, undefined,
-        { tag: 'FOUND!', note: `all ${word.length} letters matched → true` });
+        { tag: 'FOUND!', note: `all ${plural(word.length, 'letter')} matched → true` });
       return true;
     }
     push(`Match ${board[r][c]} at (${r}, ${c})`, `Letter ${i} ("${word[i]}") matches at (${r}, ${c}). Mark the cell used and look for "${word[i + 1]}" next door.`, 'Marking the cell as used stops the path from reusing it.', 'info', [10, 11, 12], [12, 13, 14], 1, false, undefined,

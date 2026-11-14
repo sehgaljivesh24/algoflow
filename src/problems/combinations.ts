@@ -1,4 +1,5 @@
 import type { Cell, ProblemDef, Step } from '../engine/types.ts';
+import { plural } from './text.ts';
 import { fmtList, recorder } from './stepKit.ts';
 import { treeOverArray, twoPass, type RecTree } from './recTreeKit.ts';
 
@@ -44,7 +45,7 @@ function run({ n, k }: In, tree: RecTree): Step[] {
 
   say({
     title: 'Start', tag: 'INIT',
-    desc: `Choose ${k} numbers out of 1..${n}. Order does not matter, so numbers are picked in increasing order.`,
+    desc: `Choose ${plural(k, 'number')} out of 1..${n}. Order does not matter, so numbers are picked in increasing order.`,
     note: `backtrack(n=${n}, k=${k}, start=1, [ ])`,
     logic: 'Picking only numbers larger than the last one chosen means each group is built in exactly one order.',
     java: [2], py: [9], algo: 0,
@@ -64,7 +65,7 @@ function run({ n, k }: In, tree: RecTree): Step[] {
       tree.found(tree.top);
       say({
         title: `Record ${fmtList(path)}`, tag: 'FOUND!',
-        desc: `${k} numbers chosen: ${fmtList(path)} is combination #${results.length}. Save it and return.`,
+        desc: `${plural(k, 'number')} chosen: ${fmtList(path)} is combination #${results.length}. Save it and return.`,
         note: `path.size() == ${k} → res.add(${fmtList(path)})`,
         logic: 'The path reached the target size, so it is a complete answer.', tone: 'success', java: [6], py: [3, 4], algo: 1,
       });
@@ -125,10 +126,10 @@ function run({ n, k }: In, tree: RecTree): Step[] {
   cur = 0;
   say({
     title: 'Done', tag: '✅ Done!',
-    desc: `${results.length} combinations found, C(${n},${k}) = ${results.length}: each unordered group of ${k} appears exactly once.`,
+    desc: `${plural(results.length, 'combination')} found, C(${n},${k}) = ${results.length}: each unordered group of ${k} appears exactly once.`,
     note: `return res → ${results.length} = C(${n},${k})`,
     logic: 'Each unordered group of k numbers appears exactly once.', tone: 'success', java: [3], py: [10], algo: 5,
-    result: { title: `${results.length} combinations`, text: results.join(' ') },
+    result: { title: plural(results.length, 'combination'), text: results.join(' ') },
   });
   return steps;
 }

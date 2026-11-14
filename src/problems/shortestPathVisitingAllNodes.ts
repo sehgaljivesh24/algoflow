@@ -1,4 +1,5 @@
 import type { CellState, EdgeState, ProblemDef, Step } from '../engine/types.ts';
+import { plural, verb } from './text.ts';
 import { bin, find, gc, recorder, splitParts } from './dpAdvKit.ts';
 
 interface In { n: number; edges: [number, number][] }
@@ -104,18 +105,18 @@ function build({ n, edges }: In): Step[] {
   const say = recorder(steps, snap);
 
   say({
-    title: 'State = (visited set, current node)', desc: `Nodes may be revisited, so a node alone is not a state. A state is a bitmask of nodes seen so far plus the node we stand on: ${1 << n} masks × ${n} nodes. Each walking step is one move, so BFS finds the fewest steps to the mask of all ${n} nodes (${bin(full, n)}).`,
+    title: 'State = (visited set, current node)', desc: `Nodes may be revisited, so a node alone is not a state. A state is a bitmask of nodes seen so far plus the node we stand on: ${plural(1 << n, 'mask')} × ${plural(n, 'node')}. Each walking step is one move, so BFS finds the fewest steps to the mask of all ${plural(n, 'node')} (${bin(full, n)}).`,
     logic: 'The bitmask is what makes the problem finite: revisiting a node with the SAME visited set is useless, so each (mask, node) pair is explored once.',
-    java: J.init, py: P.init, algo: 0, tag: 'STATE —', note: `${1 << n} masks × ${n} nodes, target mask = ${bin(full, n)}`,
+    java: J.init, py: P.init, algo: 0, tag: 'STATE —', note: `${plural(1 << n, 'mask')} × ${plural(n, 'node')}, target mask = ${bin(full, n)}`,
   });
   for (let i = 0; i < n; i++) {
     dist[1 << i][i] = 0;
     queue.push([1 << i, i, 0]);
   }
   say({
-    title: `Seed with every start node`, desc: `The walk may begin anywhere, so all ${n} states (only node i visited, standing on i) enter the queue at distance 0.`,
+    title: `Seed with every start node`, desc: `The walk may begin anywhere, so all ${plural(n, 'state')} (only node i visited, standing on i) ${verb(n, 'enters', 'enter')} the queue at distance 0.`,
     logic: 'A multi-source BFS: shortest over every possible starting node at once.', tone: 'info', java: J.init, py: P.init, algo: 1,
-    tag: 'SEED —', note: `queue = ${n} states, dist = 0 each`,
+    tag: 'SEED —', note: `queue = ${plural(n, 'state')}, dist = 0 each`,
   });
 
   let answer = -1;

@@ -1,4 +1,5 @@
 import type { CellState, ProblemDef, Step } from '../engine/types.ts';
+import { plural } from './text.ts';
 import { Heap, emitter, parseInts } from './listheapKit.ts';
 import type { HeapEvent } from './listheapKit.ts';
 
@@ -53,7 +54,7 @@ function build({ nums }: In): Step[] {
     hotLow = {};
     hotHigh = {};
     if (high.size > low.size) {
-      emit('Sizes are unbalanced', `The upper half has ${high.size} numbers but the lower half only ${low.size}. The lower half must be equal or one larger, so move ${high.peek()} back down.`,
+      emit('Sizes are unbalanced', `The upper half has ${plural(high.size, 'number')} but the lower half only ${low.size}. The lower half must be equal or one larger, so move ${high.peek()} back down.`,
         'The size rule is what keeps the median at the roots.', 'warn', [6], [6], 2,
         undefined, { tag: 'REBALANCE', note: `high.size ${high.size} > low.size ${low.size}: move ${high.peek()} back`, alert: `Unbalanced: upper half ${high.size} > lower half ${low.size}. Move the upper root ${high.peek()} to the lower half.` });
       const back = high.pop(cb(high, 'upper half', [6], [6], 2));
@@ -68,7 +69,7 @@ function build({ nums }: In): Step[] {
     const m = low.size > high.size ? low.peek() : (low.peek() + high.peek()) / 2;
     medians.push(m);
     median = m;
-    emit(`findMedian() = ${m}`, low.size > high.size ? `The halves differ in size, so the median is the lower root: ${m}.` : `Both halves have ${low.size} numbers: median = (${low.peek()} + ${high.peek()}) / 2 = ${m}.`,
+    emit(`findMedian() = ${m}`, low.size > high.size ? `The halves differ in size, so the median is the lower root: ${m}.` : `Both halves have ${plural(low.size, 'number')}: median = (${low.peek()} + ${high.peek()}) / 2 = ${m}.`,
       'The middle of the sorted data is always at the heap roots — no sorting needed.', 'success', low.size > high.size ? [9] : [10], low.size > high.size ? [9, 10] : [11], 3,
       undefined, { tag: 'MEDIAN', note: low.size > high.size ? `low.peek() = ${m}` : `(${low.peek()} + ${high.peek()}) / 2.0 = ${m}` });
   }

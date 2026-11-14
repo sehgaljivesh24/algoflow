@@ -1,4 +1,5 @@
 import type { Cell, CellState, GraphEdgeVM, GraphNodeVM, ProblemDef, Step, Tone } from '../engine/types.ts';
+import { plural } from './text.ts';
 import { parseEdges, tokens } from './graphKit.ts';
 import type { EdgeIn } from './graphKit.ts';
 import { INF, fmtD, matrixRows } from './p5cKit.ts';
@@ -66,7 +67,7 @@ function build({ n, threshold, edges }: In): Step[] {
   push({
     title: 'Start', desc: `Roads are two-way. dist[i][j] begins as the direct road length (0 on the diagonal, ∞ when there is no direct road). The threshold is ${threshold}.`,
     logic: 'To count how many cities each city can reach within the threshold we need real shortest distances between ALL pairs, not just direct roads.', logicTone: 'info',
-    tag: 'INIT —', note: `${edges.length} roads copied both ways, threshold = ${threshold}`,
+    tag: 'INIT —', note: `${plural(edges.length, 'road')} copied both ways, threshold = ${threshold}`,
     javaLines: [1, 2, 3, 4, 5], pyLines: [1, 2, 3, 4], algoStep: 0,
   });
 

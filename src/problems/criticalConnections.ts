@@ -1,4 +1,5 @@
 import type { Aux, CellState, EdgeState, GraphEdgeVM, Pointer, ProblemDef, Step } from '../engine/types';
+import { plural } from './text.ts';
 import { adjacency, fmtPairs, mkEdges, parseGraph } from './p5dKit.ts';
 import type { GIn } from './p5dKit.ts';
 
@@ -37,7 +38,7 @@ function build({ n, edges }: GIn): Step[] {
   const push = (s: Omit<Step, 'vars' | 'aux' | 'scene'>) => steps.push({ ...s, scene: scene(), aux: aux(), vars: vars() });
 
   push({
-    title: 'Start', desc: `${n} servers, ${edges.length} cables. A cable is critical (a bridge) if removing it splits the network. Each node will carry "disc/low" under it.`,
+    title: 'Start', desc: `${plural(n, 'server')}, ${plural(edges.length, 'cable')}. A cable is critical (a bridge) if removing it splits the network. Each node will carry "disc/low" under it.`,
     logic: 'disc is the time a node is first reached; low is the earliest disc reachable from its subtree using at most one back edge.', logicTone: 'info',
     tag: 'INIT —', note: `disc[0..${n - 1}] = −1, timer = 0, dfs(0, −1)`,
     javaLines: [4, 5, 6, 7], pyLines: [1, 2, 3, 4, 5, 6, 7], algoStep: 0,

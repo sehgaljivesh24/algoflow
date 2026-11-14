@@ -129,7 +129,7 @@ export function GraphViz({ scene }: { scene: GraphScene }) {
       <svg
         className="svg-viz gv"
         viewBox={`${vx} ${vy} ${vw} ${vh}`}
-        style={{ maxWidth: Math.round(vw * SCALE) }}
+        style={{ maxWidth: Math.round(vw * SCALE), ['--gv-w' as string]: `${Math.round(vw)}px` }}
         role="img"
         aria-label={`Graph with ${nodeCount} nodes and ${edgeCount} edges`}
       >

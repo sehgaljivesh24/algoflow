@@ -31,7 +31,7 @@ function build({ n, edges }: GIn): Step[] {
   });
   const aux = (): Aux[] => [
     { title: 'BFS queue (front on the left)', kind: 'queue', items: queue.map(String) },
-    { title: 'colour[ ]  (A = blue, B = orange)', kind: 'list', items: color.map((c, i) => `${i}: ${c ? SIDE_NAME[c] : '·'}`) },
+    { title: 'colour[ ] (A = blue, B = orange)', kind: 'list', items: color.map((c, i) => `${i}: ${c ? SIDE_NAME[c] : '·'}`) },
   ];
   const vars = () => ({ node: cur ?? '—', colour: cur === null ? '—' : SIDE_NAME[color[cur]], coloured: color.filter(Boolean).length, bipartite: verdict });
   const push = (s: Omit<Step, 'vars' | 'aux' | 'scene'>) => steps.push({ ...s, scene: scene(), aux: aux(), vars: vars() });

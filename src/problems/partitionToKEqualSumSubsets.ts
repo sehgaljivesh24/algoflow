@@ -1,4 +1,5 @@
 import type { CellState, ProblemDef, Step } from '../engine/types.ts';
+import { plural } from './text.ts';
 import { arr, bin, find, gc, parseInts, recorder, splitParts } from './dpAdvKit.ts';
 
 interface In { nums: number[]; k: number }
@@ -86,7 +87,7 @@ function build({ nums, k }: In): Step[] {
   const say = recorder(steps, snap);
 
   say({
-    title: 'Bucket arithmetic', desc: `The ${n} numbers add to ${total}. Splitting into ${k} equal groups needs ${total} divisible by ${k}${total % k === 0 ? `: each group must sum to ${target}` : ` — it is not`}.`,
+    title: 'Bucket arithmetic', desc: `The ${plural(n, 'number')} ${n === 1 ? 'adds' : 'add'} to ${total}. Splitting into ${plural(k, 'equal group')} needs ${total} divisible by ${k}${total % k === 0 ? `: each group must sum to ${target}` : ` — it is not`}.`,
     logic: 'This divisibility test and "no number exceeds the target" rule out most impossible inputs before any search.', tone: total % k === 0 ? 'info' : 'warn', java: J.chk, py: P.chk, algo: 0,
     tag: 'ARITHMETIC —', note: total % k === 0 ? `${total} / ${k} = ${target} per bucket` : `${total} % ${k} = ${total % k} ≠ 0`,
   });
@@ -140,7 +141,7 @@ function build({ nums, k }: In): Step[] {
   fresh = [];
   notes = [];
   say({
-    title: 'Done', desc: ok ? `The full mask is reachable with a closed last bucket: ${k} groups of ${target} exist.` : 'The full mask can never be reached without overflowing a bucket, so no equal split exists.',
+    title: 'Done', desc: ok ? `The full mask is reachable with a closed last bucket: ${plural(k, 'group')} of ${target} ${k === 1 ? 'exists' : 'exist'}.` : 'The full mask can never be reached without overflowing a bucket, so no equal split exists.',
     logic: 'dp[all] = 0 means every number was placed and every bucket closed exactly at the target.', tone: ok ? 'success' : 'warn', java: J.ret, py: P.ret, algo: 4,
     tag: ok ? '✅ Done!' : '❌ No split!', note: `dp[${bin((1 << n) - 1, n)}] = ${dp[(1 << n) - 1]} → return ${ok}`,
     result: { title: String(ok), text: ok ? 'Can partition' : 'Cannot partition' },

@@ -1,4 +1,5 @@
 import type { CellState, ProblemDef, Step } from '../engine/types.ts';
+import { plural } from './text.ts';
 import { rng } from './graphKit.ts';
 import { recorder } from './stepKit.ts';
 import { intIn, intList, semis } from './p4Kit.ts';
@@ -67,14 +68,14 @@ function build({ vals, seed }: In): Step[] {
       title: `Node ${seen} (value ${vals[j]}): draw ${r}`,
       tag: `NODE ${seen} —`, note: keep ? `rand.nextInt(${seen}) = ${r} == 0 → chosen = ${vals[j]}` : `rand.nextInt(${seen}) = ${r} ≠ 0 → chosen stays ${vals[chosen]}`,
       desc: keep ? `rand(${seen}) = ${r} is 0 (chance 1/${seen}) → 🎯 ${vals[j]} replaces the pick.` : `rand(${seen}) = ${r} ≠ 0 (chance ${seen - 1}/${seen}) → the pick stays ${vals[chosen]}.`,
-      logic: seen === 1 ? 'The first node is always taken: with one node seen, it must be the pick.' : `After this step every one of the ${seen} visited nodes is the pick with probability exactly 1/${seen}.`,
+      logic: seen === 1 ? 'The first node is always taken: with one node seen, it must be the pick.' : `After this step every one of the ${plural(seen, 'visited node')} is the pick with probability exactly 1/${seen}.`,
       tone: keep ? 'success' : 'info', java: [6, 7, 8], py: [5, 6, 7, 8, 9], algo: keep ? 2 : 1,
     });
   }
 
   cur = -1;
   say({
-    title: 'Done', tag: '✅ Done!', note: `return ${vals[chosen]}`, desc: `The list ended after ${n} nodes. The pick is node ${chosen + 1}, value ${vals[chosen]} (every node had chance 1/${n}).`,
+    title: 'Done', tag: '✅ Done!', note: `return ${vals[chosen]}`, desc: `The list ended after ${plural(n, 'node')}. The pick is node ${chosen + 1}, value ${vals[chosen]} (every node had chance 1/${n}).`,
     logic: `Node j survives if it is taken (1/j) and never replaced (j/(j+1) · … · (n−1)/n), a product that telescopes to 1/${n} for every node.`, tone: 'success', java: [10], py: [10], algo: 3,
     result: { title: String(vals[chosen]), text: 'Value returned by getRandom()' },
   });

@@ -1,4 +1,5 @@
 import type { Aux, CellState, ProblemDef, Step } from '../../engine/types.ts';
+import { plural } from '../text.ts';
 import { TrieModel } from '../trieKit.ts';
 import { recorder } from '../stepKit.ts';
 
@@ -48,7 +49,7 @@ function build({ ops }: In): Step[] {
       let id = 0;
       const path = [0];
       scene = trie.scene(path, { 0: 'active' });
-      say({ title: opLabel, desc: `Insert "${word}" letter by letter, creating missing nodes.`, logic: 'Insertion is the plain trie walk: one node per letter.', java: [4, 5], py: [4, 5], algo: 1, tag: 'ADD —', note: `addWord("${word}"): ${word.length} letters, node = root` });
+      say({ title: opLabel, desc: `Insert "${word}" letter by letter, creating missing nodes.`, logic: 'Insertion is the plain trie walk: one node per letter.', java: [4, 5], py: [4, 5], algo: 1, tag: 'ADD —', note: `addWord("${word}"): ${plural(word.length, 'letter')}, node = root` });
       for (let k = 0; k < word.length; k++) {
         const [nid, created] = trie.ensure(id, word[k]);
         id = nid;

@@ -123,7 +123,11 @@
 
 /* picture */
 .pp-caption { font-size: .72rem; color: var(--muted); font-family: var(--mono); margin-bottom: 8px; overflow-wrap: anywhere; white-space: pre-wrap; }
-.pp-picture { position: relative; overflow-x: auto; overflow-y: hidden; margin-bottom: 18px; padding: 34px 0 8px; }
+/* the 34px head room is for the window frame's label (framed pictures only); other pictures start close under the caption */
+.pp-picture { position: relative; overflow-x: auto; overflow-y: hidden; margin-bottom: 18px; padding: 14px 0 8px; }
+.pp-picture.framed { padding-top: 34px; }
+/* two scenes side by side (matrix + forest ...): align at the top instead of centring the shorter one under a blank band */
+.pp-picture .split-viz:not(.stack) { align-items: flex-start; }
 .pp-picture-inner { position: relative; width: max-content; min-width: 100%; }
 .pp-overlay { --fc: var(--pp-accent); position: absolute; left: 0; top: 0; height: 64px; width: 0; border: 2.5px solid var(--fc); border-radius: 15px; background: linear-gradient(135deg, color-mix(in srgb, var(--fc) 4%, transparent), color-mix(in srgb, var(--fc) 11%, transparent)); box-shadow: 0 0 26px color-mix(in srgb, var(--fc) 16%, transparent), inset 0 0 16px color-mix(in srgb, var(--fc) 5%, transparent); transition: transform .48s cubic-bezier(.34, 1.56, .64, 1), width .4s ease, opacity .3s; pointer-events: none; z-index: 5; opacity: 0; }
 .pp-overlay.visible { opacity: 1; }
@@ -215,6 +219,18 @@ a.pp-prob:hover { border-color: var(--cyan); transform: translateX(5px); backgro
 @media (max-width: 480px) {
   .pp-picture .av-root { --av-cw: 40px; --av-gap: 6px; }
 }
+/* phone: tap targets of at least 36-40px (controls, back, theme, copy) and no text under 11px */
+@media (max-width: 600px) {
+  .pp-btn, .pp-speed { min-height: 40px; }
+  .pp-btn.primary { min-height: 42px; }
+  .pp-back { min-height: 38px; }
+  .pp-theme { width: 38px; height: 38px; }
+  .pp-copy { min-height: 34px; padding: 6px 12px; }
+  .pp-full { display: inline-flex; align-items: center; min-height: 34px; font-size: .74rem; }
+  .pp-label, .pp-extab-n, .pp-extab-meta, .pp-cx-lbl, .pp-cx-pill, .pp-hero-tag, .pp-prob-num, .pp-diff, .pp-animated, .pp-lang { font-size: .7rem; }
+  .pp-ph, .pp-tag, .pp-anim-top, .pp-exwhy-label, .pp-copy, .pp-aux-title, .pp-overlay-label { font-size: .7rem; }
+  .pp-ph { padding: 5px 11px; }
+}
 
 @media (prefers-reduced-motion: reduce) {
   .pp-ph.on, .pp-stat.record, .pp-alert, .pp-window [data-state], .pp-window .viz-box { animation: none; }
@@ -266,3 +282,9 @@ a.pp-prob:hover { border-color: var(--cyan); transform: translateX(5px); backgro
 :root[data-theme='light'] .pp-picture .gv-circle.vz-dim, :root[data-theme='light'] .pp-picture .tr-circle.vz-dim,
 :root[data-theme='light'] .pp-picture .iv-rect.vz-dim, :root[data-theme='light'] .pp-picture .nt-shape.vz-dim,
 :root[data-theme='light'] .pp-picture .pl-dot.vz-dim { fill: var(--bg3); stroke: #afb8c1; }
+
+/* phone: array index numbers stay readable (11px+) */
+@media (max-width: 600px) {
+  .pp-picture .av-inner.pat .av-idx { font-size: .7rem; }
+  .pp-picture .av-ptr-row.under .av-ptr-lbl { font-size: .7rem; }
+}

@@ -1,4 +1,5 @@
 import type { Aux, Cell, CellState, ProblemDef, Step } from '../engine/types';
+import { plural, verb } from './text.ts';
 
 interface In { nums: number[] }
 
@@ -98,7 +99,7 @@ function build({ nums }: In): Step[] {
 
   steps.push({
     title: 'Done', tag: '✅ Done!',
-    desc: `fast reached the end: ${slow + 1} unique value${slow === 0 ? '' : 's'} [${a.slice(0, slow + 1).join(', ')}] fill the first ${slow + 1} cells; the rest are leftovers.`,
+    desc: `fast reached the end: ${plural(slow + 1, 'unique value')} [${a.slice(0, slow + 1).join(', ')}] ${verb(slow + 1, 'fills', 'fill')} the first ${plural(slow + 1, 'cell')}; the rest are leftovers.`,
     cells: cells(n, { cut: slow + 1 }), pointers: [{ id: 'slow', label: 'slow', index: slow, tone: 'green' }], aux: inv(), vars: vars('—'),
     logic: `Return slow + 1 = ${slow + 1}. Cells after that are leftovers and don't matter.`, logicTone: 'success', javaLines: [8], pyLines: [6],
     algoStep: 3, note: `return slow + 1 = ${slow + 1}`, result: { title: String(slow + 1), text: `[${a.slice(0, slow + 1).join(', ')}]` },

@@ -1,6 +1,7 @@
 import type { Aux, CellState, EdgeState, GraphEdgeVM, GraphNodeVM, GraphScene, Pointer, Step, Tone } from '../engine/types.ts';
 import type { Cell } from '../engine/types.ts';
 import { tokens } from './graphKit.ts';
+import { plural } from './text.ts';
 
 /* ------------------------------------------------------------------ shared input parsing */
 
@@ -202,7 +203,7 @@ export class FlowRun {
       desc: `Every edge shows flow/capacity and begins at 0. Each edge also has a hidden backward arc that will let us undo flow later.${extraDesc}`,
       logic: 'A flow is legal when no edge carries more than its capacity and every inner node passes on exactly what it receives. Zero flow is trivially legal.',
       logicTone: 'info', javaLines: L.j, pyLines: L.p, algoStep: L.a,
-      tag: 'INIT —', note: `flow = 0, ${this.net.edges.length} edges each get a backward arc of capacity 0`,
+      tag: 'INIT —', note: `flow = 0, ${plural(this.net.edges.length, 'edge')} each get a backward arc of capacity 0`,
     });
   }
 

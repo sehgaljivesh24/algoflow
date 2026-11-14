@@ -1,4 +1,5 @@
 import type { Aux, Cell, CellState, ProblemDef, Step } from '../engine/types';
+import { plural } from './text.ts';
 import { tokens } from './graphKit.ts';
 
 interface In { grid: string[] }
@@ -38,7 +39,7 @@ function build({ grid }: In): Step[] {
   const push = (s: Omit<Step, 'vars' | 'aux' | 'scene'>) => steps.push({ ...s, scene: scene(), aux: aux(), vars: vars() });
 
   push({
-    title: 'Start', tag: '🗺️ PLAN —', note: `${R} × ${C} heights; Pacific = top + left, Atlantic = bottom + right`, desc: `Heights on a ${R}×${C} island. The Pacific touches the top row and left column; the Atlantic touches the bottom row and right column. Water flows to equal or lower neighbours.`,
+    title: 'Start', tag: '🗺️ PLAN —', note: `${R} × ${plural(C, 'height')}; Pacific = top + left, Atlantic = bottom + right`, desc: `Heights on a ${R}×${C} island. The Pacific touches the top row and left column; the Atlantic touches the bottom row and right column. Water flows to equal or lower neighbours.`,
     logic: 'Instead of asking from every cell where its water goes, flip it: start at each ocean and climb UPHILL. Every cell the climb reaches can drain into that ocean.', logicTone: 'info',
     javaLines: [1], pyLines: [1], algoStep: 0,
   });
@@ -50,7 +51,7 @@ function build({ grid }: In): Step[] {
       if (!seen[r][c]) { seen[r][c] = true; frontier.push([r, c]); newly.add(`${r},${c}`); }
     }
     push({
-      title: `Seed the ${name} border`, tag: '🌊 SEED —', note: `${name === 'Pacific' ? 'pac' : 'atl'}[border] = true for ${frontier.length} cells`, desc: `${frontier.length} border cell${frontier.length === 1 ? '' : 's'} touch the ${name}, so they drain into it (purple = just reached).`,
+      title: `Seed the ${name} border`, tag: '🌊 SEED —', note: `${name === 'Pacific' ? 'pac' : 'atl'}[border] = true for ${plural(frontier.length, 'cell')}`, desc: `${frontier.length} border cell${frontier.length === 1 ? '' : 's'} touch the ${name}, so they drain into it (purple = just reached).`,
       logic: 'Border cells next to an ocean obviously flow into it.', logicTone: 'info',
       javaLines: name === 'Pacific' ? [4, 5] : [8, 9], pyLines: name === 'Pacific' ? [2] : [3], algoStep: 1,
     });
@@ -85,7 +86,7 @@ function build({ grid }: In): Step[] {
     }
     newly = new Set();
     push({
-      title: `${name} finished`, tag: '🏁 FINISHED —', note: `${name === 'Pacific' ? 'pac' : 'atl'} has ${count(seen)} of ${R * C} cells`, desc: `No unvisited neighbour is high enough to continue: ${count(seen)} of ${R * C} cells can drain into the ${name}.`,
+      title: `${name} finished`, tag: '🏁 FINISHED —', note: `${name === 'Pacific' ? 'pac' : 'atl'} has ${count(seen)} of ${plural(R * C, 'cell')}`, desc: `No unvisited neighbour is high enough to continue: ${count(seen)} of ${plural(R * C, 'cell')} can drain into the ${name}.`,
       logic: 'No unvisited neighbour is high enough to continue the climb.', logicTone: 'info',
       javaLines: [name === 'Pacific' ? 6 : 10], pyLines: [name === 'Pacific' ? 4 : 5], algoStep: 3,
     });

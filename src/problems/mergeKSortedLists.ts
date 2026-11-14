@@ -1,4 +1,5 @@
 import type { Cell, CellState, ProblemDef, Step } from '../engine/types.ts';
+import { plural, verb } from './text.ts';
 import { Heap, arrow, emitter, parseInts, plainList } from './listheapKit.ts';
 
 interface In { lists: number[][] }
@@ -95,7 +96,7 @@ function build({ lists }: In): Step[] {
 
   const out = res.slice(1);
   finished = true;
-  emit('Done', `The heap is empty. Return dummy.next: ${arrow(out)}.`, `${out.length} nodes were output using a heap of at most ${lists.length} entries.`, 'success', [9], [10], 4,
+  emit('Done', `The heap is empty. Return dummy.next: ${arrow(out)}.`, `${plural(out.length, 'node')} ${verb(out.length, 'was', 'were')} output using a heap of at most ${plural(lists.length, 'entry', 'entries')}.`, 'success', [9], [10], 4,
     { title: arrow(out), text: `Merged ${lists.length} lists` }, { tag: '✅ Done!', note: `return dummy.next → ${out.join(', ')}` });
   return steps;
 }

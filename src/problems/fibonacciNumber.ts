@@ -1,4 +1,5 @@
 import type { Cell, CellState, ProblemDef, Step } from '../engine/types.ts';
+import { plural } from './text.ts';
 import { recorder } from './stepKit.ts';
 
 interface In { n: number }
@@ -32,7 +33,7 @@ function build({ n }: In): Step[] {
   const say = recorder(steps, snap);
 
   say({
-    title: 'Define the table', tag: 'DEFINE —', desc: `dp[i] is the i-th Fibonacci number: a table of ${n + 1} cells, F(0) = 0, F(1) = 1, and each later cell is the sum of the two before it.`,
+    title: 'Define the table', tag: 'DEFINE —', desc: `dp[i] is the i-th Fibonacci number: a table of ${plural(n + 1, 'cell')}, F(0) = 0, F(1) = 1, and each later cell is the sum of the two before it.`,
     logic: 'Instead of recomputing the same values with recursion, store each one once in a table and reuse it.',
     java: [0, 2], py: [0, 3], algo: 0, note: `dp = new int[${n + 1}]`,
   });

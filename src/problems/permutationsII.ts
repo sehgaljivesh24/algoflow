@@ -1,4 +1,5 @@
 import type { Cell, ProblemDef, Step } from '../engine/types.ts';
+import { plural } from './text.ts';
 import { capSteps, fmtList, parseInts, recorder } from './stepKit.ts';
 import { find } from './treeKit.ts';
 import { treeOverArray, twoPass, type RecTree } from './recTreeKit.ts';
@@ -171,7 +172,7 @@ function run({ nums: input }: In, tree: RecTree): Step[] {
     desc: `${results.length} distinct permutation${results.length === 1 ? '' : 's'} found; the skipped duplicate branches (red) never produced a repeat.`,
     note: `return res → ${results.length} distinct`,
     logic: 'This equals n! divided by the factorials of the repeat counts of each value.', tone: 'success',
-    java: J.ret, py: P.ret, algo: 5, result: { title: `${results.length} permutations`, text: results.join(' ') },
+    java: J.ret, py: P.ret, algo: 5, result: { title: plural(results.length, 'permutation'), text: results.join(' ') },
   });
   return steps;
 }

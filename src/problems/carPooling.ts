@@ -1,4 +1,5 @@
 import type { IntervalBarVM, ProblemDef, Step } from '../engine/types.ts';
+import { plural } from './text.ts';
 import { recorder } from './stepKit.ts';
 import { intIn, semis } from './p4Kit.ts';
 
@@ -59,7 +60,7 @@ function build({ trips, capacity }: In): Step[] {
     logic: 'The car is overloaded at some point exactly when the number of passengers on board exceeds the capacity at some position — only the pick-up and drop-off points can change that.', java: [0], py: [0], algo: 0,
   });
   say({
-    tag: 'EVENTS', title: 'Turn trips into events', desc: `Every trip gives two events: +passengers at its pick-up and −passengers at its drop-off, ${events.length} events for ${trips.length} trips.`,
+    tag: 'EVENTS', title: 'Turn trips into events', desc: `Every trip gives two events: +passengers at its pick-up and −passengers at its drop-off, ${plural(events.length, 'event')} for ${plural(trips.length, 'trip')}.`,
     note: `events = ${events.map(evText).join(', ')}`,
     logic: 'A sweep line only needs to stop where something changes.', java: [2, 3, 4], py: [2, 3, 4], algo: 1,
   });
@@ -81,8 +82,8 @@ function build({ trips, capacity }: In): Step[] {
       ok = false;
       answer = 'false';
       say({
-        tag: 'OVERLOAD', title: `Overload at ${e.pos}: ${load} > ${capacity}`, desc: `${e.change} passengers board at ${e.pos}: ${before} → ${load}, more than the ${capacity} seats.`,
-        note: `load = ${before} + ${e.change} = ${load} > ${capacity} → return false`, alert: `Over capacity at position ${e.pos}: ${load} passengers but only ${capacity} seats!`,
+        tag: 'OVERLOAD', title: `Overload at ${e.pos}: ${load} > ${capacity}`, desc: `${plural(e.change, 'passenger')} ${e.change === 1 ? 'boards' : 'board'} at ${e.pos}: ${before} → ${load}, more than the ${plural(capacity, 'seat')}.`,
+        note: `load = ${before} + ${e.change} = ${load} > ${capacity} → return false`, alert: `Over capacity at position ${e.pos}: ${plural(load, 'passenger')} but only ${plural(capacity, 'seat')}!`,
         logic: 'The first moment the load exceeds the capacity proves the plan is impossible, so we can stop.', tone: 'warn', java: [10], py: [9, 10], algo: 3,
       });
       break;

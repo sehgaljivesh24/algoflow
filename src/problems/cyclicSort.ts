@@ -1,4 +1,5 @@
 import type { Cell, CellState, ProblemDef, Step } from '../engine/types.ts';
+import { plural } from './text.ts';
 import { fmtArr, ptr } from './pack1Kit.ts';
 import { parseInts } from './stepKit.ts';
 
@@ -69,7 +70,7 @@ function build({ nums }: In): Step[] {
     note: `sorted: ${text}, swaps = ${swaps}`,
     cells: cells(-1, [], true).map((c) => ({ ...c, state: 'sorted' as CellState })), pointers: [], aux: aux(), vars: vars('—', '—'),
     logic: 'O(n) time, O(1) space: no comparisons between elements were needed.', logicTone: 'success', javaLines: [10], pyLines: [8], algoStep: 3,
-    result: { title: text, text: `Sorted with ${swaps} swaps` },
+    result: { title: text, text: `Sorted with ${plural(swaps, 'swap')}` },
   });
   return steps;
 }

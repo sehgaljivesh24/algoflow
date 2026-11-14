@@ -1,4 +1,5 @@
 import type { Cell, CellState, ProblemDef, Step } from '../engine/types.ts';
+import { plural } from './text.ts';
 import { fmtArr, ptr } from './pack1Kit.ts';
 import { parseInts } from './stepKit.ts';
 
@@ -92,7 +93,7 @@ function build({ nums }: In): Step[] {
   const res = [...dups].sort((x, y) => x - y);
   steps.push({
     title: 'Done', tag: '✅ Done!', note: `return ${fmtArr(res)}`,
-    desc: res.length ? `Values that appear twice: ${fmtArr(res)}. Two passes over ${n} numbers, no extra array` : `No value appears twice in these ${n} numbers`, cells: cells(-1), pointers: [], aux: aux(), vars: vars('—'),
+    desc: res.length ? `Values that appear twice: ${fmtArr(res)}. Two passes over ${n} numbers, no extra array` : `No value appears twice among the ${plural(n, 'number')}`, cells: cells(-1), pointers: [], aux: aux(), vars: vars('—'),
     logic: 'Two linear passes, no extra array: O(n) time, O(1) space.', logicTone: 'success', javaLines: [10], pyLines: [8], algoStep: 4,
     result: { title: fmtArr(res), text: res.length ? 'Duplicated values' : 'No duplicates' },
   });

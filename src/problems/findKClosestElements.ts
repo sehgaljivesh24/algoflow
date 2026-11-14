@@ -1,4 +1,5 @@
 import type { Cell, ProblemDef, Step } from '../engine/types.ts';
+import { noun, plural } from './text.ts';
 import { emitter, parseOne, parts } from './listheapKit.ts';
 import { parseNums, ptr } from './ssbShared.ts';
 
@@ -53,7 +54,7 @@ function build({ arr, k, x }: In): Step[] {
   });
 
   show([`x = ${x}`, `k = ${k}`, `start range = [${lo}..${hi}]`]);
-  emit('Start', `Pick the k = ${k} values closest to x = ${x} from a sorted array. The answer is a block of k neighbours, so we search for where that block starts: between 0 and n − k = ${hi}.`,
+  emit('Start', `Pick the k = ${plural(k, 'value')} closest to x = ${x} from a sorted array. The answer is a block of k neighbours, so we search for where that block starts: between 0 and n − k = ${hi}.`,
     'The k closest elements are always contiguous in a sorted array, so only the start index is unknown.', 'info', [1], [1], 0,
     undefined, { tag: 'INIT —', note: `lo = 0, hi = ${n} − ${k} = ${hi}` });
 
@@ -87,7 +88,7 @@ function build({ arr, k, x }: In): Step[] {
   show([`start = ${lo}`, `answer = [${res.join(', ')}]`], 1);
   emit(`Block starts at ${lo}`, `The start range collapsed to ${lo}, so the answer is arr[${lo}..${lo + k - 1}] = [${res.join(', ')}].`,
     'Those k values are the ones with the smallest distance to x, listed in sorted order.', 'success', [7, 8, 9], [8], 4,
-    { title: `[${res.join(', ')}]`, text: `The ${k} closest values to ${x}` }, { tag: '✅ Done!', note: `return arr[${lo}..${lo + k - 1}]` });
+    { title: `[${res.join(', ')}]`, text: `The ${k} closest ${noun(k, 'value')} to ${x}` }, { tag: '✅ Done!', note: `return arr[${lo}..${lo + k - 1}]` });
   return steps;
 }
 

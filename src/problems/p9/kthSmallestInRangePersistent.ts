@@ -1,4 +1,5 @@
 import type { Aux, CellState, ProblemDef, Step } from '../../engine/types.ts';
+import { ordinal, plural, verb } from '../text.ts';
 import { dagScene, layoutDag, lineOf, parseNums, splitBar } from './kitC.ts';
 import type { DagLayout, PNode } from './kitC.ts';
 
@@ -174,7 +175,7 @@ function run(input: In, lay: DagLayout | null): { steps: Step[]; nodes: PNode[] 
     title: 'Version 0: an empty tree over the values', desc: `The ${m} distinct value${m === 1 ? '' : 's'} ${vals.join(', ')} are the leaves; each box counts how many inserted elements fall in its value range (shown under the count). Everything is 0.`,
     logic: 'The tree is indexed by VALUE, not by position. Version i will count the first i array elements.', logicTone: 'info',
     javaLines: J.empty, pyLines: P.empty, algoStep: 0,
-    tag: 'VERSION 0 —', note: `vals = [${vals.join(', ')}] → ${m} leaves, all counts 0`,
+    tag: 'VERSION 0 —', note: `vals = [${vals.join(', ')}] → ${plural(m, 'leaf', 'leaves')}, all counts 0`,
   });
 
   a.forEach((x, idx) => {
@@ -221,7 +222,7 @@ function run(input: In, lay: DagLayout | null): { steps: Step[]; nodes: PNode[] 
       for (const ch of [c.left, c.right]) if (ch !== null && !fresh.has(ch)) st[ch] = 'found';
     });
     push({
-      title: `Version ${ver} ready: ${prefix(ver)}`, desc: `${copies.length} new nodes were created (blue outline); the green nodes are shared with older versions.`,
+      title: `Version ${ver} ready: ${prefix(ver)}`, desc: `${plural(copies.length, 'new node')} ${verb(copies.length, 'was', 'were')} created (blue outline); the green nodes are shared with older versions.`,
       logic: 'After n inserts there are n + 1 roots, and the tree of any prefix can be read from its root.', logicTone: 'success',
       javaLines: J.insHead, pyLines: P.insHead, algoStep: 1,
       tag: 'VERSION READY —', note: `${copies.length} new nodes, ${nodes.length} in total; v${ver} counts ${prefix(ver)}`,
@@ -240,7 +241,7 @@ function run(input: In, lay: DagLayout | null): { steps: Step[]; nodes: PNode[] 
     st = { [A.id]: 'active', [B.id]: 'compare' };
     ptr = [{ label: `R:v${q.r}`, node: A.id, tone: 'orange' }, { label: `L:v${q.l - 1}`, node: B.id, tone: 'purple' }];
     push({
-      title: `${q.k}-th smallest of positions ${q.l}..${q.r}`, desc: `The range holds [${sub.join(' ')}]. Its value counts are (version ${q.r}) minus (version ${q.l - 1}), so we walk both trees together from their roots.`,
+      title: `${ordinal(q.k)} smallest of positions ${q.l}..${q.r}`, desc: `The range holds [${sub.join(' ')}]. Its value counts are (version ${q.r}) minus (version ${q.l - 1}), so we walk both trees together from their roots.`,
       logic: 'Subtracting two prefix versions gives the counts of exactly the elements in the range, without building anything new.', logicTone: 'info',
       javaLines: J.qHead, pyLines: P.qHead, algoStep: 2,
       tag: 'QUERY —', note: `a = root[${q.r}], b = root[${q.l - 1}], k = ${q.k}, range [${sub.join(' ')}]`,
@@ -257,7 +258,7 @@ function run(input: In, lay: DagLayout | null): { steps: Step[]; nodes: PNode[] 
       ptr = [{ label: `R:v${q.r}`, node: A.id, tone: 'orange' }, { label: `L:v${q.l - 1}`, node: B.id, tone: 'purple' }];
       push({
         title: goLeft ? `${inLeft} in the smaller half: go left` : `Only ${inLeft} in the smaller half: go right with k = ${k}`,
-        desc: `Range elements in the smaller half: ${la} - ${lb} = ${inLeft}. ${goLeft ? `k = ${before} <= ${inLeft}, so the answer is among the smaller values (${rangeLabel(A.lo, A.hi)}).` : `k = ${before} > ${inLeft}: skip those ${inLeft}; the answer is the ${k}-th among the larger values (${rangeLabel(A.lo, A.hi)}).`}`,
+        desc: `Range elements in the smaller half: ${la} - ${lb} = ${inLeft}. ${goLeft ? `k = ${before} <= ${inLeft}, so the answer is among the smaller values (${rangeLabel(A.lo, A.hi)}).` : `k = ${before} > ${inLeft}: skip those ${inLeft}; the answer is the ${ordinal(k)} among the larger values (${rangeLabel(A.lo, A.hi)}).`}`,
         logic: 'count(range in left half) = count in version r minus count in version l-1, so one subtraction decides the direction.', logicTone: 'info',
         javaLines: goLeft ? J.qStep : J.qRight, pyLines: goLeft ? P.qStep : P.qRight, algoStep: 3,
         tag: goLeft ? 'GO LEFT:' : 'GO RIGHT:',
@@ -267,14 +268,14 @@ function run(input: In, lay: DagLayout | null): { steps: Step[]; nodes: PNode[] 
     const ans = vals[A.lo];
     answers.push(ans);
     st = { [A.id]: 'found', [B.id]: 'compare' };
-    push({ title: `${op} = ${ans}`, desc: `Both walks ended on the leaf for value ${ans}; it is the ${q.k}-th smallest in [${sub.join(' ')}]. Sorted: [${[...sub].sort((x, y) => x - y).join(' ')}].`, logic: 'O(log m) steps, regardless of how long the range is.', logicTone: 'success', javaLines: J.qEnd, pyLines: P.qEnd, algoStep: 4, tag: 'ANSWER —', note: `return vals[${A.lo}] = ${ans}` });
+    push({ title: `${op} = ${ans}`, desc: `Both walks ended on the leaf for value ${ans}; it is the ${ordinal(q.k)} smallest in [${sub.join(' ')}]. Sorted: [${[...sub].sort((x, y) => x - y).join(' ')}].`, logic: 'O(log m) steps, regardless of how long the range is.', logicTone: 'success', javaLines: J.qEnd, pyLines: P.qEnd, algoStep: 4, tag: 'ANSWER —', note: `return vals[${A.lo}] = ${ans}` });
   }
   st = {};
   ptr = [];
   op = 'done';
   rangeTxt = '—';
   kk = '—';
-  push({ title: 'All queries answered', desc: `Answers in order: [${answers.join(', ')}]. ${roots.length} versions share ${nodes.length} nodes.`, logic: 'Persistence turned "k-th smallest in a range" into a walk over two trees.', logicTone: 'success', javaLines: J.qEnd, pyLines: P.qEnd, algoStep: 5, tag: '✅ Done!', note: `${roots.length} versions share ${nodes.length} nodes` });
+  push({ title: 'All queries answered', desc: `Answers in order: [${answers.join(', ')}]. ${plural(roots.length, 'version')} ${verb(roots.length, 'shares', 'share')} ${plural(nodes.length, 'node')}.`, logic: 'Persistence turned "k-th smallest in a range" into a walk over two trees.', logicTone: 'success', javaLines: J.qEnd, pyLines: P.qEnd, algoStep: 5, tag: '✅ Done!', note: `${plural(roots.length, 'version')} ${verb(roots.length, 'shares', 'share')} ${plural(nodes.length, 'node')}` });
   steps[steps.length - 1].result = { title: `[${answers.join(', ')}]`, text: 'k-th smallest of each queried range' };
   return { steps, nodes };
 }

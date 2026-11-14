@@ -1,6 +1,7 @@
 /** Pack p8 rolling-hash problems: Rabin-Karp search, Repeated DNA Sequences (#187), Longest Duplicate Substring (#1044, simplified). */
 import type { Cell, ProblemDef, Step } from '../engine/types.ts';
 import { Rec, arr, blank, idx, int, parts, ptr, word } from './p8Kit.ts';
+import { aNum, plural } from './text.ts';
 
 const val = (c: string) => c.charCodeAt(0) - 96;
 
@@ -60,7 +61,7 @@ function buildRK({ text, pat }: SIn): Step[] {
       rec.push({ t: `Roll: drop '${text[i]}', add '${text[i + m]}'`, d: `hash = ((${before} − ${out}·${pow}) · ${B} + ${inn}) mod ${M} = ${h}: one subtract, one multiply, one add, O(1).`, scene: grid(i + 1, 'cmp'), aux: aux(h), v: vars(i + 1, h), why: 'Removing the leading letter\'s contribution (out · B^(m−1)) and shifting everything by one place turns the old hash into the new one without rehashing m letters.', j: [11, 12, 13], p: [12, 13, 14], a: 2, tag: 'ROLL —', note: `hw = ((${before} - ${out}*${pow}) * ${B} + ${inn}) % ${M} = ${h}` });
     }
   }
-  rec.push({ t: `Matches: ${arr(hits)}`, d: `${windows} windows hashed in O(n) total; only windows whose hash equalled the pattern's were compared character by character.`, scene: grid(-1, 'none'), aux: aux('—'), v: vars('—', '—'), why: 'Expected O(n + m); the worst case O(nm) needs adversarial collisions.', tone: 'success', j: [16], p: [15], a: 3, tag: '✅ Done!', note: `return hits = ${arr(hits)}`, result: { title: arr(hits), text: hits.length ? `Pattern occurs at indices ${arr(hits)}` : 'Pattern does not occur' } });
+  rec.push({ t: `Matches: ${arr(hits)}`, d: `${plural(windows, 'window')} hashed in O(n) total; only windows whose hash equalled the pattern's were compared character by character.`, scene: grid(-1, 'none'), aux: aux('—'), v: vars('—', '—'), why: 'Expected O(n + m); the worst case O(nm) needs adversarial collisions.', tone: 'success', j: [16], p: [15], a: 3, tag: '✅ Done!', note: `return hits = ${arr(hits)}`, result: { title: arr(hits), text: hits.length ? `Pattern occurs at indices ${arr(hits)}` : 'Pattern does not occur' } });
   return rec.steps;
 }
 
@@ -155,7 +156,7 @@ function buildDna({ s, L }: DIn): Step[] {
     { title: 'repeated', kind: 'list' as const, items: [...added] },
   ];
   const vars = (i: number | string, w: string, hv: number | string, b: string) => ({ i, window: w, hash: hv, bits: b });
-  rec.push({ t: 'Start', d: `Slide a ${L}-letter window over the DNA. Each letter is 2 bits (A=00, C=01, G=10, T=11), so a window is an exact ${2 * L}-bit number: no collisions.`, cells: cells(-1), pointers: [], aux: aux(), v: vars('—', '—', 0, '—'), why: 'Packing a small alphabet into bits gives an exact, O(1)-updatable key, so we can use a hash set of integers instead of storing substrings.', j: [0, 1, 2, 3], p: [0, 1, 2, 3], a: 0, tag: 'ENCODE —', note: `mask = (1 << ${2 * L}) - 1 = ${mask}; h = 0` });
+  rec.push({ t: 'Start', d: `Slide ${aNum(L)}-letter window over the DNA. Each letter is 2 bits (A=00, C=01, G=10, T=11), so a window is an exact ${2 * L}-bit number: no collisions.`, cells: cells(-1), pointers: [], aux: aux(), v: vars('—', '—', 0, '—'), why: 'Packing a small alphabet into bits gives an exact, O(1)-updatable key, so we can use a hash set of integers instead of storing substrings.', j: [0, 1, 2, 3], p: [0, 1, 2, 3], a: 0, tag: 'ENCODE —', note: `mask = (1 << ${2 * L}) - 1 = ${mask}; h = 0` });
   for (let i = 0; i < n; i++) {
     const hOld = h;
     h = ((h << 2) | CODE[s[i]]) & mask;

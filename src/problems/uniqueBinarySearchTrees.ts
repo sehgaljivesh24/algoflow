@@ -1,4 +1,5 @@
 import type { CellState, ProblemDef, Step } from '../engine/types.ts';
+import { ordinal, plural, verb } from './text.ts';
 import { find, gc, heads, parseOne, recorder } from './dpAdvKit.ts';
 
 interface In { n: number }
@@ -48,7 +49,7 @@ function build({ n }: In): Step[] {
         else if (v === null) s = 'dim';
         return gc(`d${k}`, v === null ? '?' : v, s);
       })],
-      rowHeads: ['BSTs'], colHeads: heads(n + 1, (k) => `${k} nodes`),
+      rowHeads: ['BSTs'], colHeads: heads(n + 1, (k) => plural(k, 'node')),
     },
     aux: [{ title: cur >= 0 ? `dp[${cur}] = sum over the root` : 'sum over the root', kind: 'list' as const, items: [...terms] }],
     vars: { nodes: cur < 0 ? '—' : cur, root, 'dp[root-1]': l < 0 ? '—' : dp[l]!, 'dp[nodes-root]': r < 0 ? '—' : dp[r]!, sum },
@@ -84,8 +85,8 @@ function build({ n }: In): Step[] {
       sum = dp[m]!;
       terms.push(`root ${j}: dp[${l}]×dp[${r}] = ${dp[l]}×${dp[r]} = ${t}`);
       say({
-        title: `${m} nodes, root = ${j}`,
-        desc: `Key ${j} at the root puts ${l} smaller key${l === 1 ? '' : 's'} on the left and ${r} larger key${r === 1 ? '' : 's'} on the right: ${dp[l]} × ${dp[r]} = ${t} trees. Running total ${dp[m]}.`,
+        title: `${plural(m, 'node')}, root = ${j}`,
+        desc: `Key ${j} at the root puts ${l} smaller key${l === 1 ? '' : 's'} on the left and ${r} larger key${r === 1 ? '' : 's'} on the right: ${dp[l]} × ${dp[r]} = ${plural(t, 'tree')}. Running total ${dp[m]}.`,
         logic: 'Left and right subtrees are chosen independently, so their counts multiply; summing over every possible root is the Catalan convolution.',
         java: J.term, py: P.term, algo: 2,
         tag: `ROOT ${j} —`, note: `dp[${m}] += dp[${l}] × dp[${r}] = ${dp[l]} × ${dp[r]} = ${t} → ${dp[m]}`,
@@ -107,7 +108,7 @@ function build({ n }: In): Step[] {
   r = -1;
   done = true;
   say({
-    title: 'Done', tag: '✅ Done!', note: `return dp[${n}] = ${dp[n]}`, desc: `There are ${dp[n]} structurally different BSTs with ${n} node${n === 1 ? '' : 's'} (the ${n}th Catalan number).`,
+    title: 'Done', tag: '✅ Done!', note: `return dp[${n}] = ${dp[n]}`, desc: `There ${verb(dp[n]!, 'is', 'are')} ${plural(dp[n]!, 'structurally different BST')} with ${plural(n, 'node')} (the ${ordinal(n)} Catalan number).`,
     logic: 'dp[n] holds the answer; the sequence 1, 1, 2, 5, 14, 42, … is the Catalan numbers.', tone: 'success',
     java: J.ret, py: P.ret, algo: 3, result: { title: String(dp[n]), text: 'Distinct BSTs' },
   });

@@ -1,4 +1,5 @@
 import type { Cell, ProblemDef, Step } from '../engine/types.ts';
+import { plural } from './text.ts';
 import { at, heads, inList, recorder } from './stepKit.ts';
 
 interface In { grid: string[] }
@@ -41,7 +42,7 @@ function build({ grid }: In): Step[] {
   say({
     title: 'Define the table', tag: 'DEFINE —', desc: `dp[r][c] = ways to reach cell (r, c). Red ✕ cells are obstacles and can never be entered, so their count is 0.`,
     logic: 'Same recurrence as the plain grid, except an obstacle forces the cell\'s count to 0.',
-    java: [0, 1, 2], py: [0, 1, 2], algo: 0, note: `${m}×${n} grid, ${blocked.flat().filter(Boolean).length} obstacle(s)`,
+    java: [0, 1, 2], py: [0, 1, 2], algo: 0, note: `${m}×${n} grid, ${plural(blocked.flat().filter(Boolean).length, 'obstacle')}`,
   });
 
   for (let r = 0; r < m; r++) {

@@ -1,4 +1,5 @@
 import type { Aux, ProblemDef, Step } from '../engine/types';
+import { plural, verb } from './text.ts';
 import { Dsu, mstScene } from './mstKit.ts';
 import type { EdgeMark } from './mstKit.ts';
 import { parseEdges } from './graphKit.ts';
@@ -41,10 +42,10 @@ function build({ n, cables }: In): Step[] {
 
   const need = n - 1;
   push({
-    title: 'Count the cables', desc: `${n} computers need at least ${need} cables to be connected at all; there are ${cables.length}.`,
+    title: 'Count the cables', desc: `${plural(n, 'computer')} ${verb(n, 'needs', 'need')} at least ${plural(need, 'cable')} to be connected at all; there ${verb(cables.length, 'is', 'are')} ${cables.length}.`,
     logic: 'A move only re-plugs an existing cable, so with fewer than n − 1 cables no sequence of moves can ever connect everyone.', logicTone: cables.length < need ? 'warn' : 'info',
-    tag: 'COUNT', note: `${cables.length} cables ${cables.length < need ? '<' : '≥'} n − 1 = ${need}`,
-    alert: cables.length < need ? `Only ${cables.length} cables for ${n} computers: at least ${need} are needed.` : undefined,
+    tag: 'COUNT', note: `${plural(cables.length, 'cable')} ${cables.length < need ? '<' : '≥'} n − 1 = ${need}`,
+    alert: cables.length < need ? `Only ${plural(cables.length, 'cable')} for ${plural(n, 'computer')}: at least ${need} ${verb(need, 'is', 'are')} needed.` : undefined,
     javaLines: [1], pyLines: [1, 2], algoStep: 0,
   });
   if (cables.length < need) {
@@ -90,7 +91,7 @@ function build({ n, cables }: In): Step[] {
   cur = -1; hot = [];
   answer = comps - 1;
   steps.push({
-    title: `Groups: ${comps}, answer ${answer}`, desc: `${comps} separate group${comps === 1 ? '' : 's'} remain, so ${answer} extra link${answer === 1 ? ' is' : 's are'} needed. There ${spare === 1 ? 'is 1 spare cable' : `are ${spare} spare cables`}, enough because ${cables.length} ≥ ${need}.`,
+    title: `Groups: ${comps}, answer ${answer}`, desc: `${plural(comps, 'separate group')} ${verb(comps, 'remains', 'remain')}, so ${answer} extra link${answer === 1 ? ' is' : 's are'} needed. There ${spare === 1 ? 'is 1 spare cable' : `are ${spare} spare cables`}, enough because ${cables.length} ≥ ${need}.`,
     scene: scene(), aux: aux(), vars: { cable: '—', spare, components: comps, answer },
     logic: 'Joining c groups needs c − 1 links and we have at least that many spare cables, so each link costs exactly one move.', logicTone: 'success',
     tag: '✅ Done!', note: `components − 1 = ${comps} − 1 = ${answer}`,

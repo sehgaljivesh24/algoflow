@@ -1,4 +1,5 @@
 import type { ProblemDef, Step } from '../../engine/types.ts';
+import { plural } from '../text.ts';
 import { fmtArr, suffixesSorted, tableScene } from './kitD.ts';
 
 interface In { s: string; p: string }
@@ -79,7 +80,7 @@ function build({ s, p }: In): Step[] {
       push({
         title: `mid = ${md}: "${hh}" vs "${p}"`,
         desc: goRight
-          ? `The head "${hh}" (first ${m} letters, or the whole suffix if shorter) ${hh === p ? 'equals the pattern, and we want the end of the block' : 'sorts before the pattern'}, so everything up to rank ${md} is too small: lo = ${md + 1}.`
+          ? `The head "${hh}" (first ${plural(m, 'letter')}, or the whole suffix if shorter) ${hh === p ? 'equals the pattern, and we want the end of the block' : 'sorts before the pattern'}, so everything up to rank ${md} is too small: lo = ${md + 1}.`
           : `"${hh}" ${hh === p ? 'matches the pattern, and we want the start of the block' : 'sorts after the pattern'}, so the boundary is at or before rank ${md}: hi = ${md}.`,
         logic: strict ? 'Upper bound: skip suffixes whose prefix is smaller than OR equal to the pattern.' : 'Lower bound: skip only suffixes whose prefix is strictly smaller than the pattern.', logicTone: 'info',
         javaLines: [12, 13, 14, 15, goRight ? 16 : 17], pyLines: [7, 8, 9, 10, goRight ? 11 : 13], algoStep: strict ? 2 : 1,

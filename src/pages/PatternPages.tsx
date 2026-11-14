@@ -8,8 +8,9 @@ import { PracticeList } from '../components/pattern/PracticeList';
 import { familyMeta } from '../components/shell/familyMeta';
 import { BRAND } from '../config';
 import { useTheme } from '../data/storage';
-import { ALL_PATTERNS, CONTENT, examplesFor } from '../data/patterns';
-import { PATTERN_META, type PatternMeta } from '../data/patternMeta';
+import { ALL_PATTERNS } from '../data/patternCards';
+import type { PatternMeta } from '../data/patternMeta';
+import { usePatternText } from '../data/patternText/usePatternText';
 import { accentFor } from '../data/patternAccent';
 import { ALL_ENTRIES } from '../data/catalog';
 import { isAnimated } from '../problems/lazy';
@@ -48,17 +49,20 @@ export function PatternPage() {
   const [theme, toggleTheme] = useTheme();
   const [params, setParams] = useSearchParams();
   const card = ALL_PATTERNS.find((p) => p.slug === slug);
-  const content = CONTENT[slug];
+  // content, hero copy and examples of this pattern come from lazy chunks (src/data/patternText); the card itself is always at hand
+  const state = usePatternText(card ? slug : '');
+  const text = state.status === 'ready' ? state.text : undefined;
+  const content = text?.content;
 
   // worked examples: every entry whose problem is animated (a pattern without pack examples has just its flagship)
   const tabs = useMemo<ExampleTab[]>(() => {
     const out: ExampleTab[] = [];
-    for (const e of examplesFor(slug)) {
+    for (const e of text?.examples ?? []) {
       const problem = ENTRY_BY_SLUG.get(e.slug);
       if (problem && isAnimated(e.slug) && !out.some((t) => t.problem.slug === e.slug)) out.push({ problem, why: e.why });
     }
     return out;
-  }, [slug]);
+  }, [text]);
 
   const exParam = Number(params.get('ex'));
   const active = Number.isFinite(exParam) && exParam >= 1 ? Math.min(Math.floor(exParam), tabs.length || 1) - 1 : 0;
@@ -111,20 +115,33 @@ export function PatternPage() {
 
   const [time, space] = card.complexity.split(' / ');
   // new patterns may lack a PATTERN_META entry: derive a sensible icon / label / copy from the card and its family
-  const stored: Partial<PatternMeta> = PATTERN_META[slug] ?? {};
+  const stored: Partial<PatternMeta> = text?.meta ?? {};
   const meta: PatternMeta = {
     icon: stored.icon || familyMeta(card.group).icon,
     label: stored.label || card.tags[0] || card.group,
     desc: stored.desc || content?.summary || '',
     useNote: stored.useNote || content?.tip || '',
-    complexityNote:
-      stored.complexityNote || `Time ${time}${space ? `, extra space ${space}` : ''}. See the template below for where the cost comes from.`,
+    // while the text loads, show no complexity note (the derived fallback would be replaced a moment later)
+    complexityNote: !text
+      ? ''
+      : stored.complexityNote || `Time ${time}${space ? `, extra space ${space}` : ''}. See the template below for where the cost comes from.`,
     highlight: stored.highlight ?? [],
   };
   const hl = meta.highlight;
   const windowed = slug.startsWith('sliding-window');
   const searchRange = slug.startsWith('binary-search');
   const current = tabs[active];
+
+  const complexity = (
+    <section className="pp-card pp-info" aria-labelledby="pp-cx-title">
+      <h2 className="pp-label" id="pp-cx-title">⚡ Complexity</h2>
+      <div className={`pp-cx-grid${space ? '' : ' single'}`}>
+        <div className="pp-cx-card time"><div className="pp-cx-lbl">Time</div><div className="pp-cx-val">{time}</div></div>
+        {space && <div className="pp-cx-card space"><div className="pp-cx-lbl">Space</div><div className="pp-cx-val">{space}</div></div>}
+      </div>
+      {meta.complexityNote && <p className="pp-cx-note">{meta.complexityNote}</p>}
+    </section>
+  );
 
   return (
     <div className="pp-root">
@@ -157,7 +174,25 @@ export function PatternPage() {
           </div>
         </section>
 
-        {content && current ? (
+        {!text ? (
+          // the text chunks are on their way: same frame as the finished page, with the parts that need them still empty
+          <>
+            <div className="pp-info-row">
+              <section className="pp-card pp-info" aria-labelledby="pp-use-title" aria-busy={state.status === 'loading'}>
+                <h2 className="pp-label" id="pp-use-title">📋 When to use</h2>
+                <p className="muted" role="status" aria-live="polite">
+                  {state.status === 'error' ? `Could not load this page (${state.message}). Reload the page to try again.` : 'Loading…'}
+                </p>
+              </section>
+              {complexity}
+            </div>
+            <section className="pp-card pp-anim" id="pp-expanel" aria-labelledby="pp-anim-title" aria-busy={state.status === 'loading'}>
+              <header className="pp-anim-head">
+                <h2 className="pp-anim-top" id="pp-anim-title">Live animation · {card.title}</h2>
+              </header>
+            </section>
+          </>
+        ) : content && current ? (
           <>
             <div className="pp-info-row">
               <section className="pp-card pp-info" aria-labelledby="pp-use-title">
@@ -167,14 +202,7 @@ export function PatternPage() {
                 </ul>
                 {meta.useNote && <div className="pp-use-note"><span aria-hidden>💡 </span>{meta.useNote}</div>}
               </section>
-              <section className="pp-card pp-info" aria-labelledby="pp-cx-title">
-                <h2 className="pp-label" id="pp-cx-title">⚡ Complexity</h2>
-                <div className={`pp-cx-grid${space ? '' : ' single'}`}>
-                  <div className="pp-cx-card time"><div className="pp-cx-lbl">Time</div><div className="pp-cx-val">{time}</div></div>
-                  {space && <div className="pp-cx-card space"><div className="pp-cx-lbl">Space</div><div className="pp-cx-val">{space}</div></div>}
-                </div>
-                {meta.complexityNote && <p className="pp-cx-note">{meta.complexityNote}</p>}
-              </section>
+              {complexity}
             </div>
 
             <LazyAnimation

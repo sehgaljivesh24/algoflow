@@ -1,4 +1,5 @@
 import type { Aux, CellState, EdgeState, GraphEdgeVM, ProblemDef, Step } from '../engine/types';
+import { plural, verb } from './text.ts';
 import { tokens } from './graphKit.ts';
 
 /** Words of an alien dictionary, already sorted by the alien alphabet. */
@@ -47,9 +48,9 @@ function build({ words }: In): Step[] {
   const push = (s: Omit<Step, 'vars' | 'aux' | 'scene'>) => steps.push({ ...s, scene: scene(), aux: aux(), vars: vars() });
 
   push({
-    title: 'Start', desc: `${words.length} words sorted in an unknown alphabet use ${n} different letters (${letters.join(', ')}). Each letter becomes a node.`,
+    title: 'Start', desc: `${plural(words.length, 'word')} sorted in an unknown alphabet ${verb(words.length, 'uses', 'use')} ${plural(n, 'different letter')} (${letters.join(', ')}). Each letter becomes a node.`,
     logic: 'The word order hides facts of the form "letter x comes before letter y". We will dig those out, then order the letters.', logicTone: 'info',
-    tag: 'INIT —', note: `${n} letters: ${letters.join(' ')}, all in-degree 0`,
+    tag: 'INIT —', note: `${plural(n, 'letter')}: ${letters.join(' ')}, all in-degree 0`,
     javaLines: [1, 2, 3, 4, 5, 6, 7], pyLines: [1, 2], algoStep: 0,
   });
 
@@ -115,7 +116,7 @@ function build({ words }: In): Step[] {
     title: queue.length ? `Queue the letters with in-degree 0: ${queue.map((q) => letters[q]).join(', ')}` : 'No letter has in-degree 0',
     desc: queue.length ? 'These letters have nothing forced before them, so they can come first.' : 'Every letter must come after another one, which is only possible with a cycle.',
     logic: 'Now the task is exactly a topological sort of the letter graph.', logicTone: queue.length ? 'info' : 'warn',
-    tag: 'SEED', note: `queue = [${queue.map((q) => letters[q]).join(', ')}] from ${edges.length} edges`,
+    tag: 'SEED', note: `queue = [${queue.map((q) => letters[q]).join(', ')}] from ${plural(edges.length, 'edge')}`,
     alert: queue.length ? undefined : 'No letter has in-degree 0: the constraints loop, so no alphabet exists.',
     javaLines: [19, 20, 21], pyLines: [12, 13], algoStep: 2,
   });

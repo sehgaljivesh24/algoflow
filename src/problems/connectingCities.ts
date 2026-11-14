@@ -1,4 +1,5 @@
 import type { Aux, ProblemDef, Step } from '../engine/types';
+import { plural, verb } from './text.ts';
 import { Dsu, mstScene, parseWeightedEdges, tokens } from './mstKit.ts';
 import type { EdgeMark, WEdge } from './mstKit.ts';
 
@@ -39,7 +40,7 @@ function build({ n, edges: input }: In): Step[] {
     });
 
   push({
-    title: 'Sort the connections', desc: `${edges.length} possible links between ${n} cities. Sort them from cheapest to most expensive; every city starts in its own group.`,
+    title: 'Sort the connections', desc: `${plural(edges.length, 'possible link')} between ${plural(n, 'city', 'cities')}. Sort them from cheapest to most expensive; every city starts in its own group.`,
     logic: 'Trying cheap links first is safe: the cheapest link that does not form a loop always belongs to some cheapest network.', logicTone: 'info',
     tag: 'SORT', note: `costs ascending: ${edges.map((e) => e.w).join(', ')}; ${n} groups`,
     javaLines: [1, 2, 3, 4], pyLines: [1, 2, 3], algoStep: 0,
@@ -74,7 +75,7 @@ function build({ n, edges: input }: In): Step[] {
     total += w; used++;
     marks[i] = 'take';
     push({
-      title: `Take ${u}-${v}: cost ${total}`, desc: `Leaders ${a} and ${b} differ, so link the groups (parent[${a}] = ${b}) and pay ${w}. Total so far ${total}; ${used} of ${n - 1} links chosen.`,
+      title: `Take ${u}-${v}: cost ${total}`, desc: `Leaders ${a} and ${b} differ, so link the groups (parent[${a}] = ${b}) and pay ${w}. Total so far ${total}; ${used} of ${plural(n - 1, 'link')} chosen.`,
       logic: 'Joining two different groups can never create a cycle and shrinks the number of groups by one.', logicTone: 'success',
       tag: 'KEEP', note: `parent[${a}] = ${b}, total += ${w} → ${total}, used = ${used}/${n - 1}`,
       javaLines: [8, 9, 10], pyLines: [8, 9, 10, 11, 12], algoStep: 3,
@@ -83,7 +84,7 @@ function build({ n, edges: input }: In): Step[] {
       done = true;
       cur = -1; hot = [];
       push({
-        title: 'Spanning tree complete', desc: `${n - 1} links join all ${n} cities, so the remaining (more expensive) connections are not needed.`,
+        title: 'Spanning tree complete', desc: `${plural(n - 1, 'link')} ${verb(n - 1, 'joins', 'join')} all ${plural(n, 'city', 'cities')}, so the remaining (more expensive) connections are not needed.`,
         logic: 'A tree on n nodes has exactly n − 1 edges: no further edge can help.', logicTone: 'success',
         tag: 'COMPLETE', note: `used == n − 1 = ${n - 1} → return ${total}`,
         javaLines: [10], pyLines: [11, 12], algoStep: 3,
@@ -95,7 +96,7 @@ function build({ n, edges: input }: In): Step[] {
   const ans = used === n - 1 ? total : -1;
   steps.push({
     title: ans === -1 ? 'Some cities cannot be reached' : `Minimum cost ${ans}`,
-    desc: ans === -1 ? `Only ${used} links were possible, fewer than n − 1 = ${n - 1}. The cities fall into ${dsu.components()} separate groups, so the answer is −1.` : `The chosen links connect every city for a total of ${ans}.`,
+    desc: ans === -1 ? `Only ${plural(used, 'link')} ${verb(used, 'was', 'were')} possible, fewer than n − 1 = ${n - 1}. The cities fall into ${dsu.components()} separate groups, so the answer is −1.` : `The chosen links connect every city for a total of ${ans}.`,
     scene: mstScene({ n, base: 1, edges, marks, dsu }),
     aux: aux(),
     vars: { edge: '—', 'root(u)': '—', 'root(v)': '—', cost: total, used: `${used}/${n - 1}` },

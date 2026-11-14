@@ -1,4 +1,5 @@
 import type { Cell, CellState, ProblemDef, Step } from '../engine/types.ts';
+import { plural } from './text.ts';
 
 interface In { s: string; k: number }
 
@@ -70,7 +71,7 @@ function build({ s, k }: In): Step[] {
       title: `Add '${ch}'`, tag: 'EXPAND:',
       desc: `take in s[${r}]='${ch}' → count ${count.get(ch)}, maxf ${prevMax === maxf ? `stays ${maxf}` : `${prevMax} → ${maxf}`}; len ${len} − maxf ${maxf} = ${cost} ${cost > k ? `> k=${k} ⚠ shrink!` : `≤ k=${k} ✓ valid`}`,
       cells: cells(l, r, r, cost > k), pointers: ptrs(r), aux: aux(cost > k), vars: vars(r, len),
-      alert: cost > k ? `Window needs ${cost} replacements but k = ${k}. Move L right until it fits.` : undefined,
+      alert: cost > k ? `Window needs ${plural(cost, 'replacement')} but k = ${k}. Move L right until it fits.` : undefined,
       logic: cost > k ? 'More replacements needed than allowed — the window is invalid and must shrink.' : 'Within budget, so this window is valid.', logicTone: cost > k ? 'warn' : 'info',
       javaLines: [4, 5], pyLines: [4, 5], algoStep: 0,
       note: `count['${ch}'] = ${count.get(ch)}; maxf = ${maxf}; ${len} − ${maxf} = ${cost} ${cost > k ? '>' : '≤'} ${k}`,
@@ -85,7 +86,7 @@ function build({ s, k }: In): Step[] {
         title: `Shrink: drop '${out}'`, tag: 'SHRINK:',
         desc: `drop s[${l - 1}]='${out}' → L moves to ${l}; len ${len3} − maxf ${maxf} = ${len3 - maxf} ${still ? `> k=${k}, still invalid` : `≤ k=${k} ✓ valid again`}`,
         cells: cells(l, r, -1, false, l - 1), pointers: ptrs(r), aux: aux(still), vars: vars(r, len3),
-        alert: still ? `Still ${len3 - maxf} replacements for k = ${k}. Keep shrinking.` : undefined,
+        alert: still ? `Still ${plural(len3 - maxf, 'replacement')} for k = ${k}. Keep shrinking.` : undefined,
         logic: 'maxf is intentionally not lowered: only a window with a larger count could beat the best, so a stale maxf never causes a wrong answer.', logicTone: 'warn',
         javaLines: [6, 7], pyLines: [6, 7], algoStep: 1,
         note: `count['${out}'] → ${count.get(out)}; l = ${l}; ${len3} − ${maxf} = ${len3 - maxf} ${still ? '>' : '≤'} ${k}`,
@@ -107,7 +108,7 @@ function build({ s, k }: In): Step[] {
   const bestCounts = new Map<string, number>();
   for (const c of s.slice(bestL, bestL + best)) bestCounts.set(c, (bestCounts.get(c) ?? 0) + 1);
   steps.push({
-    title: 'Done', tag: '✅ Done!', desc: `best = ${best}: the longest window that fits within k = ${k} replacements is "${s.slice(bestL, bestL + best)}" (indices ${bestL}–${bestL + best - 1})`,
+    title: 'Done', tag: '✅ Done!', desc: `best = ${best}: the longest window that fits within k = ${plural(k, 'replacement')} is "${s.slice(bestL, bestL + best)}" (indices ${bestL}–${bestL + best - 1})`,
     cells: cells(0, -1, -1, false, -1, true), pointers: [{ id: 'l', label: String(bestL), index: bestL, tone: 'blue' as const }, { id: 'r', label: String(bestL + best - 1), index: bestL + best - 1, tone: 'green' as const }], aux: aux(false, bestCounts),
     vars: { L: bestL, R: bestL + best - 1, maxf: Math.max(...bestCounts.values()), 'len − maxf ≤ k': `${best - Math.max(...bestCounts.values())} ≤ ${k} ✓`, best },
     logic: 'Highlighted is the first window that reached the best length.', logicTone: 'success', javaLines: [11], pyLines: [9], algoStep: 3, note: `return ${best}`,

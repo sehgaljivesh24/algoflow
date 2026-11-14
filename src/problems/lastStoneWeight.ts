@@ -1,4 +1,5 @@
 import type { CellState, ProblemDef, Step } from '../engine/types.ts';
+import { plural } from './text.ts';
 import { Heap, emitter, heapExtra, parseInts } from './listheapKit.ts';
 import type { HeapEvent } from './listheapKit.ts';
 
@@ -15,7 +16,7 @@ function build({ stones }: In): Step[] {
   const emit = emitter(steps, () => ({ scene: heap.scene(hot), aux: [heap.aux('max-heap as array')], vars: { y, x, 'heap size': heap.size } }));
   const cb = (java: number[], py: number[], algo: number) => (e: HeapEvent) => { hot = e.hot; emit(e.title, e.desc, e.logic, e.tone, java, py, algo, undefined, heapExtra(e)); };
 
-  emit('Start', `Put all ${stones.length} stones into a max-heap, so the heaviest stone is always at the root.`,
+  emit('Start', `Put all ${plural(stones.length, 'stone')} into a max-heap, so the heaviest stone is always at the root.`,
     'Each round needs the two heaviest stones; a max-heap hands them over in O(log n).', 'info', [1, 2], [1, 2], 0,
     undefined, { tag: 'INIT', note: `pq = max-heap of [${stones.join(', ')}], size ${stones.length}` });
 

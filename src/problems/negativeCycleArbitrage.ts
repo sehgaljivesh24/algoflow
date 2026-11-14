@@ -1,4 +1,5 @@
 import type { Aux, CellState, EdgeState, GraphEdgeVM, ProblemDef, Step } from '../engine/types';
+import { plural } from './text.ts';
 import { parseEdges, tokens } from './graphKit.ts';
 import type { EdgeIn } from './graphKit.ts';
 
@@ -70,7 +71,7 @@ function build({ n, edges }: In): Step[] {
     examined.fill(false);
     push({
       title: `Round ${round}${round === n ? ' (the check round)' : ''}`,
-      desc: round === n ? `Rounds 1 to ${n - 1} would settle everything if no negative cycle existed. Any update in this round proves one.` : `Relax all ${edges.length} edges in order.`,
+      desc: round === n ? `Rounds 1 to ${n - 1} would settle everything if no negative cycle existed. Any update in this round proves one.` : `Relax all ${plural(edges.length, 'edge')} in order.`,
       logic: round === n ? 'With no negative cycle, distances stop changing after n − 1 rounds. An update in round n therefore points at a cycle.' : 'Each round extends the cheapest routes by one more edge.', logicTone: 'info',
       tag: `ROUND ${round}`, note: `round ${round} of ${n}${round === n ? ' = check round' : ''}, dist = [${dist.join(', ')}]`,
       javaLines: [5, 6], pyLines: [4, 5], algoStep: 1,

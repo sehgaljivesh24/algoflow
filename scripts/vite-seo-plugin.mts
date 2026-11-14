@@ -80,9 +80,14 @@ export function seoPlugin(options: { siteUrl: string }) {
       const { metaFor, allRoutes } = await import('../src/seo/meta.ts');
       const { ALL_PROBLEMS } = await import('../src/problems/registry.ts');
       const { BRAND } = await import('../src/config.ts');
+      // Node may be eager: the full pattern data supplies the hero text that the browser bundle loads lazily (src/seo/meta.ts heroOf)
+      const { PATTERN_META } = await import('../src/data/patternsFull.ts');
 
       const statements = new Map<string, string>(ALL_PROBLEMS.map((p: { slug: string; statement: string }) => [p.slug, p.statement]));
-      const statementOf = (slug: string) => statements.get(slug);
+      const opts = {
+        statementOf: (slug: string) => statements.get(slug),
+        heroOf: (slug: string): string | undefined => (PATTERN_META as Record<string, { desc?: string } | undefined>)[slug]?.desc,
+      };
 
       const base = readFileSync(indexPath, 'utf8');
       const jsonLd = (m: Meta) => ({
@@ -97,7 +102,7 @@ export function seoPlugin(options: { siteUrl: string }) {
       const routes: string[] = allRoutes();
       let written = 0;
       for (const route of routes) {
-        const m: Meta = metaFor(route, '', { statementOf });
+        const m: Meta = metaFor(route, '', opts);
         const html = withHead(base, headBlock(m, site, BRAND, route === '/' ? jsonLd(m) : undefined));
         const file = route === '/' ? indexPath : join(outDir, ...route.split('/').filter(Boolean), 'index.html');
         if (relative(outDir, file).startsWith('..')) throw new Error(`[seo] refusing to write outside dist: ${route}`);
@@ -107,7 +112,7 @@ export function seoPlugin(options: { siteUrl: string }) {
       }
 
       const lastmod = new Date().toISOString().slice(0, 10);
-      const urls = routes.filter((r) => !metaFor(r, '', { statementOf }).noindex);
+      const urls = routes.filter((r) => !metaFor(r, '', opts).noindex);
       const sitemap =
         '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' +
         urls

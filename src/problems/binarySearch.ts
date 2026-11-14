@@ -1,4 +1,5 @@
 import type { Cell, CellState, ProblemDef, Step } from '../engine/types';
+import { plural, verb } from './text.ts';
 
 interface In { nums: number[]; target: number }
 
@@ -41,7 +42,7 @@ function build({ nums, target }: In): Step[] {
 
   steps.push({
     title: 'Start', tag: 'INIT —',
-    desc: `lo = 0, hi = ${n - 1}: all ${n} cells are candidates while we hunt for ${target}.`,
+    desc: `lo = 0, hi = ${n - 1}: all ${plural(n, 'cell')} ${verb(n, 'is a candidate', 'are candidates')} while we hunt for ${target}.`,
     cells: cells(0, n - 1), pointers: ptrs(0, n - 1), vars: vars(0, '—', n - 1),
     aux: box([`target = ${target}`, `window = [0..${n - 1}]`, `size = ${n}`]),
     logic: 'The whole array is the search window. Each comparison will discard half of it.', logicTone: 'info',

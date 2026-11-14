@@ -1,4 +1,5 @@
 import type { CellState, ProblemDef, Step } from '../engine/types.ts';
+import { plural } from './text.ts';
 import { find, gc, heads, parseOne, recorder } from './dpAdvKit.ts';
 
 interface In { n: number }
@@ -91,7 +92,7 @@ function build({ n }: In): Step[] {
       if (i === j) diag.push(`dp[${i}][${i}] = ${dp[i][j]}`);
       say({
         title: `dp[${i}][${j}] = ${dp[i][j]}`,
-        desc: `${i > 0 && j < i ? `Append "(" to a prefix with ${i - 1} opens, ${j} closes: ${a} ways. ` : i > 0 ? `A "(" can't be the last character here: the previous prefix would have more ")" than "(". ` : ''}${j > 0 ? `Append ")" to a prefix with ${i} opens, ${j - 1} closes: ${b} ways.` : ''} Total ${a} + ${b} = ${dp[i][j]}.`,
+        desc: `${i > 0 && j < i ? `Append "(" to a prefix with ${plural(i - 1, 'open')}, ${plural(j, 'close')}: ${plural(a, 'way')}.` : i > 0 ? `A "(" can't be the last character here: the previous prefix would have more ")" than "(".` : ''}${j > 0 ? `${i > 0 ? ' ' : ''}Append ")" to a prefix with ${plural(i, 'open')}, ${plural(j - 1, 'close')}: ${plural(b, 'way')}.` : ''} Total ${a} + ${b} = ${dp[i][j]}.`,
         logic: 'The last character was either "(" or ")", and the two cases never overlap, so the counts add.',
         tone: 'info', java: J.cell, py: P.cell, algo: 2,
         tag: i === j ? 'DIAGONAL —' : 'FILL CELL —',

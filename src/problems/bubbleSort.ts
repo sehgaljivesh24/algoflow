@@ -1,4 +1,5 @@
 import type { Cell, CellState, ProblemDef, Step } from '../engine/types';
+import { plural } from './text.ts';
 
 interface In { nums: number[] }
 
@@ -92,9 +93,9 @@ function build({ nums }: In): Step[] {
   steps.push({
     title: 'Done', tag: '✅ Done!',
     desc: `the array is sorted after ${swaps} swap${swaps === 1 ? '' : 's'} and ${compares} comparison${compares === 1 ? '' : 's'}: [${arr.join(', ')}].`,
-    cells: cells(0), pointers: [], vars: vars('—', '—'), note: `${compares} compares, ${swaps} swaps`,
+    cells: cells(0), pointers: [], vars: vars('—', '—'), note: `${plural(compares, 'compare')}, ${plural(swaps, 'swap')}`,
     logic: `Final array: [${arr.join(', ')}]`, logicTone: 'success', javaLines: [0, 14], pyLines: [0], algoStep: 4,
-    result: { title: 'Sorted', text: `[${arr.join(', ')}] · ${compares} comparisons · ${swaps} swaps` },
+    result: { title: 'Sorted', text: `[${arr.join(', ')}] · ${plural(compares, 'comparison')} · ${plural(swaps, 'swap')}` },
   });
   return steps;
 }

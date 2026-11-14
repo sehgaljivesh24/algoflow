@@ -1,4 +1,5 @@
 import type { Cell, ProblemDef, Step } from '../engine/types.ts';
+import { plural } from './text.ts';
 import { capSteps, heads, recorder } from './stepKit.ts';
 import { parsePalString, type PalIn } from './palIntervalKit.ts';
 import { rowCells } from './dpCoreKit.ts';
@@ -72,7 +73,7 @@ function build({ s }: PalIn): Step[] {
     cand = '—';
     done = false;
     say({
-      title: `End at j = ${e}: start with ${e} cuts`, desc: `Worst case, "${s.slice(0, e + 1)}" is cut between every pair of letters: ${e} cuts. Now look for a last palindrome piece s[i..${e}] that does better.`,
+      title: `End at j = ${e}: start with ${plural(e, 'cut')}`, desc: `Worst case, "${s.slice(0, e + 1)}" is cut between every pair of letters: ${plural(e, 'cut')}. Now look for a last palindrome piece s[i..${e}] that does better.`,
       logic: 'The last piece ends at j; its start i decides how many cuts came before it.', java: [4, 5], py: [4, 5], algo: 1,
       tag: `END j = ${e} —`, note: `cuts[${e}] = ${e} (cut between every pair)`,
     });

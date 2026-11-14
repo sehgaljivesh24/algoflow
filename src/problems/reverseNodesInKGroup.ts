@@ -1,4 +1,5 @@
 import type { CellState, ProblemDef, Step } from '../engine/types.ts';
+import { plural, verb } from './text.ts';
 import { arrow, chainKeys, chainOrder, emitter, listScene, parseInts, parseOne, parts, show } from './listheapKit.ts';
 import { annotate } from './annotate.ts';
 
@@ -44,7 +45,7 @@ function build({ vals, k }: In): Step[] {
     if (c === null) {
       kth = null;
       group.length = 0;
-      emit('Fewer than k nodes remain', `Walking ${k} nodes from gp falls off the end, so the remaining nodes stay in their original order.`, 'The problem says a short final group is left untouched.', 'warn', [4, 5], [4, 5, 6], 3);
+      emit('Fewer than k nodes remain', `Walking ${plural(k, 'node')} from gp falls off the end, so the remaining nodes stay in their original order.`, 'The problem says a short final group is left untouched.', 'warn', [4, 5], [4, 5, 6], 3);
       break;
     }
     kth = c;
@@ -84,7 +85,7 @@ function build({ vals, k }: In): Step[] {
   const out = chainKeys(next, next[0]).map((x) => all[x]);
   gp = null;
   for (const x of chainKeys(next, next[0])) if (!finished.includes(x)) finished.push(x);
-  emit('Done', `Return dummy.next: ${arrow(out)}.`, `Complete groups of ${k} are reversed${len % k ? `; the last ${len % k} node${len % k === 1 ? '' : 's'} were left alone` : ''}.`, 'success', [18], [16], 3, { title: arrow(out), text: `Reversed in groups of ${k}` });
+  emit('Done', `Return dummy.next: ${arrow(out)}.`, `Complete groups of ${k} are reversed${len % k ? `; the last ${plural(len % k, 'node')} ${verb(len % k, 'was', 'were')} left alone` : ''}.`, 'success', [18], [16], 3, { title: arrow(out), text: `Reversed in groups of ${k}` });
   return steps;
 }
 
@@ -97,7 +98,7 @@ function annotated(input: In): Step[] {
     if (s.title === 'Prepare to reverse') return { tag: 'PREPARE —', note: `prev = groupNext (${v.prev}); curr = gp.next (${v.curr})`, desc: s.desc };
     if (s.title.startsWith('Flip node')) return { tag: 'FLIP —', note: `curr.next = prev (${v.prev}); prev = curr; curr = saved next`, desc: s.desc };
     if (s.title === 'Reconnect the group') return { tag: 'RECONNECT —', note: `gp.next = kth (${v.kth}); gp = old first node`, desc: s.desc };
-    if (s.title.startsWith('Fewer than k')) return { tag: 'SHORT TAIL —', note: `fewer than ${k} nodes left → stop`, alert: `Fewer than k = ${k} nodes remain, so the tail stays as it is.`, desc: s.desc };
+    if (s.title.startsWith('Fewer than k')) return { tag: 'SHORT TAIL —', note: `fewer than ${plural(k, 'node')} left → stop`, alert: `Fewer than k = ${plural(k, 'node')} ${verb(k, 'remains', 'remain')}, so the tail stays as it is.`, desc: s.desc };
     if (i === all.length - 1) return { tag: '✅ Done!', note: `return dummy.next → ${s.result?.title}`, desc: `${s.desc}`, algoStep: 4 };
   });
 }

@@ -1,4 +1,5 @@
 import type { CellState, ProblemDef, Scene, SplitScene, Step } from '../engine/types.ts';
+import { plural } from './text.ts';
 import { Heap, parseInts } from './listheapKit.ts';
 import { recorder } from './stepKit.ts';
 import { leaf, semis } from './p4Kit.ts';
@@ -53,7 +54,7 @@ function build({ nums, k }: In): Step[] {
   const prune = (h: Heap<Item>) => { while (h.size && gone.has(h.peek().i)) h.pop(noop, true); };
 
   say({
-    title: 'Start', desc: `Slide a window of ${k} across ${n} numbers and report the median of every window. The lower half sits in a max-heap, the upper half in a min-heap.`,
+    title: 'Start', desc: `Slide a window of ${k} across ${plural(n, 'number')} and report the median of every window. The lower half sits in a max-heap, the upper half in a min-heap.`,
     logic: 'The median lives at the heap roots, but a heap cannot delete an arbitrary item cheaply, so leaving items are only marked and discarded when they surface.', java: [1], py: [1, 2, 3], algo: 0,
     tag: 'INIT', note: `low = max-heap, high = min-heap, window k = ${k}`,
   });
@@ -143,7 +144,7 @@ function build({ nums, k }: In): Step[] {
   hotLow = {};
   hotHigh = {};
   say({
-    title: 'Done', desc: `Medians of all ${medians.length} windows: ${medians.join(', ')}.`,
+    title: 'Done', desc: `Medians of all ${plural(medians.length, 'window')}: ${medians.join(', ')}.`,
     logic: 'Each element is pushed once and popped at most once, so the whole slide costs O(n log k) amortised.', tone: 'success', java: [19], py: [25], algo: 5,
     result: { title: `[${medians.join(',')}]`, text: 'Median of every window' },
     tag: '✅ Done!', note: `return [${medians.join(', ')}]`,

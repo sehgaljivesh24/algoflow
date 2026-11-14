@@ -1,4 +1,5 @@
 import type { Cell, ProblemDef, Step } from '../engine/types.ts';
+import { plural } from './text.ts';
 import { capSteps, heads, recorder } from './stepKit.ts';
 
 interface In { env: [number, number][] }
@@ -46,7 +47,7 @@ function build({ env }: In): Step[] {
   say({
     title: 'An envelope fits inside another if both sides are strictly smaller', desc: 'We want the longest chain of nested envelopes. That is a longest increasing subsequence in two dimensions, which a single LIS cannot handle directly.',
     logic: 'Plan: sort by width so that widths already increase, then run LIS on the heights alone.', java: [0], py: [0], algo: 0,
-    tag: 'GOAL —', note: `${env.length} envelopes ${env.map((e) => `${e[0]}:${e[1]}`).join(' ')}, chain must grow in width AND height`,
+    tag: 'GOAL —', note: `${plural(env.length, 'envelope')} ${env.map((e) => `${e[0]}:${e[1]}`).join(' ')}, chain must grow in width AND height`,
   });
 
   order = [...env].sort((a, b) => a[0] - b[0] || b[1] - a[1]);

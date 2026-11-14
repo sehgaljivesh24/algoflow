@@ -1,4 +1,5 @@
 import type { Cell, CellState, ProblemDef, Step } from '../engine/types.ts';
+import { plural, verb } from './text.ts';
 
 interface In { s: string }
 
@@ -76,7 +77,7 @@ function build({ s }: In): Step[] {
   }
 
   steps.push({
-    title: 'Done', desc: `There are ${count} palindromic substring${count === 1 ? '' : 's'}.`,
+    title: 'Done', desc: `There ${verb(count, 'is', 'are')} ${plural(count, 'palindromic substring')}.`,
     cells: cells(0, -1, 'active'), pointers: [], aux: aux(), vars: vars('—', '—', '—'),
     logic: 'All centres were expanded as far as they go.', logicTone: 'success', javaLines: [11], pyLines: [8], algoStep: 3,
     tag: '✅ Done!', note: `return count = ${count}`,

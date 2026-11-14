@@ -1,4 +1,5 @@
 import type { CellState, ProblemDef, Step } from '../engine/types.ts';
+import { plural, verb } from './text.ts';
 import { annotateRules } from './annotate.ts';
 import { emitter, listScene, parseOne, parts } from './listheapKit.ts';
 
@@ -101,7 +102,7 @@ function build({ cap, ops }: In): Step[] {
       const victim = buckets.get(minFreq)![0];
       hot = { [victim]: 'error' };
       hl = idx(victim);
-      emit(`${label}: cache full`, `${kv.size} of ${cap} slots are used. The victim is the oldest key in the lowest bucket ×${minFreq}: key ${victim}.`,
+      emit(`${label}: cache full`, `${kv.size} of ${plural(cap, 'slot')} ${verb(cap, 'is', 'are')} used. The victim is the oldest key in the lowest bucket ×${minFreq}: key ${victim}.`,
         'Smallest use count first; if several keys tie, the one used longest ago goes.', 'warn', [13, 14], [22, 23], 3);
       buckets.get(minFreq)!.shift();
       if (buckets.get(minFreq)!.length === 0) buckets.delete(minFreq);

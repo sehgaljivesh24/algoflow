@@ -1,4 +1,5 @@
 import type { CellState, Pointer, ProblemDef, Step } from '../engine/types.ts';
+import { plural } from './text.ts';
 import { parseInt1, parseNums, parseParts, ptr, windowCells } from './ssbShared.ts';
 import { isRotation } from './findMinimumInRotatedSortedArray.ts';
 
@@ -25,7 +26,7 @@ function build({ nums, target }: In): Step[] {
   const vars = (mid: number | string) => ({ lo, mid, hi, iterations: iter });
 
   steps.push({
-    title: 'Start', tag: 'START —', desc: `is ${target} in this rotated array of ${n} numbers (duplicates allowed)? lo = 0 and hi = ${n - 1} cover everything.`,
+    title: 'Start', tag: 'START —', desc: `is ${target} in this rotated array of ${plural(n, 'number')} (duplicates allowed)? lo = 0 and hi = ${n - 1} cover everything.`,
     cells: windowCells(nums, lo, hi), pointers: ptrs(), vars: vars('—'),
     logic: 'Duplicates can hide which half is sorted: when nums[lo] = nums[mid] = nums[hi] we cannot tell. In that case we peel off both ends.', logicTone: 'info',
     javaLines: [0, 1], pyLines: [0, 1], algoStep: 0, note: `lo = 0, hi = ${n - 1}`,

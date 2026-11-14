@@ -8,9 +8,8 @@
 import { BRAND, TAGLINE } from '../config.ts';
 import { ALL_ENTRIES } from '../data/catalog.ts';
 import type { CatalogEntry } from '../data/catalog.ts';
-import { ALL_PATTERNS } from '../data/patterns.ts';
-import type { PatternCard } from '../data/patterns.ts';
-import { PATTERN_META } from '../data/patternMeta.ts';
+import { ALL_PATTERNS } from '../data/patternCards.ts';
+import type { PatternCard } from '../data/patternCards.ts';
 import PATTERNS_GUIDE from '../content/cheatsheets/patterns-guide/meta.json' with { type: 'json' };
 import THE_ONLY from '../content/cheatsheets/the-only/meta.json' with { type: 'json' };
 
@@ -48,6 +47,13 @@ export interface MetaOptions {
    * the browser hook passes the lazily loaded problem. Without it, problem descriptions fall back to catalog facts.
    */
   statementOf?: (slug: string) => string | undefined;
+  /**
+   * Returns the hero description (PATTERN_META[slug].desc) of a pattern slug. That text is part of the lazily loaded
+   * pattern text, so this module does not import it: Node callers pass it from src/data/patternsFull.ts, the browser hook
+   * passes the text it has loaded. Without it, pattern descriptions fall back to the card (tags and complexity); the
+   * title never depends on it.
+   */
+  heroOf?: (slug: string) => string | undefined;
 }
 
 /* ------------------------------------------------------------------ */
@@ -196,8 +202,8 @@ function sourceOf(e: CatalogEntry): { long: string; short: string } {
   }
 }
 
-function patternMeta(p: PatternCard): RouteMeta {
-  const hero = PATTERN_META[p.slug]?.desc ?? `${p.title}: ${p.tags.join(', ')}.`;
+function patternMeta(p: PatternCard, heroText: string | undefined): RouteMeta {
+  const hero = heroText ?? `${p.title}: ${p.tags.join(', ')}.`;
   const T = p.title;
   const title = pickTitle(
     [
@@ -284,7 +290,7 @@ export function metaFor(pathname: string, _search?: string, opts: MetaOptions = 
 
   if ((slug = /^\/patterns\/([^/]+)$/.exec(path)?.[1])) {
     const p = PATTERN_BY_SLUG.get(dec(slug));
-    if (p) return patternMeta(p);
+    if (p) return patternMeta(p, opts.heroOf?.(p.slug));
   } else if ((slug = /^\/problem\/([^/]+)$/.exec(path)?.[1])) {
     const e = ENTRY_BY_SLUG.get(dec(slug));
     if (e) return problemMeta(e, opts.statementOf?.(e.slug));

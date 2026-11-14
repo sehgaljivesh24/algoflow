@@ -1,4 +1,5 @@
 import type { Cell, CellState, GraphEdgeVM, GraphNodeVM, ProblemDef, Step, Tone } from '../engine/types.ts';
+import { plural } from './text.ts';
 import { parseEdges, tokens } from './graphKit.ts';
 import type { EdgeIn } from './graphKit.ts';
 
@@ -60,7 +61,7 @@ function build({ n, edges }: In): Step[] {
   push({
     title: 'Start', desc: 'reach[i][j] = 1 means "i can get to j". Initially a node reaches itself and its direct successors (the edges).',
     logic: 'Only walks with zero intermediate stops are known so far. Each round allows one more node as a stop.', logicTone: 'info',
-    tag: 'INIT —', note: `reach[i][i] = 1 and ${edges.length} edges set; ${pairs()} pairs reachable`,
+    tag: 'INIT —', note: `reach[i][i] = 1 and ${plural(edges.length, 'edge')} set; ${plural(pairs(), 'pair')} reachable`,
     javaLines: [1, 2, 3], pyLines: [1, 2], algoStep: 0,
   });
 
@@ -70,7 +71,7 @@ function build({ n, edges }: In): Step[] {
     push({
       title: `k = ${k}: allow node ${k} as a stop`, desc: `Whoever can reach ${k} (column ${k}) now also reaches everything ${k} can reach (row ${k}). Rows and columns of ${k} are purple.`,
       logic: 'Invariant: after round k, reach[i][j] is 1 exactly when some path i → j uses only nodes 0…k as stops.', logicTone: 'info',
-      tag: `ROUND k=${k}`, note: `k = ${k}: stops allowed = {${Array.from({ length: k + 1 }, (_, x) => x).join(', ')}}, ${pairs()} pairs so far`,
+      tag: `ROUND k=${k}`, note: `k = ${k}: stops allowed = {${Array.from({ length: k + 1 }, (_, x) => x).join(', ')}}, ${plural(pairs(), 'pair')} so far`,
       javaLines: [4], pyLines: [3], algoStep: 1,
     });
     for (let i = 0; i < n; i++) {

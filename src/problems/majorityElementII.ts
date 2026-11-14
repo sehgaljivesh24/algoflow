@@ -1,4 +1,5 @@
 import type { Cell, CellState, ProblemDef, Step } from '../engine/types.ts';
+import { plural } from './text.ts';
 import { fmtArr } from './pack1Kit.ts';
 import { parseInts } from './stepKit.ts';
 
@@ -28,13 +29,13 @@ function build({ nums }: In): Step[] {
       return { key: i, value, state };
     });
   const aux = (extra: string[] = [], bad?: number[]) => [
-    { title: `Votes (answer needs more than ${need} copies)`, kind: 'map' as const, items: [`candidate 1 → ${c1 ?? '—'} (votes ${n1})`, `candidate 2 → ${c2 ?? '—'} (votes ${n2})`, ...extra], bad },
+    { title: `Votes (answer needs more than ${plural(need, 'copy', 'copies')})`, kind: 'map' as const, items: [`candidate 1 → ${c1 ?? '—'} (votes ${n1})`, `candidate 2 → ${c2 ?? '—'} (votes ${n2})`, ...extra], bad },
   ];
   const vars = (i: number | string, x: number | string) => ({ i, x, c1: c1 ?? '—', n1, c2: c2 ?? '—', n2 });
   const ptr = (i: number) => [{ id: 'i', label: 'i', index: i, tone: 'blue' as const }];
 
   steps.push({
-    title: 'Start', tag: 'START —', desc: `n = ${n}, so an answer needs more than ⌊${n}/3⌋ = ${need} copies. At most two values can qualify, so two slots.`,
+    title: 'Start', tag: 'START —', desc: `n = ${n}, so an answer needs more than ⌊${n}/3⌋ = ${plural(need, 'copy', 'copies')}. At most two values can qualify, so two slots.`,
     cells: cells(-1), pointers: [], aux: aux(), vars: vars('—', '—'),
     logic: 'More than n/3 copies means at most two values qualify, so we keep two candidates with two vote counters. A number that matches neither candidate cancels one vote from BOTH (three different numbers cancel each other out).', logicTone: 'info',
     javaLines: [1], pyLines: [1], algoStep: 0, note: `c1 = c2 = none, n1 = n2 = 0, need > ${need}`,
@@ -91,7 +92,7 @@ function build({ nums }: In): Step[] {
     const ok = cnt > need;
     if (ok) found.push(c);
     steps.push({
-      title: `Verify ${label} = ${c}`, tag: 'VERIFY:', desc: `${c} appears ${cnt} time${cnt === 1 ? '' : 's'} in ${n} numbers; ${ok ? `${cnt} > ${need}, so it is an answer` : `${cnt} ≤ ${need}, so it is rejected`}`,
+      title: `Verify ${label} = ${c}`, tag: 'VERIFY:', desc: `${c} appears ${cnt} time${cnt === 1 ? '' : 's'} in ${plural(n, 'number')}; ${ok ? `${cnt} > ${need}, so it is an answer` : `${cnt} ≤ ${need}, so it is rejected`}`,
       cells: cells(-1, c), pointers: [], aux: aux([`count of ${c} → ${cnt}`], ok ? undefined : [2]), vars: vars('—', '—'),
       logic: 'Survivors are only candidates. Unlike the n/2 problem there is no guarantee, so a second pass must count them.', logicTone: ok ? 'success' : 'warn',
       javaLines: label === 'candidate 1' ? [15] : [16], pyLines: [14, 15], algoStep: 3,

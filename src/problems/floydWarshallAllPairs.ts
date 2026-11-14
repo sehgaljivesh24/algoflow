@@ -1,4 +1,5 @@
 import type { Cell, CellState, GraphEdgeVM, GraphNodeVM, ProblemDef, Step, Tone } from '../engine/types.ts';
+import { plural } from './text.ts';
 import { parseEdges, tokens } from './graphKit.ts';
 import type { EdgeIn } from './graphKit.ts';
 import { INF, fmtD, matrixRows } from './p5cKit.ts';
@@ -126,7 +127,7 @@ function build({ n, edges }: In): Step[] {
     desc: `Every node has been allowed as a stop, so each cell holds the shortest distance between its two nodes (∞ means there is no route). ${finite} of ${n * (n - 1)} ordered pairs are reachable.`,
     scene: scene(), vars: vars(),
     logic: 'Any shortest path uses each node at most once; when its highest-numbered inner node was allowed, the cell was already correct for that path.', logicTone: 'success',
-    tag: '✅ Done!', note: `all ${n} rounds finished, ${improved} improvements → return dist`,
+    tag: '✅ Done!', note: `all ${plural(n, 'round')} finished, ${plural(improved, 'improvement')} → return dist`,
     javaLines: [15], pyLines: [10], algoStep: 4,
     result: { title: fmtMatrix(d), text: 'Shortest distance between every ordered pair (rows = from, columns = to, ∞ = unreachable)' },
   });

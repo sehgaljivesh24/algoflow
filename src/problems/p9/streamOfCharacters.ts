@@ -1,4 +1,5 @@
 import type { Aux, Cell, ProblemDef, Scene, Step } from '../../engine/types.ts';
+import { plural } from '../text.ts';
 import { Aho, parseWordsAndText } from './kitD.ts';
 
 interface In { words: string[]; text: string }
@@ -92,7 +93,7 @@ function build({ words, text }: In): Step[] {
     title: 'Stream finished', desc: `The queries returned [${answers.join(', ')}].`,
     scene: scene(a.scene({ done: all, labels })), logic: 'Each query cost O(1) amortised: fallbacks are paid for by earlier forward moves.', logicTone: 'success',
     javaLines: [15], pyLines: [12], algoStep: 4,
-    tag: '✅ Done!', note: `${text.length} queries answered, ${answers.filter((x) => x === 'true').length} true`,
+    tag: '✅ Done!', note: `${plural(text.length, 'query', 'queries')} answered, ${answers.filter((x) => x === 'true').length} true`,
     result: { title: `[${answers.join(', ')}]`, text: 'Return values of the constructor and the queries' },
   });
   return steps;
@@ -186,6 +187,29 @@ export const streamOfCharacters: ProblemDef<In> = {
     '            self.state = self.fail[self.state]',
     '        self.state = self.next[self.state].get(letter, 0)',
     '        return self.hit[self.state]',
+    '',
+    '    def _insert(self, w):',
+    '        v = 0',
+    '        for ch in w:',
+    '            if ch not in self.next[v]:',
+    '                self.next.append({})',
+    '                self.fail.append(0)',
+    '                self.hit.append(False)',
+    '                self.next[v][ch] = len(self.next) - 1',
+    '            v = self.next[v][ch]',
+    '        self.hit[v] = True',
+    '',
+    '    def _build(self):',
+    '        queue = deque(self.next[0].values())',
+    '        while queue:',
+    '            u = queue.popleft()',
+    '            self.hit[u] |= self.hit[self.fail[u]]',
+    '            for ch, v in self.next[u].items():',
+    '                f = self.fail[u]',
+    '                while f and ch not in self.next[f]:',
+    '                    f = self.fail[f]',
+    '                self.fail[v] = self.next[f].get(ch, 0)',
+    '                queue.append(v)',
   ],
   algorithm: [
     'Insert every word into a trie',

@@ -1,4 +1,5 @@
 import type { Cell, ProblemDef, Step } from '../engine/types.ts';
+import { plural } from './text.ts';
 import { bitHeads, bitRow } from './ssbShared.ts';
 import { parseSingle } from './singleNumber.ts';
 
@@ -35,7 +36,7 @@ function build({ nums }: In): Step[] {
     const count = nums.filter((x) => (x >> bit) & 1).length;
     counts[col] = count;
     steps.push({
-      title: `Count the 1s in bit ${bit}`, tag: `BIT ${bit} — COUNT`, note: `ones = ${count}`, desc: `Column b${bit} contains ${count} one${count === 1 ? '' : 's'} among the ${nums.length} numbers.`,
+      title: `Count the 1s in bit ${bit}`, tag: `BIT ${bit} — COUNT`, note: `ones = ${count}`, desc: `Column b${bit} contains ${count} one${count === 1 ? '' : 's'} among the ${plural(nums.length, 'number')}.`,
       scene: grid(col), vars: vars(bit, count, '—'),
       logic: 'Sum the bit across every number (this is the inner loop).', logicTone: 'info', javaLines: [2, 3, 4], pyLines: [2, 3], algoStep: 1,
     });

@@ -1,4 +1,5 @@
 import type { CellState, ProblemDef, Step } from '../engine/types.ts';
+import { plural } from './text.ts';
 import { arr, find, gc, parseOne, perm, recorder } from './dpAdvKit.ts';
 
 interface In { n: number }
@@ -120,7 +121,7 @@ function build({ n }: In): Step[] {
     const dup = used.has(c);
     status = dup ? 'repeat — stop' : 'tight';
     say({
-      title: `Position ${i}: N has ${c}`, desc: `Drop below N here with an unused digit smaller than ${c}${i === 0 ? ' (not 0: no leading zero)' : ''}: ${choices} choice${choices === 1 ? '' : 's'}. The other ${L - i - 1} slot${L - i - 1 === 1 ? '' : 's'} take distinct unused digits in P(${9 - i}, ${L - i - 1}) = ${rest} ways. Adds ${choices} × ${rest} = ${add}; count = ${count}. ${dup ? `But ${c} was already used earlier in N, so no number can follow N's prefix any further.` : `Digit ${c} is new, so keep following N.`}`,
+      title: `Position ${i}: N has ${c}`, desc: `Drop below N here with an unused digit smaller than ${c}${i === 0 ? ' (not 0: no leading zero)' : ''}: ${choices} choice${choices === 1 ? '' : 's'}. The other ${L - i - 1} slot${L - i - 1 === 1 ? '' : 's'} take distinct unused digits in P(${9 - i}, ${L - i - 1}) = ${plural(rest, 'way')}. Adds ${choices} × ${rest} = ${add}; count = ${count}. ${dup ? `But ${c} was already used earlier in N, so no number can follow N's prefix any further.` : `Digit ${c} is new, so keep following N.`}`,
       logic: dup ? 'A repeated digit kills the tight path: every number matching N this far already has a repeat.' : 'Staying tight means copying N’s digit, which marks it as used.', tone: dup ? 'warn' : 'info',
       java: [...J.cnt, ...(dup ? J.stop : J.mark)], py: [...P.cnt, ...(dup ? P.stop : P.mark)], algo: dup ? 3 : 2,
       tag: dup ? `POSITION ${i} · REPEAT —` : `POSITION ${i} · TIGHT —`, note: `count += ${choices} × P(${9 - i}, ${L - i - 1}) = ${choices} × ${rest} = ${add} → ${count}`,
@@ -144,7 +145,7 @@ function build({ n }: In): Step[] {
   }
   finished = true;
   say({
-    title: 'Done', desc: `${count} integers in 1..${n} have all-distinct digits${self ? ' (N included)' : ''}.`,
+    title: 'Done', desc: `${plural(count, 'integer')} in 1..${n} ${count === 1 ? 'has' : 'have'} all-distinct digits${self ? ' (N included)' : ''}.`,
     logic: 'Shorter lengths plus the below-N choices along the tight path partition every valid number exactly once.', tone: 'success', java: J.self, py: P.self, algo: 4,
     tag: '✅ Done!', note: `return count = ${count}`,
     result: { title: String(count), text: 'Special integers' },

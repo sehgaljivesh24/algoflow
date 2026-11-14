@@ -1,4 +1,5 @@
 import type { Cell, CellState, Pointer, ProblemDef, Step } from '../engine/types.ts';
+import { plural, verb } from './text.ts';
 import { parseInts, recorder } from './stepKit.ts';
 import { find } from './treeKit.ts';
 import { ptr } from './ssbShared.ts';
@@ -175,7 +176,7 @@ function run({ nums }: In, tree: RecTree): Step[] {
   const ans = sort(0, n - 1);
   lo0 = 0; hi0 = n - 1; marks = {}; ptrs = []; v.lo = 0; v.hi = n - 1;
   say({
-    title: 'Done', desc: `There are ${ans} reverse pair${ans === 1 ? '' : 's'}.`,
+    title: 'Done', desc: `There ${verb(ans, 'is', 'are')} ${plural(ans, 'reverse pair')}.`,
     logic: 'Each pair is counted at exactly one level: the merge where its two indices are first separated into different halves.', tone: 'success',
     java: J.ret, py: P.ret, algo: 3, result: { title: String(ans), text: 'Reverse pairs' },
     tag: '✅ Done!', note: `return count = ${ans}`,

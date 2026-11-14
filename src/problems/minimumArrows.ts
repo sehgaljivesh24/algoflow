@@ -1,4 +1,5 @@
 import type { Aux, CellState, IntervalBarVM, ProblemDef, Step } from '../engine/types';
+import { plural } from './text.ts';
 import { parseIntervals } from './graphKit.ts';
 
 interface In { iv: [number, number][] }
@@ -35,7 +36,7 @@ function build({ iv }: In): Step[] {
   push({
     title: 'Start', tag: 'START —', desc: `${n} balloon${n === 1 ? '' : 's'}, each covering a horizontal range; an arrow shot straight up at x pops every balloon whose range contains x.`,
     logic: 'We want the fewest vertical lines so that every range is crossed by at least one line.', logicTone: 'info',
-    javaLines: [0], pyLines: [0], algoStep: 0, note: `${n} balloons, 0 arrows`,
+    javaLines: [0], pyLines: [0], algoStep: 0, note: `${plural(n, 'balloon')}, 0 arrows`,
   });
   sorted = true;
   push({
@@ -87,7 +88,7 @@ function build({ iv }: In): Step[] {
   cur = -1;
   result = String(arrows.length);
   push({
-    title: 'Done', tag: '✅ Done!', desc: `${arrows.length} arrow${arrows.length === 1 ? '' : 's'} (at x = ${arrows.join(', ')}) pop all ${n} balloons.`,
+    title: 'Done', tag: '✅ Done!', desc: `${arrows.length} arrow${arrows.length === 1 ? '' : 's'} (at x = ${arrows.join(', ')}) pop all ${plural(n, 'balloon')}.`,
     logic: 'Each arrow is placed as late as possible, so no arrow could have covered more.', logicTone: 'success',
     javaLines: [10], pyLines: [7], algoStep: 5, note: `return ${arrows.length}`,
     result: { title: result, text: 'Minimum arrows' },

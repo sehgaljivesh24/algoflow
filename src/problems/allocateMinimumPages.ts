@@ -1,4 +1,5 @@
 import type { ProblemDef, Step } from '../engine/types.ts';
+import { plural } from './text.ts';
 import { buildPartition, parsePartition, type PartIn } from './ssbPartition.ts';
 
 function build(inp: PartIn): Step[] {
@@ -8,18 +9,18 @@ function build(inp: PartIn): Step[] {
     const cells = nums.map((value, i) => ({ key: i, value, state: 'error' as const }));
     return [
       {
-        title: 'Start', tag: 'BOUND —', desc: `${nums.length} books and ${k} students: every student must get at least one book of the contiguous blocks.`,
+        title: 'Start', tag: 'BOUND —', desc: `${plural(nums.length, 'book')} and ${plural(k, 'student')}: every student must get at least one book of the contiguous blocks.`,
         cells, pointers: [], vars, logic: 'Books are handed out in contiguous blocks and nobody may be left empty-handed.', logicTone: 'info',
         javaLines: [0], pyLines: [0], algoStep: 0, note: `n = ${nums.length}, m = ${k}`,
       },
       {
-        title: 'Impossible', tag: 'REJECT:', desc: `${k} students > ${nums.length} books, so at least one student would get no book at all.`,
+        title: 'Impossible', tag: 'REJECT:', desc: `${plural(k, 'student')} > ${plural(nums.length, 'book')}, so at least one student would get no book at all.`,
         cells, pointers: [], vars, logic: 'Return −1 immediately; no capacity can fix this.', logicTone: 'warn',
-        alert: `m = ${k} is larger than the ${nums.length} books: some student would be empty-handed, so the answer is −1.`,
+        alert: `m = ${k} is larger than the ${plural(nums.length, 'book')}: some student would be empty-handed, so the answer is −1.`,
         javaLines: [1], pyLines: [1, 2], algoStep: 0, note: `${k} > ${nums.length} → return −1`,
       },
       {
-        title: 'Answer = −1', tag: '✅ Done!', desc: `no allocation exists with ${k} students and only ${nums.length} books, so the function returns −1.`,
+        title: 'Answer = −1', tag: '✅ Done!', desc: `no allocation exists with ${plural(k, 'student')} and only ${plural(nums.length, 'book')}, so the function returns −1.`,
         cells, pointers: [], vars, logic: 'The −1 sentinel tells the caller that the input is infeasible.', logicTone: 'success',
         javaLines: [1], pyLines: [2], algoStep: 4, note: 'return −1',
         result: { title: '-1', text: 'More students than books: allocation is impossible' },
@@ -28,7 +29,7 @@ function build(inp: PartIn): Step[] {
   }
   return buildPartition(inp, {
     itemName: 'pages', groupName: 'student', groupTag: 'S', capName: 'max pages', kName: 'm',
-    startDesc: `Allocate ${nums.length} books in order among ${k} student${k === 1 ? '' : 's'}, minimising the largest number of pages any student reads.`,
+    startDesc: `Allocate ${plural(nums.length, 'book')} in order among ${plural(k, 'student')}, minimising the largest number of pages any student reads.`,
     resultText: (a) => `The busiest student reads at least ${a} pages, and ${a} is achievable`,
     java: { init: [2, 3], mid: [4, 5], check: [6, 13, 14], ok: [6], bad: [7], ret: [9] },
     py: { init: [3], mid: [4, 5], check: [6, 13, 14], ok: [6, 7], bad: [8, 9], ret: [10] },

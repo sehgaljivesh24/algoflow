@@ -247,3 +247,17 @@ a.side-item.active[class*='nt-'] { color: var(--tone); border-left-color: var(--
 @media (prefers-reduced-motion: reduce) {
   .side, .problem-card, .pattern-card, .bookmark { transition: none; }
 }
+/* Phone (≤ 600px): every tappable chip / button is 36-40px tall and no label is under 11px. Desktop is untouched. */
+@media (max-width: 600px) {
+  .filter-btn, .filter-extras .filter-btn { min-height: 40px; font-size: .78rem; }
+  .filter-clear { min-height: 40px; padding: 8px 12px; font-size: .78rem; }
+  .filter-status-wrap { min-height: 40px; }
+  .seq-step { display: inline-flex; align-items: center; min-height: 38px; }
+  .viz-link, .lc-link, .gfg-link, .ib-link { display: inline-flex; align-items: center; min-height: 38px; font-size: .74rem; }
+  .status-btn { width: 38px; height: 38px; font-size: .74rem; }
+  .bookmark { display: inline-grid; place-items: center; min-width: 38px; min-height: 38px; padding: 0; margin: -8px -6px -8px -10px; font-size: 1.15rem; }
+  .problem-tag, .diff-badge, .ppill .pn, .ppill .pd, .pat-tag, .pat-ex-chip, .pat-jump-n { font-size: .7rem; }
+  .ppill { min-height: 38px; font-size: .76rem; }
+  .pat-open { display: inline-flex; align-items: center; min-height: 38px; font-size: .84rem; }
+  .pat-cta { min-height: 44px; }
+}

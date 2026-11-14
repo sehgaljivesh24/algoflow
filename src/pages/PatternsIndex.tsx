@@ -1,13 +1,16 @@
 import { Link } from 'react-router-dom';
 import { familyId, familyMeta } from '../components/shell/familyMeta';
 import { ALL_ENTRIES } from '../data/catalog';
-import { ALL_PATTERNS, CONTENT, examplesFor, PATTERN_GROUPS, type PatternContent } from '../data/patterns';
-import { PATTERN_META } from '../data/patternMeta';
+import { ALL_PATTERNS, PATTERN_GROUPS } from '../data/patternCards';
+import { DIGEST } from '../data/patternText/digest';
+import type { PatternDigest } from '../data/patternText/types';
 import { isAnimated } from '../problems/lazy';
 
-const animated = (slug: string) => !!CONTENT[slug] && isAnimated(CONTENT[slug].animation);
+// This page reads the precomputed DIGEST (src/data/patternText/digest.ts, generated) instead of the full pattern text,
+// so opening the roadmap does not fetch any of the per-pattern chunks.
+const animated = (slug: string) => !!DIGEST[slug]?.animation && isAnimated(DIGEST[slug].animation);
 /** Number of worked examples (animated problems) a pattern page offers. */
-const exampleCount = (slug: string) => examplesFor(slug).filter((e) => isAnimated(e.slug)).length;
+const exampleCount = (slug: string) => (DIGEST[slug]?.examples ?? []).filter((s) => isAnimated(s)).length;
 const BY_SLUG = new Map(ALL_ENTRIES.map((e) => [e.slug, e]));
 
 interface Pill {
@@ -23,10 +26,10 @@ interface Pill {
 const D = { Easy: 'E', Medium: 'M', Hard: 'H' } as const;
 
 /** Resolve a pattern's practice list (catalog slugs, annotated refs and outside problems) into pills. */
-function pillsFor(content: PatternContent | undefined, max = 4): Pill[] {
-  if (!content) return [];
+function pillsFor(digest: PatternDigest | undefined, max = 4): Pill[] {
+  if (!digest) return [];
   const out: Pill[] = [];
-  for (const item of content.practice) {
+  for (const item of digest.practice) {
     const slug = typeof item === 'string' ? item : 'slug' in item ? item.slug : undefined;
     if (slug) {
       const e = BY_SLUG.get(slug);
@@ -43,8 +46,6 @@ function pillsFor(content: PatternContent | undefined, max = 4): Pill[] {
   }
   return out.slice(0, max);
 }
-
-const firstSentence = (s: string) => (s.match(/^.*?[.!?](\s|$)/)?.[0] ?? s).trim();
 
 /** Pattern roadmap (the "Common Patterns" view). Owned by the library agent. */
 export function PatternsIndex() {
@@ -86,17 +87,16 @@ export function PatternsIndex() {
 
             {g.cards.map((p) => {
               const live = animated(p.slug);
-              const content = CONTENT[p.slug];
-              const meta = PATTERN_META[p.slug];
-              const summary = content?.summary ?? '';
-              const lead = meta?.desc ? firstSentence(meta.desc) : firstSentence(summary);
-              const pills = pillsFor(content);
+              const digest = DIGEST[p.slug];
+              const summary = digest?.summary ?? '';
+              const lead = digest?.lead ?? '';
+              const pills = pillsFor(digest);
               const nEx = live ? exampleCount(p.slug) : 0;
               return (
                 <article key={p.slug} className={`pattern-card acc-${fam.accent}${live ? ' live' : ' coming'}`}>
                   <div className="pattern-card-hdr">
                     <div className="pat-left">
-                      <span className="pat-icon" aria-hidden>{meta?.icon ?? fam.icon}</span>
+                      <span className="pat-icon" aria-hidden>{digest?.icon ?? fam.icon}</span>
                       <div className="pat-titles">
                         <h3 className="pat-title">
                           {live ? <Link to={`/patterns/${p.slug}`} className="pat-link">{p.title}</Link> : p.title}

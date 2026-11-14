@@ -1,4 +1,5 @@
 import type { ProblemDef } from '../engine/types.ts';
+import { plural } from './text.ts';
 import { buildPartition, parsePartition, type PartIn } from './ssbPartition.ts';
 
 export const paintersPartitionProblem: ProblemDef<PartIn> = {
@@ -14,7 +15,7 @@ export const paintersPartitionProblem: ProblemDef<PartIn> = {
   parseInput: (raw) => parsePartition(raw, 'board lengths ; painters — e.g. 10 20 30 40 ; 2', 1, 20, 'Painters k', 'boards'),
   buildSteps: (inp) => buildPartition(inp, {
     itemName: 'length', groupName: 'painter', groupTag: 'P', capName: 'time limit', kName: 'painters',
-    startDesc: `Paint ${inp.nums.length} boards with ${inp.k} painter${inp.k === 1 ? '' : 's'} working in parallel; each takes a contiguous run. Binary search the finish time.`,
+    startDesc: `Paint ${plural(inp.nums.length, 'board')} with ${plural(inp.k, 'painter')} working in parallel; each takes a contiguous run. Binary search the finish time.`,
     resultText: (a) => `All boards can be painted in ${a} time units, and no faster`,
     java: { init: [1, 2], mid: [3, 4], check: [5, 12, 13], ok: [5], bad: [6], ret: [8] },
     py: { init: [0, 1], mid: [2, 3], check: [4, 11, 12], ok: [4, 5], bad: [6, 7], ret: [8] },

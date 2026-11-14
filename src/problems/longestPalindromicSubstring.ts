@@ -1,4 +1,5 @@
 import type { Cell, CellState, ProblemDef, Step } from '../engine/types.ts';
+import { plural } from './text.ts';
 
 interface In { s: string }
 
@@ -31,7 +32,7 @@ function build({ s }: In): Step[] {
   ];
 
   steps.push({
-    title: 'Start', tag: 'START —', desc: `find the longest palindromic substring of "${s}" by trying all ${2 * n - 1} centres (${n} letters and ${n - 1} gaps).`,
+    title: 'Start', tag: 'START —', desc: `find the longest palindromic substring of "${s}" by trying all ${2 * n - 1} centres (${plural(n, 'letter')} and ${plural(n - 1, 'gap')}).`,
     cells: cells(0, -1, 'active'), pointers: [], aux: aux(), vars: vars('—', '—', '—'),
     logic: 'Every palindrome mirrors around a centre — a letter (odd length) or the gap between two letters (even length). Try each centre and expand outward while the two ends match.', logicTone: 'info',
     javaLines: [0, 1], pyLines: [0, 1], algoStep: 0, note: 'bestLen = 0, start = 0',

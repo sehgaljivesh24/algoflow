@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { BRAND, SITE_URL } from '../config.ts';
+import { hasPatternText, loadPatternText, peekPatternText } from '../data/patternText/load.ts';
 import { loadProblem } from '../problems/lazy.ts';
 import { metaFor } from './meta.ts';
 import type { RouteMeta } from './meta.ts';
@@ -69,21 +70,51 @@ export function applyRouteMeta(m: RouteMeta) {
   setMeta('name', 'twitter:image', image);
 }
 
+/** True when <head> already carries the canonical link of this path (the static per-route HTML, or an earlier apply). */
+function headIsFor(canonical: string): boolean {
+  const href = document.head.querySelector('link[rel="canonical"]')?.getAttribute('href');
+  if (!href) return false;
+  try { return new URL(href, window.location.href).pathname === canonical; } catch { return false; }
+}
+
 /**
  * Keeps the document metadata in sync with the route. Mount it ONCE (src/App.tsx).
  * Problem pages first get a catalog-based description, then the animation's own statement once its chunk is loaded
  * (ProblemPage loads the same chunk, so this costs no extra request).
+ * Pattern pages work the same way with the hero description of the pattern text (ProblemPage's twin PatternPage loads
+ * the same chunks). The title never depends on that text, and when the static HTML already carries this route's tags the
+ * hook leaves them alone until the text is in, so a description is never downgraded to the card-only fallback and back.
  */
 export function useRouteMeta() {
   const { pathname, search } = useLocation();
   useEffect(() => {
     let live = true;
-    applyRouteMeta(metaFor(pathname, search));
-    const raw = /^\/problem\/([^/]+)\/?$/.exec(pathname)?.[1];
-    if (raw) {
-      let slug = raw;
-      try { slug = decodeURIComponent(raw); } catch { /* keep raw */ }
-      loadProblem(slug)
+    const decoded = (raw: string) => {
+      try { return decodeURIComponent(raw); } catch { return raw; }
+    };
+    const problemRaw = /^\/problem\/([^/]+)\/?$/.exec(pathname)?.[1];
+    const patternRaw = /^\/patterns\/([^/]+)\/?$/.exec(pathname)?.[1];
+    const patternSlug = patternRaw ? decoded(patternRaw) : undefined;
+    const fallback = metaFor(pathname, search);
+
+    const have = patternSlug ? peekPatternText(patternSlug) : undefined;
+    if (have) {
+      applyRouteMeta(metaFor(pathname, search, { heroOf: () => have.meta?.desc }));
+    } else if (patternSlug && hasPatternText(patternSlug)) {
+      if (!headIsFor(fallback.canonical)) applyRouteMeta(fallback);
+      loadPatternText(patternSlug)
+        .then((t) => {
+          if (live) applyRouteMeta(metaFor(pathname, search, { heroOf: () => t.meta?.desc }));
+        })
+        .catch(() => {
+          if (live) applyRouteMeta(fallback);
+        });
+    } else {
+      applyRouteMeta(fallback);
+    }
+
+    if (problemRaw) {
+      loadProblem(decoded(problemRaw))
         .then((def) => {
           if (live) applyRouteMeta(metaFor(pathname, search, { statementOf: () => def.statement }));
         })

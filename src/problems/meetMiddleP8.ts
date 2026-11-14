@@ -1,6 +1,7 @@
 /** Pack p8 meet-in-the-middle problems: Closest Subsequence Sum (#1755), Partition Array Into Two Arrays to Minimize Sum Difference (#2035), 4Sum II (#454). */
 import type { Aux, Cell, ProblemDef, Scene, Step } from '../engine/types.ts';
 import { Rec, arr, idx, int, nums as parseNums, parts, ptr } from './p8Kit.ts';
+import { plural } from './text.ts';
 
 const subsets = (a: number[]) => {
   const out: { mask: number; sum: number; label: string }[] = [];
@@ -46,9 +47,9 @@ function buildClosest({ nums, goal }: CIn): Step[] {
   const halves = (): Scene => ({ kind: 'array', cells: nums.map((v, k) => ({ key: k, value: v })), pointers: [] });
   const auxL = (): Aux[] => [{ title: `left subsets (${lsub.length})`, kind: 'list', items: lsub.map((s) => s.label) }];
   const auxR = (): Aux[] => [{ title: `right subsets (${rsub.length})`, kind: 'list', items: rsub.map((s) => s.label) }];
-  rec.push({ t: 'Start: split into two halves', d: `${nums.length} numbers: left half ${arr(left)} and right half ${arr(right)}. Trying all 2^${nums.length} = ${1 << nums.length} subsets is too many in general, but each half alone has only 2^${left.length} and 2^${right.length}.`, scene: halves(), v: vars('—', '—', '—'), why: 'Any subsequence is a subset of the left half plus a subset of the right half, so the combined problem splits into two small enumerations plus one merge.', j: [1], p: [1], a: 0, tag: 'SPLIT —', note: `h = ${nums.length} / 2 = ${h}; left = ${arr(left)}, right = ${arr(right)}` });
-  rec.push({ t: `Enumerate the left half: ${L.length} subset sums`, d: `Each of the ${left.length} elements is in or out: sorted sums ${arr(L)}.`, scene: twoLists(L, [], -1, -1), aux: auxL(), v: vars('—', '—', '—'), why: 'Each element is either in or out, so a half of size k has 2^k sums; sorting them costs O(2^k · k).', j: [2, 3], p: [2], a: 1, tag: 'LEFT SUMS —', note: `L = ${arr(L)}  (2^${left.length} = ${L.length} sums)` });
-  rec.push({ t: `Enumerate the right half: ${R.length} subset sums`, d: `Same for the right half: sorted sums ${arr(R)}. Now pick one from each list closest to ${goal}.`, scene: twoLists(L, R, -1, -1), aux: auxR(), v: vars('—', '—', '—'), why: 'Same for the right half. Now we need a pair (one sum from each list) whose total is closest to the goal.', j: [2, 3], p: [3], a: 1, tag: 'RIGHT SUMS —', note: `R = ${arr(R)}  (2^${right.length} = ${R.length} sums)` });
+  rec.push({ t: 'Start: split into two halves', d: `${plural(nums.length, 'number')}: left half ${arr(left)} and right half ${arr(right)}. Trying all 2^${nums.length} = ${1 << nums.length} subsets is too many in general, but each half alone has only 2^${left.length} and 2^${right.length}.`, scene: halves(), v: vars('—', '—', '—'), why: 'Any subsequence is a subset of the left half plus a subset of the right half, so the combined problem splits into two small enumerations plus one merge.', j: [1], p: [1], a: 0, tag: 'SPLIT —', note: `h = ${nums.length} / 2 = ${h}; left = ${arr(left)}, right = ${arr(right)}` });
+  rec.push({ t: `Enumerate the left half: ${plural(L.length, 'subset sum')}`, d: `Each of the ${plural(left.length, 'element')} is in or out: sorted sums ${arr(L)}.`, scene: twoLists(L, [], -1, -1), aux: auxL(), v: vars('—', '—', '—'), why: 'Each element is either in or out, so a half of size k has 2^k sums; sorting them costs O(2^k · k).', j: [2, 3], p: [2], a: 1, tag: 'LEFT SUMS —', note: `L = ${arr(L)}  (2^${left.length} = ${plural(L.length, 'sum')})` });
+  rec.push({ t: `Enumerate the right half: ${plural(R.length, 'subset sum')}`, d: `Same for the right half: sorted sums ${arr(R)}. Now pick one from each list closest to ${goal}.`, scene: twoLists(L, R, -1, -1), aux: auxR(), v: vars('—', '—', '—'), why: 'Same for the right half. Now we need a pair (one sum from each list) whose total is closest to the goal.', j: [2, 3], p: [3], a: 1, tag: 'RIGHT SUMS —', note: `R = ${arr(R)}  (2^${right.length} = ${R.length} sums)` });
   let i = 0;
   let j = R.length - 1;
   while (i < L.length && j >= 0) {
@@ -57,7 +58,7 @@ function buildClosest({ nums, goal }: CIn): Step[] {
     const improved = diff < best;
     best = Math.min(best, diff);
     const dir = s < goal ? 'move i right (need a bigger sum)' : s > goal ? 'move j left (need a smaller sum)' : 'exact hit';
-    rec.push({ t: `L[${i}] + R[${j}] = ${L[i]} + ${R[j]} = ${s}`, d: `|${s} − ${goal}| = ${diff}${improved ? ': new best.' : '.'} ${s < goal ? 'Too small:' : s > goal ? 'Too large:' : ''} ${dir}.`, scene: twoLists(L, R, i, j, s === goal ? 'found' : 'compare'), v: vars(i, j, s), why: s < goal ? 'L ascending: only a larger L[i] can help with this R[j], and a smaller R[j] would make it worse.' : s > goal ? 'R descending: no larger L[i] can help with this R[j], and any smaller R[j] is the only way to reduce the sum.' : 'The sum equals the goal exactly, so the distance 0 cannot be beaten.', tone: improved ? 'success' : 'info', j: [7, 8, s < goal ? 9 : s > goal ? 10 : 11], p: [7, 8, s < goal ? 9 : s > goal ? 11 : 13], a: 2, tag: `i=${i}, j=${j} —`, note: `s = ${L[i]} + ${R[j]} = ${s}; best = ${best}` });
+    rec.push({ t: `L[${i}] + R[${j}] = ${L[i]} + ${R[j]} = ${s}`, d: `|${s} − ${goal}| = ${diff}${improved ? ': new best.' : '.'} ${s < goal ? 'Too small: ' : s > goal ? 'Too large: ' : ''}${dir}.`, scene: twoLists(L, R, i, j, s === goal ? 'found' : 'compare'), v: vars(i, j, s), why: s < goal ? 'L ascending: only a larger L[i] can help with this R[j], and a smaller R[j] would make it worse.' : s > goal ? 'R descending: no larger L[i] can help with this R[j], and any smaller R[j] is the only way to reduce the sum.' : 'The sum equals the goal exactly, so the distance 0 cannot be beaten.', tone: improved ? 'success' : 'info', j: [7, 8, s < goal ? 9 : s > goal ? 10 : 11], p: [7, 8, s < goal ? 9 : s > goal ? 11 : 13], a: 2, tag: `i=${i}, j=${j} —`, note: `s = ${L[i]} + ${R[j]} = ${s}; best = ${best}` });
     if (s === goal) break;
     if (s < goal) i++; else j--;
   }
@@ -287,7 +288,7 @@ function buildFour({ a, b, c, d }: FIn): Step[] {
   });
   const aux = (): Aux[] => [{ title: 'A+B sums → how many pairs', kind: 'map', items: [...ab.entries()].sort((x, y) => x[0] - y[0]).map(([k, v]) => `${k} → ${v}`) }];
   const vars = (s: number | string, need: number | string) => ({ sum: s, 'need (−(c+d))': need, count });
-  rec.push({ t: 'Start: two halves A+B and C+D', d: `Count quadruples (i, j, k, l) with A[i] + B[j] + C[k] + D[l] = 0. Brute force tries ${n ** 4}; meeting in the middle tries ${n * n} + ${n * n}.`, scene: grid(), aux: aux(), v: vars('—', '—'), why: 'a + b + c + d = 0 is the same as a + b = −(c + d): each side involves only two lists, so each side has n² possibilities instead of n⁴ together.', j: [0], p: [0], a: 0, tag: 'REWRITE —', note: `a + b = −(c + d): ${n * n} sums on each side` });
+  rec.push({ t: 'Start: two halves A+B and C+D', d: `Count quadruples (i, j, k, l) with A[i] + B[j] + C[k] + D[l] = 0. Brute force tries ${n ** 4}; meeting in the middle tries ${n * n} + ${n * n}.`, scene: grid(), aux: aux(), v: vars('—', '—'), why: 'a + b + c + d = 0 is the same as a + b = −(c + d): each side involves only two lists, so each side has n² possibilities instead of n⁴ together.', j: [0], p: [0], a: 0, tag: 'REWRITE —', note: `a + b = −(c + d): ${plural(n * n, 'sum')} on each side` });
   a.forEach((x, i) => {
     hl.a = i;
     for (let j = 0; j < n; j++) ab.set(x + b[j], (ab.get(x + b[j]) ?? 0) + 1);
@@ -305,7 +306,7 @@ function buildFour({ a, b, c, d }: FIn): Step[] {
     }
   });
   hl.c = hl.d = -1;
-  rec.push({ t: `Number of quadruples = ${count}`, d: `${n * n} lookups against ${n * n} stored sums.`, scene: grid(), aux: aux(), v: vars('—', '—'), why: 'O(n²) time and space instead of O(n⁴).', tone: 'success', j: [7], p: [6], a: 3, tag: '✅ Done!', note: `return ${count}`, result: { title: String(count), text: `${count} quadruple${count === 1 ? '' : 's'} sum to zero` } });
+  rec.push({ t: `Number of quadruples = ${count}`, d: `${plural(n * n, 'lookup')} against ${plural(n * n, 'stored sum')}.`, scene: grid(), aux: aux(), v: vars('—', '—'), why: 'O(n²) time and space instead of O(n⁴).', tone: 'success', j: [7], p: [6], a: 3, tag: '✅ Done!', note: `return ${count}`, result: { title: String(count), text: `${count} quadruple${count === 1 ? '' : 's'} sum to zero` } });
   return rec.steps;
 }
 
