@@ -127,6 +127,7 @@ function build({ n, edges }: In): Step[] {
     b.taken.forEach((id) => { marks[id] = 'take'; });
     withE = fmt(b.total);
     const ok = b.total === W;
+    if (ok) { pseudo.push(i); verdict[i] = 'pseudo-critical'; } else verdict[i] = 'in no MST';
     push({
       title: `Force #${i}: MST weight ${fmt(b.total)}`,
       desc: `Start with #${i} already in the tree, then run Kruskal. The result weighs ${b.total}${ok ? `, which equals the minimum ${W}` : `, which is more than the minimum ${W}`}.`,
@@ -135,7 +136,6 @@ function build({ n, edges }: In): Step[] {
       alert: ok ? undefined : `Forcing #${i} gives ${fmt(b.total)} > ${W}: no minimum tree uses it.`,
       javaLines: [10, 21, 22, 23, 25, 27, 28, 29], pyLines: [8, 15, 16, 17, 18, 19, 22, 23, 24, 25, 26], algoStep: 3,
     }, [edges[i].u, edges[i].v]);
-    if (ok) { pseudo.push(i); verdict[i] = 'pseudo-critical'; } else verdict[i] = 'in no MST';
   }
 
   edge = '—'; without = '—'; withE = '—';

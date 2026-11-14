@@ -175,6 +175,13 @@ export const criticalConnections: ProblemDef<GIn> = {
     '        }',
     '    }',
     '}',
+    '',
+    'private List<Integer>[] buildAdjacency(int n, List<List<Integer>> connections) {',
+    '    List<Integer>[] adj = new List[n];',
+    '    for (int i = 0; i < n; i++) adj[i] = new ArrayList<>();',
+    '    for (List<Integer> c : connections) { adj[c.get(0)].add(c.get(1)); adj[c.get(1)].add(c.get(0)); }',
+    '    return adj;',
+    '}',
   ],
   python: [
     'def critical_connections(n, connections):',

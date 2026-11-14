@@ -208,7 +208,7 @@ export const pathWithMinimumEffort: ProblemDef<In> = {
   python: [
     'def minimum_effort_path(h):',
     '    R, C = len(h), len(h[0])',
-    '    effort = [[inf] * C for _ in range(R)]',
+    "    effort = [[float('inf')] * C for _ in range(R)]",
     '    effort[0][0] = 0',
     '    pq = [(0, 0, 0)]',
     '    while pq:',

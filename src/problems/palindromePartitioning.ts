@@ -24,6 +24,10 @@ const java = [
   '        path.remove(path.size() - 1);                   // un-choose',
   '    }',
   '}',
+  'private boolean isPalindrome(String s, int lo, int hi) {',
+  '    while (lo < hi) if (s.charAt(lo++) != s.charAt(hi--)) return false;',
+  '    return true;',
+  '}',
 ];
 const python = [
   'def partition(s):',

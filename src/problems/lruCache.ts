@@ -155,7 +155,7 @@ export const lruCache: ProblemDef<In> = {
   },
   java: [
     'class LRUCache {',
-    '    class Node { int key, val; Node prev, next; }',
+    '    class Node { int key, val; Node prev, next; Node() {} Node(int k, int v) { key = k; val = v; } }',
     '    private final Map<Integer, Node> map = new HashMap<>();',
     '    private final Node head = new Node(), tail = new Node();',
     '    private final int cap;',

@@ -32,6 +32,16 @@ function build({ begin, end, words }: In): Step[] {
   const adj: number[][] = nodes.map(() => []);
   edges.forEach(([a, b], ei) => { adj[a].push(ei); adj[b].push(ei); });
   const other = (ei: number, u: number) => (edges[ei][0] === u ? edges[ei][1] : edges[ei][0]);
+  // The Java tries neighbours position by position, 'a'..'z' at each position, so siblings must enter the queue in that order (not in word-list order).
+  adj.forEach((list, u) => {
+    const key = (ei: number): [number, string] => {
+      const a = nodes[u], b = nodes[other(ei, u)];
+      let p = 0;
+      while (a[p] === b[p]) p++;
+      return [p, b[p]];
+    };
+    list.sort((e1, e2) => { const [p1, c1] = key(e1), [p2, c2] = key(e2); return p1 - p2 || (c1 < c2 ? -1 : c1 > c2 ? 1 : 0); });
+  });
   const endId = words.includes(end) ? idx.get(end)! : -1;
 
   const depth = new Map<number, number>();

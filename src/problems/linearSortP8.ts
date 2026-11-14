@@ -223,7 +223,7 @@ function buildGap({ nums }: NIn): Step[] {
   const gaps: string[] = [];
   for (let b = 0; b < B; b++) {
     if (bmin[b] === undefined) {
-      rec.push({ t: `Bucket ${b} is empty`, d: 'Nothing here: the gap simply continues into the next non-empty bucket.', scene: scene(-1, n, b), aux: [{ title: 'gaps', kind: 'list', items: gaps }], v: vars(b, best, prev), why: 'Empty buckets are where big gaps hide; skipping them lets the next bucket measure the full distance from the previous max.', j: [15], p: [14], a: 2, tag: `BUCKET ${b} — EMPTY`, note: `bmax[${b}] < 0 → continue (prev stays ${prev})`, alert: `Bucket ${b} is empty: the gap stretches over it, so prev stays ${prev}.` });
+      rec.push({ t: `Bucket ${b} is empty`, d: 'Nothing here: the gap simply continues into the next non-empty bucket.', scene: scene(-1, n, b), aux: [{ title: 'gaps', kind: 'list', items: gaps.slice() }], v: vars(b, best, prev), why: 'Empty buckets are where big gaps hide; skipping them lets the next bucket measure the full distance from the previous max.', j: [15], p: [14], a: 2, tag: `BUCKET ${b} — EMPTY`, note: `bmax[${b}] < 0 → continue (prev stays ${prev})`, alert: `Bucket ${b} is empty: the gap stretches over it, so prev stays ${prev}.` });
       continue;
     }
     const gap = bmin[b]! - prev;
@@ -231,11 +231,11 @@ function buildGap({ nums }: NIn): Step[] {
     const better = gap > best;
     const oldBest = best;
     best = Math.max(best, gap);
-    rec.push({ t: `Bucket ${b}: min ${bmin[b]} − previous max ${prev} = ${gap}`, d: better ? `${bmin[b]} − ${prev} = ${gap} → 🏆 NEW LARGEST GAP: ${best}.` : `${bmin[b]} − ${prev} = ${gap} does not beat ${best}.`, scene: scene(-1, n, b, prevB), aux: [{ title: 'gaps', kind: 'list', items: gaps }], v: vars(b, best, prev), why: 'The gap between consecutive sorted numbers that straddle a bucket boundary is min of this bucket minus max of the previous non-empty bucket.', tone: better ? 'success' : 'info', j: [16, 17], p: [15, 16], a: 2, tag: `BUCKET ${b} —`, note: `best = max(${oldBest}, ${bmin[b]} - ${prev}) = ${best}` });
+    rec.push({ t: `Bucket ${b}: min ${bmin[b]} − previous max ${prev} = ${gap}`, d: better ? `${bmin[b]} − ${prev} = ${gap} → 🏆 NEW LARGEST GAP: ${best}.` : `${bmin[b]} − ${prev} = ${gap} does not beat ${best}.`, scene: scene(-1, n, b, prevB), aux: [{ title: 'gaps', kind: 'list', items: gaps.slice() }], v: vars(b, best, prev), why: 'The gap between consecutive sorted numbers that straddle a bucket boundary is min of this bucket minus max of the previous non-empty bucket.', tone: better ? 'success' : 'info', j: [16, 17], p: [15, 16], a: 2, tag: `BUCKET ${b} —`, note: `best = max(${oldBest}, ${bmin[b]} - ${prev}) = ${best}` });
     prev = bmax[b]!;
     prevB = b;
   }
-  rec.push({ t: `Maximum gap = ${best}`, d: 'Compared only bucket boundaries, in linear time.', scene: scene(-1, n), aux: [{ title: 'gaps', kind: 'list', items: gaps }], v: vars('—', best, prev), why: 'Total work: one pass to bucket plus one pass over the buckets, with no comparison sort.', tone: 'success', j: [19], p: [17], a: 3, tag: '✅ Done!', note: `return ${best}`, result: { title: String(best), text: `Maximum gap in sorted order: ${best}` } });
+  rec.push({ t: `Maximum gap = ${best}`, d: 'Compared only bucket boundaries, in linear time.', scene: scene(-1, n), aux: [{ title: 'gaps', kind: 'list', items: gaps.slice() }], v: vars('—', best, prev), why: 'Total work: one pass to bucket plus one pass over the buckets, with no comparison sort.', tone: 'success', j: [19], p: [17], a: 3, tag: '✅ Done!', note: `return ${best}`, result: { title: String(best), text: `Maximum gap in sorted order: ${best}` } });
   return rec.steps;
 }
 

@@ -203,7 +203,7 @@ export const pathWithMaximumProbability: ProblemDef<In> = {
     'public double maxProbability(int n, int[][] edges, double[] succProb, int start, int end) {',
     '    List<double[]>[] adj = new List[n];',
     '    for (int i = 0; i < n; i++) adj[i] = new ArrayList<>();',
-    '    for (int i = 0; i < edges.length; i++) { /* add {v, p} both ways */ }',
+    '    for (int i = 0; i < edges.length; i++) { int a = edges[i][0], b = edges[i][1]; adj[a].add(new double[]{b, succProb[i]}); adj[b].add(new double[]{a, succProb[i]}); }',
     '    double[] prob = new double[n];',
     '    prob[start] = 1.0;',
     '    PriorityQueue<double[]> pq = new PriorityQueue<>((a, b) -> Double.compare(b[0], a[0]));',

@@ -130,7 +130,7 @@ export const findAllDuplicates: ProblemDef<In> = {
     '    int i = 0;',
     '    while (i < nums.length) {',
     '        int j = nums[i] - 1;',
-    '        if (nums[i] != nums[j]) swap(nums, i, j);',
+    '        if (nums[i] != nums[j]) { int t = nums[i]; nums[i] = nums[j]; nums[j] = t; }',
     '        else i++;',
     '    }',
     '    List<Integer> res = new ArrayList<>();',

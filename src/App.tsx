@@ -14,11 +14,13 @@ import { PatternsIndex } from './pages/PatternsIndex';
 import { PatternPage } from './pages/PatternPages';
 import { ProblemPage } from './pages/ProblemPage';
 import { Quiz } from './pages/Quiz';
+import { useRouteMeta } from './seo/useRouteMeta';
 import { surfaceFor } from './surface';
 
 export default function App() {
   const { pathname } = useLocation();
   const surface = surfaceFor(pathname);
+  useRouteMeta(); // title / description / canonical / og tags per route (src/seo/meta.ts)
 
   // The page type decides the colour palette (src/styles-surfaces.css).
   useEffect(() => {

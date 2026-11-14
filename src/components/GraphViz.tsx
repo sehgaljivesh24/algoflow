@@ -1,3 +1,4 @@
+import { useId } from 'react';
 import type { CellState, EdgeState, GraphEdgeVM, GraphScene } from '../engine/types';
 import { layoutGraph } from './graphLayout';
 import type { P } from './graphLayout';
@@ -60,6 +61,8 @@ const norm = (x: number, y: number) => {
 };
 
 export function GraphViz({ scene }: { scene: GraphScene }) {
+  // a page can show two graphs (split scenes): their arrow markers need distinct ids
+  const uid = useId().replace(/:/g, '');
   if (scene.nodes.length === 0) {
     return (
       <div className="gv-wrap">
@@ -132,7 +135,7 @@ export function GraphViz({ scene }: { scene: GraphScene }) {
       >
         <defs>
           {EDGE_STATES.map((s) => (
-            <marker key={s} id={`gv-arr-${s}`} className={`gv-mk st-${s}`} viewBox="0 0 10 10" refX="9" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto">
+            <marker key={s} id={`gv-arr-${uid}-${s}`} className={`gv-mk st-${s}`} viewBox="0 0 10 10" refX="9" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto">
               <path d="M0 0L10 5L0 10z" />
             </marker>
           ))}
@@ -148,7 +151,7 @@ export function GraphViz({ scene }: { scene: GraphScene }) {
           const bw = Math.max(16, w.length * 6.6 + 8);
           return (
             <g key={i} className={`gv-edge st-${st}`}>
-              <path d={d} fill="none" className="gv-line" markerEnd={e.directed ? `url(#gv-arr-${st})` : undefined} />
+              <path d={d} fill="none" className="gv-line" markerEnd={e.directed ? `url(#gv-arr-${uid}-${st})` : undefined} />
               {w && (
                 <g>
                   <rect x={label.x - bw / 2} y={label.y - 8} width={bw} height="16" rx="8" className="gv-wbox" />

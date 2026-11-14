@@ -1,15 +1,17 @@
 /**
- * DSA patterns. Every pattern is listed (so the index shows the full roadmap);
- * only those with an entry in CONTENT have a written page and a live animation.
+ * DSA patterns: types plus the BASE layer (the first 13 pattern cards and pages). Every pattern is listed (so the
+ * index shows the full roadmap); only those with an entry in CONTENT have a written page and a live animation.
+ *
+ * This module is a lazily loaded SOURCE of the pattern text (it holds BASE_CONTENT, ~12 kB) and is never imported
+ * for values by the browser entry. Who reads what:
+ *   - browser, always loaded:   ./patternCards.ts          (cards, groups, which patterns have a page; generated light index)
+ *   - browser, per pattern:     ./patternText/load.ts      (content, hero copy and examples of ONE pattern, fetched on demand)
+ *   - Node scripts:             ./patternsFull.ts          (everything, synchronous; same data as the two above)
+ * Regenerate the light index and the loader manifest after adding a card, pack or detail batch:
+ *   node scripts/gen-pattern-text.mts      (npm run check fails while they are out of date)
  *
  * Line format:  slug|title|tags|time / space
  */
-
-import { EXTRA_CONTENT } from './patternContent.ts';
-import { PACKS } from './packs/index.ts';
-import type { PatternExample } from './packs/types.ts';
-import { TEMPLATES } from './patternTemplates.ts';
-import { DETAIL } from './detail/index.ts';
 
 export type { PatternExample } from './packs/types.ts';
 
@@ -129,7 +131,8 @@ bits-modulo|Bit Modulo (Single Number II)|Mod 3, Bit columns|O(32·n)
 `,
 };
 
-const BASE_GROUPS: { name: string; cards: PatternCard[] }[] = Object.entries(RAW).map(([name, body]) => ({
+/** The original 14 families / 44 cards. Packs add more and detail batches override tags: see patternsFull.ts. */
+export const BASE_GROUPS: { name: string; cards: PatternCard[] }[] = Object.entries(RAW).map(([name, body]) => ({
   name,
   cards: body
     .split('\n')
@@ -141,31 +144,7 @@ const BASE_GROUPS: { name: string; cards: PatternCard[] }[] = Object.entries(RAW
     }),
 }));
 
-/** New pattern cards from the packs are appended to their family; unknown families are added at the end. */
-function mergeGroups(base: { name: string; cards: PatternCard[] }[]): { name: string; cards: PatternCard[] }[] {
-  const out = base.map((g) => ({ name: g.name, cards: [...g.cards] }));
-  for (const pack of PACKS) {
-    for (const g of pack.groups ?? []) {
-      let fam = out.find((x) => x.name === g.name);
-      if (!fam) {
-        fam = { name: g.name, cards: [] };
-        out.push(fam);
-      }
-      fam.cards.push(...g.cards.map((c) => ({ ...c, group: g.name })));
-    }
-  }
-  return out;
-}
-
-/** Hero tag overrides from `src/data/detail/*` are applied last. */
-export const PATTERN_GROUPS: { name: string; cards: PatternCard[] }[] = mergeGroups(BASE_GROUPS).map((g) => ({
-  name: g.name,
-  cards: g.cards.map((c) => (DETAIL[c.slug]?.tags ? { ...c, tags: DETAIL[c.slug].tags! } : c)),
-}));
-
-export const ALL_PATTERNS: PatternCard[] = PATTERN_GROUPS.flatMap((g) => g.cards);
-
-const BASE_CONTENT: Record<string, PatternContent> = {
+export const BASE_CONTENT: Record<string, PatternContent> = {
   'sliding-window-fixed': {
     animation: '643-maximum-average-subarray-i',
     summary: 'Slide a window of constant size k across the array, updating a running value instead of recomputing it.',
@@ -326,28 +305,4 @@ const BASE_CONTENT: Record<string, PatternContent> = {
   },
 };
 
-/** First 13 pages (above, with their templates) plus everything in patternContent.ts. */
-const BASE_WITH_TEMPLATES: Record<string, PatternContent> = Object.fromEntries(
-  Object.entries(BASE_CONTENT).map(([slug, c]) => [slug, { ...c, template: c.template ?? TEMPLATES[slug] }]),
-);
-const MERGED_CONTENT: Record<string, PatternContent> = {
-  ...BASE_WITH_TEMPLATES,
-  ...EXTRA_CONTENT,
-  ...Object.assign({}, ...PACKS.map((p) => p.content ?? {})),
-};
-/** Per-pattern overrides from `src/data/detail/*` replace individual fields last. */
-export const CONTENT: Record<string, PatternContent> = Object.fromEntries(
-  Object.entries(MERGED_CONTENT).map(([slug, c]) => [slug, DETAIL[slug]?.content ? { ...c, ...DETAIL[slug].content } : c]),
-);
-
-/**
- * The worked examples of a pattern: at least 3 different animated problems, each with a note on what it adds.
- * Patterns whose pack has not supplied examples yet fall back to their single flagship animation.
- */
-export function examplesFor(slug: string): PatternExample[] {
-  if (DETAIL[slug]?.examples?.length) return DETAIL[slug].examples!;
-  const fromPacks = PACKS.flatMap((p) => p.examples?.[slug] ?? []);
-  if (fromPacks.length) return fromPacks;
-  const c = CONTENT[slug];
-  return c ? [{ slug: c.animation, why: '' }] : [];
-}
+// The merged CONTENT, PATTERN_META and examplesFor() are built in ./patternsFull.ts (Node) and ./patternText/resolve.ts (browser).

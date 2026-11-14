@@ -42,12 +42,13 @@ function build(input: ParsedOps): Step[] {
   let pieces: string[] = [];
   const answers: string[] = [];
   const steps: Step[] = [];
-  const live2 = (i: number) => i <= built || tree[i] !== 0;
+  const touched = new Set<number>(); // slots that already received a partial sum from a child (a +0 still counts: it must not look "not built")
+  const live2 = (i: number) => i <= built || touched.has(i);
   const rng = (j: number) => (lowbit(j) === 1 ? `a[${j}]` : `a[${j - lowbit(j) + 1}..${j}]`);
 
   const emit = (title: string, desc: string, logic: string, tone: Step['logicTone'], l: { j: number[]; p: number[] }, algo: number, _ptrs: Pointer[], tag: string, note: string, alert?: string) => {
     const states: Record<number, CellState> = {};
-    const live = (i: number) => i <= built || tree[i] !== 0 || st[i] !== undefined;
+    const live = (i: number) => i <= built || touched.has(i) || st[i] !== undefined;
     for (let i = 1; i <= n; i++) states[i] = !live(i) ? 'dim' : (st[i] as CellState);
     const cells: Cell[] = a.map((v, k) => { const c: Cell = { key: k, value: v }; const s = cellSt(k); if (s) c.state = s; return c; });
     const aux: Aux[] = [{ title: 'a[ ] positions 1..n (the real array)', kind: 'list', items: a.map((v, k) => `${k + 1}:${v}`) }];
@@ -76,6 +77,7 @@ function build(input: ParsedOps): Step[] {
     let note = `tree[${i}] receives a[${i}] = ${a[i - 1]}, now ${tree[i]}, the final sum of ${rng(i)}.`;
     if (p <= n) {
       tree[p] += tree[i];
+      touched.add(p);
       st[p] = 'found';
       note += ` Its parent ${i} + ${lowbit(i)} = ${p} is the next block that must contain it, so tree[${p}] += ${tree[i]}.`;
     } else note += ` ${i} + ${lowbit(i)} = ${i + lowbit(i)} is past ${n}: no parent.`;

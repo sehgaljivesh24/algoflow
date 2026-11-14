@@ -139,7 +139,7 @@ function build28({ text, pat }: SIn): Step[] {
     }
   }
   if (found < 0) {
-    rec.push({ t: 'Text exhausted: not found', d: `The text ended before the pattern fully matched.`, scene: view(n - 1, 0, false), aux: lpsAux(), v: vars(n, '—'), why: 'i only moves forward and every start position was either matched or ruled out through the lps table.', tone: 'warn', j: [22], p: [25], a: 3, tag: '✅ Done!', note: 'return -1', result: { title: '-1', text: 'The pattern does not occur in the text' } });
+    rec.push({ t: 'Text exhausted: not found', d: `The text ended before the pattern fully matched.`, scene: view(n, j, false), aux: lpsAux(), v: vars(n, '—'), why: 'i only moves forward and every start position was either matched or ruled out through the lps table.', tone: 'warn', j: [22], p: [25], a: 3, tag: '✅ Done!', note: 'return -1', result: { title: '-1', text: 'The pattern does not occur in the text' } });
   } else {
     rec.steps[rec.steps.length - 1].result = { title: String(found), text: `First occurrence starts at index ${found}` };
   }

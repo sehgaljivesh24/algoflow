@@ -24,6 +24,7 @@ const java = [
   '    for (int j = 1; j < n; j++) best = Math.min(best, dp[full][j] + d[j][0]);   // close the loop',
   '    return best;',
   '}',
+  'private static final int INF = 1_000_000_000;               // "unreachable" (small enough that INF + a distance cannot overflow)',
 ];
 const python = [
   'def tsp(d):',
@@ -44,6 +45,8 @@ const python = [
   '                if prev & (1 << (i - 1)):',
   '                    dp[mask][j] = min(dp[mask][j], dp[prev][i] + d[i][j])',
   '    return min(dp[full][j] + d[j][0] for j in range(1, n))   # close the loop',
+  '',
+  'INF = 10 ** 9                                        # "unreachable" (any real tour costs less)',
 ];
 const J = { def: find(java, 'int n = d.length', 'int[][] dp'), base: find(java, 'for (int j = 1; j < n; j++) dp[1'), cell: find(java, 'for (int mask', 'int prev', 'dp[mask][j] = Math.min'), close: find(java, 'int best = INF', 'for (int j = 1; j < n; j++) best'), ret: find(java, 'return best') };
 const P = { def: find(python, 'n = len(d)', 'dp = [[INF]'), base: find(python, 'dp[1 << (j - 1)][j] = d[0][j]'), cell: find(python, 'for mask in', 'prev = mask', 'dp[mask][j] = min'), close: find(python, 'return min(dp[full]'), ret: find(python, 'return min(dp[full]') };

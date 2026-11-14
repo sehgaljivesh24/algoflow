@@ -21,6 +21,7 @@ const java = [
   '    }',
   '    return count + 1;                                        // n itself has all-distinct digits',
   '}',
+  'private int perm(int a, int k) { int r = 1; for (int t = 0; t < k; t++) r *= a - t; return r; }   // a * (a-1) * ... (k factors)',
 ];
 const python = [
   'def count_special_numbers(n):',
@@ -38,6 +39,12 @@ const python = [
   '            return count                                     # n\'s own prefix repeats a digit: stop',
   '        used.add(c)',
   '    return count + 1                                         # n itself has all-distinct digits',
+  '',
+  'def perm(a, k):                                              # a * (a-1) * ... (k factors)',
+  '    r = 1',
+  '    for t in range(k):',
+  '        r *= a - t',
+  '    return r',
 ];
 const J = { def: find(java, 'String s = String.valueOf', 'int L = s.length()'), shorter: find(java, 'for (int len = 1', 'count += 9 * perm'), loop: find(java, 'boolean[] used', 'for (int i = 0; i < L'), cnt: find(java, 'for (int x =', 'if (!used[x])'), stop: find(java, 'if (used[c]) return count'), mark: find(java, 'used[c] = true'), self: find(java, 'return count + 1') };
 const P = { def: find(python, 's = str(n)', 'L, count'), shorter: find(python, 'for length in', 'count += 9 * perm'), loop: find(python, 'used = set()', 'for i, ch in enumerate'), cnt: find(python, 'for x in range', 'if x not in used', 'count += perm(9 - i'), stop: find(python, 'if c in used', 'return count   '), mark: find(python, 'used.add(c)'), self: find(python, 'return count + 1') };

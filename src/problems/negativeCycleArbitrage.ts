@@ -118,6 +118,7 @@ function build({ n, edges }: In): Step[] {
   }
 
   if (cycle) {
+    round = n; // the for-loop left round = n + 1; the check round is round n
     push({
       title: `Round ${n} still updated: a cycle exists`, desc: `The last updated node is ${last}. It is reachable from a negative cycle, but may sit on a tail leading away from it, so we cannot read the cycle off yet.`,
       logic: 'Distances kept falling after n − 1 rounds, which is only possible around a negative cycle.', logicTone: 'warn',

@@ -23,6 +23,7 @@ const java = [
   '    }',
   '    return dp[0][n - 1];',
   '}',
+  'private String compress(String t) { return t.replaceAll("(.)\\\\1+", "$1"); }   // collapse runs of equal letters',
 ];
 const python = [
   'def strange_printer(text):',
@@ -55,6 +56,7 @@ function build({ s: raw }: In): Step[] {
   let cj = -1;
   let ck = -1;
   let done = false;
+  let finished = false;
   let cand: number | string = '—';
   let cur: number | string = '—';
   let tries: string[] = [];
@@ -74,7 +76,7 @@ function build({ s: raw }: In): Step[] {
             if (j < i) return gc(`${i},${j}`, '·', 'dim');
             let st: CellState | undefined;
             if (i === ci && j === cj) st = done ? 'found' : 'active';
-            else if (ci >= 0 && ((i === ci + 1 && j === cj) || (ck >= 0 && ((i === ci + 1 && j === ck - 1) || (i === ck && j === cj))))) st = 'compare';
+            else if (!finished && ci >= 0 && ((i === ci + 1 && j === cj) || (ck >= 0 && ((i === ci + 1 && j === ck - 1) || (i === ck && j === cj))))) st = 'compare';
             else if (v === null) st = 'dim';
             return gc(`${i},${j}`, v === null ? '?' : v, st);
           })),
@@ -142,6 +144,7 @@ function build({ s: raw }: In): Step[] {
   cj = n - 1;
   ck = -1;
   done = true;
+  finished = true; // the answer step has no "source" cells: do not light up dp[1][n-1] as one
   cur = dp[0][n - 1]!;
   say({
     title: 'Done', tag: '✅ Done!', note: `return dp[0][${n - 1}] = ${dp[0][n - 1]}`, desc: `The printer needs ${dp[0][n - 1]} turn${dp[0][n - 1] === 1 ? '' : 's'} for "${raw}".`,

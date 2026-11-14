@@ -22,6 +22,14 @@ const java = [
   '    merge(nums, lo, mid, hi);                         // ordinary merge of the two sorted runs',
   '    return count;',
   '}',
+  'private void merge(int[] nums, int lo, int mid, int hi) {',
+  '    int[] tmp = new int[hi - lo + 1];',
+  '    int a = lo, b = mid + 1, k = 0;',
+  '    while (a <= mid && b <= hi) tmp[k++] = nums[a] <= nums[b] ? nums[a++] : nums[b++];',
+  '    while (a <= mid) tmp[k++] = nums[a++];',
+  '    while (b <= hi) tmp[k++] = nums[b++];',
+  '    System.arraycopy(tmp, 0, nums, lo, tmp.length);',
+  '}',
 ];
 const python = [
   'def reverse_pairs(nums):',

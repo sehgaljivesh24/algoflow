@@ -103,6 +103,8 @@ export const rabinKarp: ProblemDef<SIn> = {
     '    }',
     '    return hits;',
     '}',
+    '',
+    'static int val(char c) { return c - \'a\' + 1; }       // a=1 ... z=26',
   ],
   python: [
     'def rabin_karp(text, pat):',
@@ -211,6 +213,8 @@ export const repeatedDnaSequences: ProblemDef<DIn> = {
     '    }',
     '    return new ArrayList<>(added);',
     '}',
+    '',
+    'private int code(char c) { return "ACGT".indexOf(c); }       // A=0, C=1, G=2, T=3',
   ],
   python: [
     'def find_repeated(s, L):',

@@ -165,6 +165,9 @@ export const quickSort: ProblemDef<In> = {
     '    swap(nums, i, hi);',
     '    return i;',
     '}',
+    'void swap(int[] nums, int a, int b) {',
+    '    int t = nums[a]; nums[a] = nums[b]; nums[b] = t;',
+    '}',
   ],
   python: [
     'def quick_sort(nums, lo, hi):',

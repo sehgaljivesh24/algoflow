@@ -39,7 +39,7 @@ function build({ words }: In): Step[] {
   const finish = (reason: string, col: number, bad: number) => {
     const prefix = first.slice(0, plen);
     steps.push({
-      title: 'Done', tag: '✅ Done!', desc: reason, scene: scene(col, bad), aux: aux(), vars: vars(col, col < first.length ? first[col] : '—'),
+      title: 'Done', tag: '✅ Done!', desc: reason, scene: scene(col, bad, bad + 1), aux: aux(), vars: vars(col, col < first.length ? first[col] : '—'),
       logic: 'Everything to the left of this column agreed in every word, and this column does not, so the prefix cannot grow any more.', logicTone: 'warn',
       javaLines: [5], pyLines: [4], algoStep: 5, note: `return strs[0].substring(0, ${plen}) = "${prefix}"`,
       result: { title: JSON.stringify(prefix), text: prefix ? `Common prefix: "${prefix}"` : 'No common prefix' },

@@ -3,11 +3,27 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!--
+      Default head tags. `vite build` (scripts/vite-seo-plugin.mts) replaces the title / description / canonical / og:* /
+      twitter:* tags of this file with each route's own values (src/seo/meta.ts) and writes one copy per route;
+      in the browser src/seo/useRouteMeta.ts keeps them in sync on navigation.
+    -->
     <title>AlgoFlow — Watch algorithms run, step by step</title>
     <meta
       name="description"
       content="Step-by-step animated walkthroughs of coding-interview problems, with synced Java and Python code, custom input and progress tracking."
     />
+    <meta property="og:site_name" content="AlgoFlow" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="AlgoFlow — Watch algorithms run, step by step" />
+    <meta
+      property="og:description"
+      content="Step-by-step animated walkthroughs of coding-interview problems, with synced Java and Python code, custom input and progress tracking."
+    />
+    <meta property="og:image" content="/og-default.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="theme-color" content="#0f1117" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <script>
       // Apply the saved theme before first paint to avoid a flash.
       try {

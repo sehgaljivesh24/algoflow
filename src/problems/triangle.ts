@@ -110,7 +110,7 @@ export const triangle: ProblemDef<In> = {
   },
   java: [
     'public int minimumTotal(List<List<Integer>> t) {',
-    '    int[][] dp = copy(t);   // last row is already final',
+    '    int[][] dp = t.stream().map(row -> row.stream().mapToInt(Integer::intValue).toArray()).toArray(int[][]::new);   // copy; last row is already final',
     '    for (int r = t.size() - 2; r >= 0; r--) {',
     '        for (int c = 0; c <= r; c++) {',
     '            dp[r][c] = t.get(r).get(c) + Math.min(dp[r + 1][c], dp[r + 1][c + 1]);',

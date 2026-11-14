@@ -3,26 +3,20 @@
  * the pattern that features the problem (its flagship animation, a worked example or a practice entry) decides, and the
  * problem's own category / technique tag covers the rest.
  */
-import { accentFor, type Accent } from './patternAccent.ts';
-import { ALL_PATTERNS, CONTENT, examplesFor } from './patterns.ts';
+import type { Accent } from './patternAccent.ts';
+import { FEATURED } from './patternText/light.ts';
 
 let bySlug: Map<string, Accent> | undefined;
 
-/** problem slug -> accent of the first pattern that features it (flagship animations first, then examples, then practice lists). */
+/**
+ * problem slug -> accent of the first pattern that features it (flagship animations first, then examples, then practice lists).
+ * Precomputed into patternText/light.ts by scripts/gen-pattern-text.mts (the algorithm is computeFeatured in featuredAccent.ts),
+ * so this module needs none of the pattern text.
+ */
 function featured(): Map<string, Accent> {
   if (bySlug) return bySlug;
   const map = new Map<string, Accent>();
-  const add = (slug: string | undefined, pattern: { slug: string; group: string }) => {
-    if (slug && !map.has(slug)) map.set(slug, accentFor(pattern.slug, pattern.group));
-  };
-  for (const p of ALL_PATTERNS) add(CONTENT[p.slug]?.animation, p);
-  for (const p of ALL_PATTERNS) for (const e of examplesFor(p.slug)) add(e.slug, p);
-  for (const p of ALL_PATTERNS) {
-    for (const item of CONTENT[p.slug]?.practice ?? []) {
-      if (typeof item === 'string') add(item, p);
-      else if ('slug' in item) add(item.slug, p);
-    }
-  }
+  for (const [accent, slugs] of Object.entries(FEATURED)) for (const s of slugs.split(' ')) if (s) map.set(s, accent as Accent);
   bySlug = map;
   return map;
 }

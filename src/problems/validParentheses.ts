@@ -133,7 +133,7 @@ export const validParentheses: ProblemDef<In> = {
     '        } else {',
     '            if (stack.isEmpty()) return false;',
     '            char open = stack.pop();',
-    '            if (!matches(open, c)) return false;',
+    '            if ("([{".indexOf(open) != ")]}".indexOf(c)) return false;',
     '        }',
     '    }',
     '    return stack.isEmpty();',

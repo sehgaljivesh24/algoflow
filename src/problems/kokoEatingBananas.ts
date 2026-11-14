@@ -85,6 +85,7 @@ function build({ piles, h }: In): Step[] {
     });
   }
 
+  hoursShown = hoursAt(piles, lo); // the Variables panel must show the hours at the ANSWER speed, not at the last speed that was tried
   steps.push({
     title: `Minimum speed = ${lo}`, tag: '✅ Done!', desc: `lo = hi = ${lo}: the smallest speed that finishes within ${h} hours (${hoursAt(piles, lo)} hours needed).`,
     cells: cells({ [lo]: 'found' }), pointers: [ptr('k', 'k', lo - 1, 'green')], vars: vars('—'), aux: [range()],

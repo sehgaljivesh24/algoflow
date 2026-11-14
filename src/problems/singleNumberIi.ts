@@ -102,7 +102,7 @@ export const singleNumberIi: ProblemDef<In> = {
     '        count = sum((x >> bit) & 1 for x in nums)',
     '        if count % 3:',
     '            result |= 1 << bit',
-    '    return result',
+    '    return result if result < 1 << 31 else result - (1 << 32)   # bit 31 is the sign bit (Java int wraps, Python does not)',
   ],
   algorithm: [
     'Start with result = 0',

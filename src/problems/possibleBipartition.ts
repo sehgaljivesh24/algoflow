@@ -176,6 +176,13 @@ export const possibleBipartition: ProblemDef<GIn> = {
     '    }',
     '    return true;',
     '}',
+    '',
+    'private List<Integer>[] buildGraph(int n, int[][] dislikes) {',
+    '    List<Integer>[] adj = new List[n + 1];',
+    '    for (int i = 0; i <= n; i++) adj[i] = new ArrayList<>();',
+    '    for (int[] d : dislikes) { adj[d[0]].add(d[1]); adj[d[1]].add(d[0]); }',
+    '    return adj;',
+    '}',
   ],
   python: [
     'def possible_bipartition(n, dislikes):',

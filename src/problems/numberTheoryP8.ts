@@ -136,7 +136,7 @@ function build50({ x, n }: PIn): Step[] {
   let m = m0;
   resRow[0] = 1;
   rec.push({ t: 'Start', d: `Compute ${fmt(x)}^${n}. Write |n| = ${m0} in binary (${bits.slice().reverse().join('')}); the bits tell which repeated squares of x to multiply together.`, scene: grid(-1), v: vars(m), why: `x^${m0} = product of x^(2^i) over the set bits i, and each x^(2^(i+1)) is just the square of x^(2^i).`, j: [0, 1, 2], p: [0, 1, 2], a: 0, tag: 'READY —', note: `m = |${n}| = ${m0}, result = 1, base = ${fmt(x)}` });
-  for (let i = 0; i < L; i++) {
+  for (let i = 0; i < (m0 === 0 ? 0 : L); i++) { // n = 0: `while (m > 0)` never runs, so nothing is multiplied or squared
     const set = bits[i] === 1;
     const resBefore = result;
     if (set) result *= base;
@@ -153,7 +153,7 @@ function build50({ x, n }: PIn): Step[] {
     out = 1 / result;
     rec.push({ t: 'Negative exponent: take the reciprocal', d: `x^${n} = 1 / x^${m0} = 1 / ${fmt(result)} = ${fmt(out)}.`, scene: grid(L), v: vars(0), why: 'x^(−k) = 1 / x^k, so the loop only ever works with the absolute value of n.', j: [8], p: [8], a: 3, tag: 'INVERT —', note: `n < 0 → 1 / ${fmt(result)} = ${fmt(out)}` });
   }
-  rec.push({ t: `Answer: ${fmt(out)}`, d: `${fmt(x)}^${n} = ${fmt(out)} using ${L} squarings instead of ${m0} multiplications.`, scene: grid(L), v: vars(0), why: 'The loop runs ⌊log₂|n|⌋ + 1 times, so the work is logarithmic in the exponent.', tone: 'success', j: [8], p: [8], a: 4, tag: '✅ Done!', note: `return ${fmt(out)}`, result: { title: fmt(out), text: `${fmt(x)}^${n} = ${fmt(out)}` } });
+  rec.push({ t: `Answer: ${fmt(out)}`, d: `${fmt(x)}^${n} = ${fmt(out)} ${m0 === 0 ? 'with no loop iterations (any x to the power 0 is 1).' : `using ${L} squarings instead of ${m0} multiplications.`}`, scene: grid(L), v: vars(0), why: 'The loop runs ⌊log₂|n|⌋ + 1 times, so the work is logarithmic in the exponent.', tone: 'success', j: [8], p: [8], a: 4, tag: '✅ Done!', note: `return ${fmt(out)}`, result: { title: fmt(out), text: `${fmt(x)}^${n} = ${fmt(out)}` } });
   return rec.steps;
 }
 

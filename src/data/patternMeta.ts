@@ -2,9 +2,10 @@
  * Per-pattern copy for the single-pattern page (header pill, hero line, tip box, complexity note).
  * `highlight` lists phrases that are emphasised (cyan) wherever they occur in the page title and the
  * "when to use" bullets (case-insensitive substring match).
+ *
+ * This file holds the type and the BASE layer (the original 44 patterns). It is a lazily loaded source of the pattern
+ * text; the merged PATTERN_META lives in ./patternsFull.ts (Node) and ./patternText/resolve.ts (browser).
  */
-import { PACKS } from './packs/index.ts';
-import { DETAIL } from './detail/index.ts';
 
 export interface PatternMeta {
   /** Emoji shown in the hero and the header pill. */
@@ -20,7 +21,7 @@ export interface PatternMeta {
   highlight: string[];
 }
 
-const BASE_META: Record<string, PatternMeta> = {
+export const BASE_META: Record<string, PatternMeta> = {
   'sliding-window-fixed': {
     icon: '📏', label: 'Fixed',
     desc: 'A window of constant size k glides over the data. Each move adds the newcomer and drops the oldest, so one step costs O(1).',
@@ -330,13 +331,3 @@ const BASE_META: Record<string, PatternMeta> = {
     highlight: ['Bit Modulo', 'appears k times', 'XOR alone is not enough', '32 bit columns', 'constant extra space'],
   },
 };
-
-/** Copy for the original 44 patterns plus whatever the packs add for new patterns. */
-const MERGED_META: Record<string, PatternMeta> = {
-  ...BASE_META,
-  ...Object.assign({}, ...PACKS.map((p) => p.meta ?? {})),
-};
-/** Per-pattern overrides from `src/data/detail/*` replace individual fields last. */
-export const PATTERN_META: Record<string, PatternMeta> = Object.fromEntries(
-  Object.entries(MERGED_META).map(([slug, m]) => [slug, DETAIL[slug]?.meta ? { ...m, ...DETAIL[slug].meta } : m]),
-);

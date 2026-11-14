@@ -119,6 +119,8 @@ export const hldLca: ProblemDef<In> = {
     '    }',
     '    return depth[u] < depth[v] ? u : v;     // same chain: shallower node',
     '}',
+    '',
+    'int[] parent, depth, head;                 // filled by the decomposition: head[v] = top node of v\'s heavy chain',
   ],
   python: [
     'def lca(u, v):',
@@ -128,6 +130,8 @@ export const hldLca: ProblemDef<In> = {
     '        else:',
     '            v = parent[head[v]]',
     '    return u if depth[u] < depth[v] else v',
+    '',
+    'parent, depth, head = [], [], []     # filled by the decomposition: head[v] = top node of v\'s heavy chain',
   ],
   algorithm: [
     'Decompose the tree into heavy chains and record head[] and depth[]',

@@ -51,7 +51,7 @@ function build({ n, src, edges }: In): Step[] {
   /** Edge relaxation table of the current round: u→v, weight, dist[u]+w, dist[v] before, update? */
   let table: string[] = [];
   const aux = (): Aux[] => [
-    { title: `dist[ ] (round ${round} of ${n - 1})`, kind: 'list', items: dist.map((d, i) => `${i}: ${dd(d)}`) },
+    { title: round > n - 1 ? `dist[ ] (check round ${round}, after the ${n - 1} relaxation rounds)` : `dist[ ] (round ${round} of ${n - 1})`, kind: 'list', items: dist.map((d, i) => `${i}: ${dd(d)}`) },
     ...(table.length ? [{ title: 'Edge relaxation table: u→v · w · dist[u]+w · dist[v] before · update?', kind: 'list' as const, items: [...table], highlight: curEdge >= 0 ? table.length - 1 : undefined, bad: bad >= 0 ? [table.length - 1] : undefined }] : []),
   ];
   const vars = () => ({ round, edge: curEdge >= 0 ? `${edges[curEdge].u}→${edges[curEdge].v}` : '—', 'updates this round': changes });
@@ -230,18 +230,18 @@ export const bellmanFordNegativeEdges: ProblemDef<In> = {
   ],
   python: [
     'def bellman_ford(n, edges, src):',
-    '    dist = [inf] * n',
+    "    dist = [float('inf')] * n",
     '    dist[src] = 0',
     '    for _ in range(n - 1):',
     '        changed = False',
     '        for u, v, w in edges:',
-    '            if dist[u] != inf and dist[u] + w < dist[v]:',
+    "            if dist[u] != float('inf') and dist[u] + w < dist[v]:",
     '                dist[v] = dist[u] + w',
     '                changed = True',
     '        if not changed:',
     '            break                                     # settled early',
     '    for u, v, w in edges:',
-    '        if dist[u] != inf and dist[u] + w < dist[v]:',
+    "        if dist[u] != float('inf') and dist[u] + w < dist[v]:",
     '            return None                               # negative cycle',
     '    return dist',
   ],

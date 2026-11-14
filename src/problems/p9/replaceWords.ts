@@ -124,7 +124,7 @@ export const replaceWords: ProblemDef<In> = {
   },
   vizTitle: 'Trie of roots',
   java: [
-    'class Trie {',
+    'static class Trie {',
     '    Trie[] next = new Trie[26];',
     '    boolean end;',
     '}',

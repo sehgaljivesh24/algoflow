@@ -167,6 +167,8 @@ export const nextPermutation: ProblemDef<In> = {
     '    }',
     '    reverse(nums, i + 1, nums.length - 1);',
     '}',
+    'private void swap(int[] a, int x, int y) { int t = a[x]; a[x] = a[y]; a[y] = t; }',
+    'private void reverse(int[] a, int lo, int hi) { while (lo < hi) swap(a, lo++, hi--); }',
   ],
   python: [
     'def next_permutation(nums):',

@@ -201,6 +201,8 @@ export const slidingWindowMedian: ProblemDef<In> = {
     '    return ans;',
     '}',
     '// peek / pop first discard entries whose gone[index] is true, then act on the top',
+    'private int[] peek(PriorityQueue<int[]> h, boolean[] gone) { while (gone[h.peek()[1]]) h.poll(); return h.peek(); }',
+    'private int[] pop(PriorityQueue<int[]> h, boolean[] gone) { peek(h, gone); return h.poll(); }',
   ],
   python: [
     'def median_sliding_window(nums, k):',

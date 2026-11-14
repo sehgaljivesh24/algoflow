@@ -61,7 +61,8 @@ export function fenCountSteps(nums: number[], mode: FenMode, L: FenLines): Step[
   let pieces: string[] = [];
   const steps: Step[] = [];
   const seen = () => inserted.filter(Boolean).length;
-  const outText = () => (mode === 'smaller' ? `[${ans.map((v, i) => (inserted[i] ? v : '?')).join(', ')}]` : String(total));
+  const recorded = new Array<boolean>(n).fill(false); // ans[i] is shown as soon as it is recorded, not only after its rank is inserted
+  const outText = () => (mode === 'smaller' ? `[${ans.map((v, i) => (recorded[i] ? v : '?')).join(', ')}]` : String(total));
 
   const emit = (title: string, desc: string, logic: string, tone: Step['logicTone'], l: Ln, algo: number, tag: string, note: string, alert?: string) => {
     const cells: Cell[] = nums.map((v, i) => {
@@ -124,6 +125,7 @@ export function fenCountSteps(nums: number[], mode: FenMode, L: FenLines): Step[
     let gain: number;
     if (mode === 'smaller') {
       ans[idx] = s;
+      recorded[idx] = true;
       gain = s;
       emit(`ans[${idx}] = ${s}`, `${s} already-inserted item${s === 1 ? ' is' : 's are'} strictly smaller than ${x} and lie to its right.`, 'Because we scan from the right, "inserted" means "to my right".', 'success', L.record, 3,
         'RECORD —', `ans[${idx}] = prefix(${r - 1}) = ${s}`);

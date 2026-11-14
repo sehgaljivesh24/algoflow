@@ -97,6 +97,7 @@ function build({ board, word }: In): Step[] {
     onPath[r][c] = false;
     path.pop();
     cur = [r, c];
+    k = i;
     push(`Backtrack from (${r}, ${c})`, 'None of the four neighbours continued the word, so free this cell again and step back.', 'Un-marking lets other paths use this cell later.', 'warn', [13], [15], 3, false, undefined,
       { tag: 'BACKTRACK', note: `b[${r}][${c}] = '${board[r][c]}' restored → return false (path length ${path.length})` });
     return false;
@@ -107,6 +108,8 @@ function build({ board, word }: In): Step[] {
     for (let c = 0; c < C && !ok; c++) {
       if (board[r][c] !== word[0]) continue;
       {
+        cur = [r, c];
+        k = 0;
         push(`Try a path starting at (${r}, ${c})`, `${board[r][c]} equals the first letter "${word[0]}".`, 'Only cells that match the first letter can start a path.', 'info', [3], [3], 0, false, undefined,
           { tag: 'START CELL', note: `b[${r}][${c}] == '${word[0]}' → dfs(b, w, ${r}, ${c}, 0)` });
       }

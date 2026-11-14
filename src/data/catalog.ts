@@ -6,7 +6,8 @@
  * id is a LeetCode number, or a label (GFG / IB / CP / ALG) for other sources.
  */
 
-import { PACKS } from './packs/index.ts';
+import type { PackProblem } from './packs/types.ts';
+import { PACK_PROBLEMS } from './patternText/light.ts';
 
 export interface CatalogEntry {
   slug: string;
@@ -297,32 +298,37 @@ function parse(): CatalogCategory[] {
 }
 
 /**
- * New problems contributed by the pattern packs (src/data/packs) are appended to their category; a category that
- * does not exist yet is created at the end of the list.
+ * New problems contributed by the pattern packs (`problems` of src/data/packs/*) are appended to their category; a
+ * category that does not exist yet is created at the end of the list. The packs hold the pattern text too, so the
+ * browser reads their problems from the generated light index (PACK_PROBLEMS in patternText/light.ts, in PACKS order)
+ * instead of importing them; `npm run check` fails while that list differs from the packs.
  */
-function withPacks(base: CatalogCategory[]): CatalogCategory[] {
+function withPacks(base: CatalogCategory[], problems: readonly PackProblem[]): CatalogCategory[] {
   const cats = base.map((c) => ({ ...c, entries: [...c.entries] }));
-  for (const pack of PACKS) {
-    for (const p of pack.problems ?? []) {
-      let cat = cats.find((c) => c.name === p.category);
-      if (!cat) {
-        cat = { id: slugify(p.category), name: p.category, entries: [] };
-        cats.push(cat);
-      }
-      cat.entries.push({
-        slug: `${p.id.toLowerCase()}-${slugify(p.title)}`,
-        id: p.id,
-        title: p.title,
-        difficulty: p.difficulty,
-        tag: p.tag,
-        category: p.category,
-        group: p.group,
-      });
+  for (const p of problems) {
+    let cat = cats.find((c) => c.name === p.category);
+    if (!cat) {
+      cat = { id: slugify(p.category), name: p.category, entries: [] };
+      cats.push(cat);
     }
+    cat.entries.push({
+      slug: `${p.id.toLowerCase()}-${slugify(p.title)}`,
+      id: p.id,
+      title: p.title,
+      difficulty: p.difficulty,
+      tag: p.tag,
+      category: p.category,
+      group: p.group,
+    });
   }
   return cats;
 }
 
+/** The whole catalog for a given list of pack problems (scripts/gen-pattern-text.mts calls it with the fresh list). */
+export function buildCatalog(packProblems: readonly PackProblem[]): CatalogCategory[] {
+  return withPacks(parse(), packProblems);
+}
+
 /** Ordered like the recommended learning sequence (pack categories last). */
-export const CATALOG: CatalogCategory[] = withPacks(parse());
+export const CATALOG: CatalogCategory[] = buildCatalog(PACK_PROBLEMS);
 export const ALL_ENTRIES: CatalogEntry[] = CATALOG.flatMap((c) => c.entries);

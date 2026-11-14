@@ -1,3 +1,4 @@
+import { useId } from 'react';
 import type { CellState, Scene, TreeNodeVM } from '../../engine/types';
 import { stateClass } from '../ArrayViz';
 import { EmptyScene } from './EmptyScene';
@@ -6,6 +7,8 @@ const LIT: CellState[] = ['active', 'found', 'swap', 'compare', 'sorted'];
 
 /** Binary tree: circles (colour follows the node state, recoloured over 0.4s) joined by edges that light up purple along the active path. */
 export function TreeViz({ scene, sortedSolid = false }: { scene: Extract<Scene, { kind: 'tree' }>; sortedSolid?: boolean }) {
+  // two trees on one page (heap halves, split scenes) must not share the arrow marker id
+  const arrowId = `tv-xarrow-${useId().replace(/:/g, '')}`;
   const byId = new Map<number, TreeNodeVM>(scene.nodes.map((n) => [n.id, n]));
   const pos = new Map<number, { x: number; y: number }>();
   let order = 0;
@@ -39,7 +42,7 @@ export function TreeViz({ scene, sortedSolid = false }: { scene: Extract<Scene, 
     <div className="tv-wrap">
       <svg className="svg-viz tv" style={{ minWidth: Math.min(width, 520), ...(maxScale ? { maxWidth: Math.round(width * maxScale) } : null) }} viewBox={`0 0 ${width} ${height}`} role="img" aria-label="Binary tree">
         <defs>
-          <marker id="tv-xarrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <marker id={arrowId}viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
             <path d="M0 0L10 5L0 10z" className="tv-xarrow" />
           </marker>
         </defs>
@@ -61,7 +64,7 @@ export function TreeViz({ scene, sortedSolid = false }: { scene: Extract<Scene, 
           const cx = (x1 + x2) / 2 + (x2 >= x1 ? bend : -bend), cy = (y1 + y2) / 2;
           return (
             <g key={`x${i}-${e.from}-${e.to}`} className="tv-xedge">
-              <path d={`M ${x1} ${y1} Q ${cx} ${cy} ${x2} ${y2}`} fill="none" markerEnd="url(#tv-xarrow)" />
+              <path d={`M ${x1} ${y1} Q ${cx} ${cy} ${x2} ${y2}`} fill="none" markerEnd={`url(#${arrowId})`} />
               {e.label && <text x={cx} y={cy - 4} textAnchor="middle">{e.label}</text>}
             </g>
           );

@@ -21,7 +21,7 @@ function parse(raw: string): In {
 function build({ n, source, destination, edges }: In): Step[] {
   const adj: number[][] = Array.from({ length: n }, () => []); // edge indexes
   edges.forEach((e, i) => { adj[e.u].push(i); adj[e.v].push(i); });
-  adj.forEach((l, u) => l.sort((a, b) => (edges[a].u === u ? edges[a].v : edges[a].u) - (edges[b].u === u ? edges[b].v : edges[b].u)));
+  // neighbours stay in edge-list order, exactly like the Java adjacency lists (adj.get(u).add(v) per edge)
   const other = (i: number, u: number) => (edges[i].u === u ? edges[i].v : edges[i].u);
   const seen = new Array<boolean>(n).fill(false);
   const dist = new Array<number>(n).fill(0);
