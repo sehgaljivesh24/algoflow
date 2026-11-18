@@ -307,6 +307,10 @@
 .vp-left { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 14px; }
 .vp-right { width: 360px; flex-shrink: 0; display: flex; flex-direction: column; gap: 14px; min-width: 0; }
 
+/* code: its own full-width row below the two columns, not squeezed into the 360px side column */
+.vp-code-full { max-width: 1380px; margin: 0 auto; padding: 0 28px 18px; }
+.embedded.vp .vp-code-full { padding: 0; margin-top: 14px; }
+
 /* controls */
 .vp .vp-ctrl { padding: 11px 16px; }
 .vp-hint { font-size: .68rem; color: var(--muted); margin-bottom: 9px; }
@@ -435,6 +439,8 @@
 .cp-lang-btn.active { background: var(--blue-bg); color: var(--cyan); }
 .cp-lang-btn:hover:not(.active) { color: var(--text); }
 .code-panel .cp-body { position: relative; padding: 10px 12px; font: .78rem/1.95 var(--mono); overflow: auto; max-height: 480px; background: var(--bg2); }
+/* full-width placement (see .vp-code-full): far fewer long lines need horizontal scroll, so give vertical room instead */
+.vp-code-full .code-panel .cp-body { max-height: 640px; }
 .code-panel .cp-line { display: flex; align-items: flex-start; padding: 0 5px; border-radius: 4px; transition: background .3s; border-left: 3px solid transparent; min-width: max-content; }
 .code-panel .cp-line.on { background: color-mix(in srgb, var(--blue) 10%, transparent); border-left-color: var(--blue); }
 .code-panel .cp-line.on.done { background: color-mix(in srgb, var(--green) 10%, transparent); border-left-color: var(--green); }
@@ -495,6 +501,7 @@
   .vp-top { padding: 12px 10px 0; }
   .vp-body { flex-direction: column; padding: 12px 14px; }
   .vp-right { width: 100%; }
+  .vp-code-full { padding: 0 14px 12px; }
   .vp-speed { margin-left: 0; }
   .vp-appr { padding: 12px 14px; gap: 12px; }
   .vp-appr-icon svg { width: 32px; height: 32px; }

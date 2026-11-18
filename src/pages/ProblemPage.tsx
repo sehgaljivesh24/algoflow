@@ -339,14 +339,6 @@ export function Player({ problem, embedded = false }: { problem: AnyProblem; emb
         </div>
 
         <div className="vp-right">
-          <CodePanel
-            title={problem.title}
-            java={problem.java} python={problem.python}
-            javaActive={step.javaLines} pyActive={step.pyLines}
-            done={!!step.result}
-            lang={lang} onLang={setLang}
-          />
-
           <section className="card vp-algo">
             <h2 className="card-title">Algorithm</h2>
             <ol className="algo-list">
@@ -373,6 +365,17 @@ export function Player({ problem, embedded = false }: { problem: AnyProblem; emb
           </section>
         </div>
       </div>
+
+      {/* dedicated full-width space for the code, below the animation — not squeezed into the side column */}
+      <section className="vp-code-full" aria-label="Code">
+        <CodePanel
+          title={problem.title}
+          java={problem.java} python={problem.python}
+          javaActive={step.javaLines} pyActive={step.pyLines}
+          done={!!step.result}
+          lang={lang} onLang={setLang}
+        />
+      </section>
 
       {!embedded && <Article problem={problem} />}
       {!embedded && <NotesButton slug={problem.slug} />}
